@@ -201,6 +201,10 @@ namespace WRST
             {
                 // получаем выбранный файл
                 string filename = saveFileDialog1.FileName;
+                if (File.Exists(filename))
+                {
+                    File.Delete(filename);
+                }
 
                 using (StreamWriter writer = new StreamWriter(filename, true,
                     System.Text.Encoding.GetEncoding(1251)))

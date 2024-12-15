@@ -275,6 +275,11 @@ namespace WRST
             {
                 // получаем выбранный файл
                 string filename = saveFileDialog1.FileName;
+                //если существует - удаляем
+                if (File.Exists(filename))
+                {
+                    File.Delete(filename);
+                }
 
                 List<string> block1 = new List<string>();
                 block1.Add(textBox1.Text);
@@ -637,13 +642,9 @@ namespace WRST
             double PN1;
 
             double[] B_Q = new double[400];
-            double ARmin_Q;
             double[] B_QP = new double[400];
-            double ARmin_QP;
             double[] B_PH = new double[400];
-            double ARmin_PH;
-            double[] B_PN = new double[400];
-            double ARmin_PN;
+            double[] B_PN = new double[400];;
 
             int M = 0;
             int MD = M1 - 1;
