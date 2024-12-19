@@ -1,14 +1,5 @@
-﻿using Microsoft.VisualBasic.Devices;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Diagnostics;
-using System.Drawing;
-using System.Linq;
+﻿using System.Data;
 using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
 
 namespace WRST
@@ -249,6 +240,16 @@ namespace WRST
                         }
                         writer.WriteLine(string.Join(';', list));
                     }
+
+                    columnsNames = new List<string>()
+                    { "Среднегодовая выработка, кВт ч"};
+                    columnsNames.Add(label2.Text);
+                    writer.WriteLine(string.Join(";", columnsNames));
+
+                    columnsNames = new List<string>()
+                    { "Суммарный объем сбросов, млн.м3"};
+                    columnsNames.Add(label4.Text);
+                    writer.WriteLine(string.Join(";", columnsNames)); ;
                 }
             }
         }
