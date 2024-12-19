@@ -1,4 +1,4 @@
-using System.Data;
+п»їusing System.Data;
 using System.Diagnostics;
 using System.Linq.Expressions;
 using System.Windows.Forms;
@@ -8,7 +8,7 @@ namespace WRST
 {
     public partial class Form1 : Form
     {
-        //Таблицы по которым строим tableGridView
+        //РўР°Р±Р»РёС†С‹ РїРѕ РєРѕС‚РѕСЂС‹Рј СЃС‚СЂРѕРёРј tableGridView
         DataTable tableTributary = new DataTable();
         DataTable tableUpstream = new DataTable();
         DataTable tableDownstream = new DataTable();
@@ -22,14 +22,14 @@ namespace WRST
         {
             InitializeComponent();
 
-            openFileDialog1.Filter = "CSV файлы (*.csv)|*.csv";
-            saveFileDialog1.Filter = "CSV файлы (*.csv)|*.csv";
+            openFileDialog1.Filter = "CSV С„Р°Р№Р»С‹ (*.csv)|*.csv";
+            saveFileDialog1.Filter = "CSV С„Р°Р№Р»С‹ (*.csv)|*.csv";
             saveFileDialog1.DefaultExt = "csv";
             saveFileDialog1.AddExtension = true;
         }
         private void Form1_Load(object sender, EventArgs e)
         {
-            //Оформление таблиц
+            //РћС„РѕСЂРјР»РµРЅРёРµ С‚Р°Р±Р»РёС†
             dataGridView1.AllowUserToAddRows = false;
             dataGridView1.AllowUserToDeleteRows = false;
             dataGridView1.RowHeadersVisible = false;
@@ -67,12 +67,12 @@ namespace WRST
             dataGridView5.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
             dataGridView5.AllowUserToOrderColumns = false;
 
-            //Начальная инициализация
-            tableTributary.Columns.Add(new DataColumn("0", typeof(string))); //Создаем столбец
-            DataRow rowTributary = tableTributary.NewRow(); //Добавляем строку
-            rowTributary[0] = 0; //Задаем данные (номер столбца - 0) 
-            tableTributary.Rows.Add(rowTributary); //Добавляем данные в таблицу
-            dataGridView1.DataSource = tableTributary; //Привязываем таблицу к tableGridView
+            //РќР°С‡Р°Р»СЊРЅР°СЏ РёРЅРёС†РёР°Р»РёР·Р°С†РёСЏ
+            tableTributary.Columns.Add(new DataColumn("0", typeof(string))); //РЎРѕР·РґР°РµРј СЃС‚РѕР»Р±РµС†
+            DataRow rowTributary = tableTributary.NewRow(); //Р”РѕР±Р°РІР»СЏРµРј СЃС‚СЂРѕРєСѓ
+            rowTributary[0] = 0; //Р—Р°РґР°РµРј РґР°РЅРЅС‹Рµ (РЅРѕРјРµСЂ СЃС‚РѕР»Р±С†Р° - 0) 
+            tableTributary.Rows.Add(rowTributary); //Р”РѕР±Р°РІР»СЏРµРј РґР°РЅРЅС‹Рµ РІ С‚Р°Р±Р»РёС†Сѓ
+            dataGridView1.DataSource = tableTributary; //РџСЂРёРІСЏР·С‹РІР°РµРј С‚Р°Р±Р»РёС†Сѓ Рє tableGridView
 
             tableUpstream.Columns.Add(new DataColumn("0", typeof(string)));
             DataRow rowUpstream0 = tableUpstream.NewRow();
@@ -146,14 +146,12 @@ namespace WRST
 
         private void radioButton2_CheckedChanged(object sender, EventArgs e)
         {
-            label20.Text = "Коэффициент потерь при Qгэс";
-            label21.Visible = true;
+            label20.Text = "РљРѕСЌС„С„РёС†РёРµРЅС‚ РїРѕС‚РµСЂСЊ РїСЂРё QРіСЌСЃВІ";
         }
 
         private void radioButton1_CheckedChanged(object sender, EventArgs e)
         {
-            label21.Visible = false;
-            label20.Text = "Потери напора, м";
+            label20.Text = "РџРѕС‚РµСЂРё РЅР°РїРѕСЂР°, Рј";
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -169,20 +167,20 @@ namespace WRST
 
             button1.Enabled = false;
 
-            //Очищаем таблицу
+            //РћС‡РёС‰Р°РµРј С‚Р°Р±Р»РёС†Сѓ
             tableTributary.Clear();
             for (int i = tableTributary.Columns.Count - 1; i >= 0; i--)
             {
                 tableTributary.Columns.RemoveAt(i);
             }
-            //Создаем таблицу по заданному количеству столбцов
+            //РЎРѕР·РґР°РµРј С‚Р°Р±Р»РёС†Сѓ РїРѕ Р·Р°РґР°РЅРЅРѕРјСѓ РєРѕР»РёС‡РµСЃС‚РІСѓ СЃС‚РѕР»Р±С†РѕРІ
             for (int i = 0; i < n; i++)
             {
                 if (m > years * 12) { m = 1; }
                 tableTributary.Columns.Add(new DataColumn(m.ToString(), typeof(string)));
                 m++;
             }
-            //Заполняем строку нулями
+            //Р—Р°РїРѕР»РЅСЏРµРј СЃС‚СЂРѕРєСѓ РЅСѓР»СЏРјРё
             DataRow rowTributary = tableTributary.NewRow();
             for (int i = 0; i < n; i++)
             {
@@ -273,9 +271,9 @@ namespace WRST
         {
             if (saveFileDialog1.ShowDialog() == DialogResult.OK)
             {
-                // получаем выбранный файл
+                // РїРѕР»СѓС‡Р°РµРј РІС‹Р±СЂР°РЅРЅС‹Р№ С„Р°Р№Р»
                 string filename = saveFileDialog1.FileName;
-                //если существует - удаляем
+                //РµСЃР»Рё СЃСѓС‰РµСЃС‚РІСѓРµС‚ - СѓРґР°Р»СЏРµРј
                 if (File.Exists(filename))
                 {
                     File.Delete(filename);
@@ -358,7 +356,7 @@ namespace WRST
         {
             if (openFileDialog1.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
-                // получаем выбранный файл
+                // РїРѕР»СѓС‡Р°РµРј РІС‹Р±СЂР°РЅРЅС‹Р№ С„Р°Р№Р»
                 string filename = openFileDialog1.FileName;
 
                 List<List<string>> blocks = new List<List<string>>();
@@ -399,13 +397,13 @@ namespace WRST
                     int years = n / 12;
                     if (dataGridView1.ColumnCount != n)
                     {
-                        //Очищаем таблицу
+                        //РћС‡РёС‰Р°РµРј С‚Р°Р±Р»РёС†Сѓ
                         tableTributary.Clear();
                         for (int i = tableTributary.Columns.Count - 1; i >= 0; i--)
                         {
                             tableTributary.Columns.RemoveAt(i);
                         }
-                        //Создаем таблицу по заданному количеству столбцов
+                        //РЎРѕР·РґР°РµРј С‚Р°Р±Р»РёС†Сѓ РїРѕ Р·Р°РґР°РЅРЅРѕРјСѓ РєРѕР»РёС‡РµСЃС‚РІСѓ СЃС‚РѕР»Р±С†РѕРІ
                         for (int i = 0; i < n; i++)
                         {
                             if (m > years * 12) { m = 1; }
@@ -543,8 +541,8 @@ namespace WRST
                     textBox9.Text = "0";
                     textBox10.Text = "0";
 
-                    MessageBox.Show("Неверный формат файла исходных данных " +
-                        "/ файл исходных данных повреждён \n\n" + ex, "Внимание!",
+                    MessageBox.Show("РќРµРІРµСЂРЅС‹Р№ С„РѕСЂРјР°С‚ С„Р°Р№Р»Р° РёСЃС…РѕРґРЅС‹С… РґР°РЅРЅС‹С… " +
+                        "/ С„Р°Р№Р» РёСЃС…РѕРґРЅС‹С… РґР°РЅРЅС‹С… РїРѕРІСЂРµР¶РґС‘РЅ \n\n" + ex, "Р’РЅРёРјР°РЅРёРµ!",
                     MessageBoxButtons.OK, icon: MessageBoxIcon.Error);
                 }
             }
@@ -553,7 +551,7 @@ namespace WRST
         private void Tb_KeyPress(object sender, KeyPressEventArgs e)
         {
             var tb = (TextBox)sender;
-            //Разрешаем только цифры
+            //Р Р°Р·СЂРµС€Р°РµРј С‚РѕР»СЊРєРѕ С†РёС„СЂС‹
             e.Handled = char.IsLetter(e.KeyChar);
         }
 
@@ -616,7 +614,7 @@ namespace WRST
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Введено не число / поле ввода пустое \n\n" + ex, "Внимание!",
+                MessageBox.Show("Р’РІРµРґРµРЅРѕ РЅРµ С‡РёСЃР»Рѕ / РїРѕР»Рµ РІРІРѕРґР° РїСѓСЃС‚РѕРµ \n\n" + ex, "Р’РЅРёРјР°РЅРёРµ!",
                     MessageBoxButtons.OK, icon: MessageBoxIcon.Error);
                 return;
             }
@@ -747,8 +745,8 @@ namespace WRST
 
 
             List<string> columnsNamesResult = new List<string>()
-            { "#", "Месяц", "Приток, м3/с", "Расход ГЭС, м3/с", "Сбросы, м3/с", "Отм. ВБ, м",
-                "Отм. НБ, м", "Напор, м", "Мощность, кВт", "Избыт. объем, млн.м3"};
+            { "#", "РњРµСЃСЏС†", "РџСЂРёС‚РѕРє, РјВі/СЃ", "Р Р°СЃС…РѕРґ Р“Р­РЎ, РјВі/СЃ", "РЎР±СЂРѕСЃС‹, РјВі/СЃ", "РћС‚Рј. Р’Р‘, Рј",
+                "РћС‚Рј. РќР‘, Рј", "РќР°РїРѕСЂ, Рј", "РњРѕС‰РЅРѕСЃС‚СЊ, РєР’С‚", "РР·Р±С‹С‚. РѕР±СЉРµРј, РјР»РЅ.РјВі"};
 
             tableResults.Clear();
             for (int i = tableResults.Columns.Count - 1; i >= 0; i--)
@@ -778,8 +776,8 @@ namespace WRST
             }
             //dataGridView6.DataSource = tableResults;
 
-            List<string> ColSecurity = new List<string>() { "Обеспеченность, %", "Расход бытовой, м3/с",
-            "Расход ГЭС, м3/с", "Напор, м", "Мощность ГЭС, среднесуточная, кВт"};
+            List<string> ColSecurity = new List<string>() { "РћР±РµСЃРїРµС‡РµРЅРЅРѕСЃС‚СЊ, %", "Р Р°СЃС…РѕРґ Р±С‹С‚РѕРІРѕР№, РјВі/СЃ",
+            "Р Р°СЃС…РѕРґ Р“Р­РЎ, РјВі/СЃ", "РќР°РїРѕСЂ, Рј", "РњРѕС‰РЅРѕСЃС‚СЊ Р“Р­РЎ, СЃСЂРµРґРЅРµСЃСѓС‚РѕС‡РЅР°СЏ, РєР’С‚"};
 
             tableSecurity.Clear();
             for (int i = tableSecurity.Columns.Count - 1; i >= 0; i--)

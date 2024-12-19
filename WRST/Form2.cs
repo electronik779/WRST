@@ -33,7 +33,7 @@ namespace WRST
             int[] x = new int[] { 0, 0, 0 };
             int[] y = new int[] { 2, 3, 4 };
             string[] list = new string[] { "Приток", "Расход ГЭС", "Сбросы" };
-            string[] list2 = new string[] { "Месяц", "м3/с" };
+            string[] list2 = new string[] { "Месяц", "м³/с" };
             BuildChart(chart1, tableResults, "column", list, "left", 3, x, y, 
                 1, ResultCount, 1, false, list2);
             x = new int[] { 0 };
@@ -63,13 +63,13 @@ namespace WRST
             x = new int[] { 0 };
             y = new int[] { 1 };
             list = new string[] { "Приток" };
-            list2 = new string[] { "Обеспеченность, %", "м3/с" };
+            list2 = new string[] { "Обеспеченность, %", "м³/с" };
             BuildChart(chart6, tableSecurity, "line", list, "right", 1, x, y, 
                 0, 100, 20, false, list2);
             x = new int[] { 0 };
             y = new int[] { 2 };
             list = new string[] { "Расход ГЭС" };
-            list2 = new string[] { "Обеспеченность, %", "м3/с" };
+            list2 = new string[] { "Обеспеченность, %", "м³/с" };
             BuildChart(chart7, tableSecurity, "line", list, "right", 1, x, y,
                 0, 100, 20, false, list2);
             x = new int[] { 0 };

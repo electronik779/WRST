@@ -33,19 +33,14 @@
             tabPage1 = new TabPage();
             textBox7 = new TextBox();
             label22 = new Label();
-            label21 = new Label();
             textBox6 = new TextBox();
             textBox5 = new TextBox();
             textBox4 = new TextBox();
             textBox3 = new TextBox();
             textBox2 = new TextBox();
             label20 = new Label();
-            label17 = new Label();
             label19 = new Label();
-            label6 = new Label();
-            label12 = new Label();
             label16 = new Label();
-            label11 = new Label();
             textBox1 = new TextBox();
             radioButton2 = new RadioButton();
             radioButton1 = new RadioButton();
@@ -54,7 +49,6 @@
             label4 = new Label();
             label2 = new Label();
             tabPage2 = new TabPage();
-            label26 = new Label();
             label25 = new Label();
             label24 = new Label();
             button1 = new Button();
@@ -62,7 +56,6 @@
             textBox8 = new TextBox();
             label23 = new Label();
             tabPage3 = new TabPage();
-            label27 = new Label();
             label28 = new Label();
             label29 = new Label();
             dataGridView2 = new DataGridView();
@@ -70,7 +63,6 @@
             textBox9 = new TextBox();
             label7 = new Label();
             tabPage4 = new TabPage();
-            label30 = new Label();
             label31 = new Label();
             label32 = new Label();
             dataGridView3 = new DataGridView();
@@ -78,12 +70,10 @@
             textBox10 = new TextBox();
             label8 = new Label();
             tabPage5 = new TabPage();
-            label33 = new Label();
             label34 = new Label();
             label35 = new Label();
             dataGridView4 = new DataGridView();
             tabPage6 = new TabPage();
-            label36 = new Label();
             label37 = new Label();
             label38 = new Label();
             dataGridView5 = new DataGridView();
@@ -129,19 +119,14 @@
             // 
             tabPage1.Controls.Add(textBox7);
             tabPage1.Controls.Add(label22);
-            tabPage1.Controls.Add(label21);
             tabPage1.Controls.Add(textBox6);
             tabPage1.Controls.Add(textBox5);
             tabPage1.Controls.Add(textBox4);
             tabPage1.Controls.Add(textBox3);
             tabPage1.Controls.Add(textBox2);
             tabPage1.Controls.Add(label20);
-            tabPage1.Controls.Add(label17);
             tabPage1.Controls.Add(label19);
-            tabPage1.Controls.Add(label6);
-            tabPage1.Controls.Add(label12);
             tabPage1.Controls.Add(label16);
-            tabPage1.Controls.Add(label11);
             tabPage1.Controls.Add(textBox1);
             tabPage1.Controls.Add(radioButton2);
             tabPage1.Controls.Add(radioButton1);
@@ -173,16 +158,6 @@
             label22.Size = new Size(76, 15);
             label22.TabIndex = 30;
             label22.Text = "Кпд агрегата";
-            // 
-            // label21
-            // 
-            label21.AutoSize = true;
-            label21.Location = new Point(178, 245);
-            label21.Name = "label21";
-            label21.Size = new Size(13, 15);
-            label21.TabIndex = 29;
-            label21.Text = "2";
-            label21.Visible = false;
             // 
             // textBox6
             // 
@@ -233,59 +208,23 @@
             label20.TabIndex = 23;
             label20.Text = "Потери напора, м";
             // 
-            // label17
-            // 
-            label17.AutoSize = true;
-            label17.Location = new Point(227, 218);
-            label17.Name = "label17";
-            label17.Size = new Size(13, 15);
-            label17.TabIndex = 22;
-            label17.Text = "3";
-            // 
             // label19
             // 
             label19.AutoSize = true;
             label19.Location = new Point(3, 221);
             label19.Name = "label19";
-            label19.Size = new Size(252, 15);
+            label19.Size = new Size(244, 15);
             label19.TabIndex = 20;
-            label19.Text = "Полный (максимальный) расход ГЭС, м    /с";
-            // 
-            // label6
-            // 
-            label6.AutoSize = true;
-            label6.Location = new Point(269, 189);
-            label6.Name = "label6";
-            label6.Size = new Size(13, 15);
-            label6.TabIndex = 19;
-            label6.Text = "3";
-            // 
-            // label12
-            // 
-            label12.AutoSize = true;
-            label12.Location = new Point(232, 159);
-            label12.Name = "label12";
-            label12.Size = new Size(13, 15);
-            label12.TabIndex = 17;
-            label12.Text = "3";
+            label19.Text = "Полный (максимальный) расход ГЭС, м³/с";
             // 
             // label16
             // 
             label16.AutoSize = true;
             label16.Location = new Point(3, 163);
             label16.Name = "label16";
-            label16.Size = new Size(234, 15);
+            label16.Size = new Size(238, 15);
             label16.TabIndex = 13;
-            label16.Text = "Мертвый объем водохранилища,  млн.м";
-            // 
-            // label11
-            // 
-            label11.AutoSize = true;
-            label11.Location = new Point(235, 130);
-            label11.Name = "label11";
-            label11.Size = new Size(13, 15);
-            label11.TabIndex = 12;
-            label11.Text = "3";
+            label16.Text = "Мертвый объем водохранилища,  млн.м³";
             // 
             // textBox1
             // 
@@ -324,18 +263,18 @@
             label5.AutoSize = true;
             label5.Location = new Point(3, 192);
             label5.Name = "label5";
-            label5.Size = new Size(294, 15);
+            label5.Size = new Size(286, 15);
             label5.TabIndex = 5;
-            label5.Text = "Гарантированный зарегулированный расход, м    /с";
+            label5.Text = "Гарантированный зарегулированный расход, м³/с";
             // 
             // label3
             // 
             label3.AutoSize = true;
             label3.Location = new Point(3, 134);
             label3.Name = "label3";
-            label3.Size = new Size(237, 15);
+            label3.Size = new Size(241, 15);
             label3.TabIndex = 3;
-            label3.Text = "Полезный объем водохранилища, млн.м";
+            label3.Text = "Полезный объем водохранилища, млн.м³";
             // 
             // label4
             // 
@@ -357,7 +296,6 @@
             // 
             // tabPage2
             // 
-            tabPage2.Controls.Add(label26);
             tabPage2.Controls.Add(label25);
             tabPage2.Controls.Add(label24);
             tabPage2.Controls.Add(button1);
@@ -372,23 +310,14 @@
             tabPage2.Text = "Приток";
             tabPage2.UseVisualStyleBackColor = true;
             // 
-            // label26
-            // 
-            label26.AutoSize = true;
-            label26.Location = new Point(65, 107);
-            label26.Name = "label26";
-            label26.Size = new Size(13, 15);
-            label26.TabIndex = 11;
-            label26.Text = "3";
-            // 
             // label25
             // 
             label25.AutoSize = true;
             label25.Location = new Point(6, 111);
             label25.Name = "label25";
-            label25.Size = new Size(86, 15);
+            label25.Size = new Size(78, 15);
             label25.TabIndex = 10;
-            label25.Text = "Приток, м    /с";
+            label25.Text = "Приток, м³/с";
             // 
             // label24
             // 
@@ -440,7 +369,6 @@
             // 
             // tabPage3
             // 
-            tabPage3.Controls.Add(label27);
             tabPage3.Controls.Add(label28);
             tabPage3.Controls.Add(label29);
             tabPage3.Controls.Add(dataGridView2);
@@ -454,15 +382,6 @@
             tabPage3.TabIndex = 2;
             tabPage3.Text = "Параметры вдхр.";
             tabPage3.UseVisualStyleBackColor = true;
-            // 
-            // label27
-            // 
-            label27.AutoSize = true;
-            label27.Location = new Point(87, 76);
-            label27.Name = "label27";
-            label27.Size = new Size(13, 15);
-            label27.TabIndex = 15;
-            label27.Text = "3";
             // 
             // label28
             // 
@@ -478,9 +397,9 @@
             label29.AutoSize = true;
             label29.Location = new Point(6, 80);
             label29.Name = "label29";
-            label29.Size = new Size(86, 15);
+            label29.Size = new Size(90, 15);
             label29.TabIndex = 13;
-            label29.Text = "Объем, млн.м";
+            label29.Text = "Объем, млн.м³";
             // 
             // dataGridView2
             // 
@@ -523,7 +442,6 @@
             // 
             // tabPage4
             // 
-            tabPage4.Controls.Add(label30);
             tabPage4.Controls.Add(label31);
             tabPage4.Controls.Add(label32);
             tabPage4.Controls.Add(dataGridView3);
@@ -537,16 +455,6 @@
             tabPage4.TabIndex = 3;
             tabPage4.Text = "Батиграфия НБ";
             tabPage4.UseVisualStyleBackColor = true;
-            // 
-            // label30
-            // 
-            label30.AutoSize = true;
-            label30.Location = new Point(79, 76);
-            label30.Margin = new Padding(1, 0, 1, 0);
-            label30.Name = "label30";
-            label30.Size = new Size(13, 15);
-            label30.TabIndex = 19;
-            label30.Text = "3";
             // 
             // label31
             // 
@@ -562,9 +470,9 @@
             label32.AutoSize = true;
             label32.Location = new Point(5, 80);
             label32.Name = "label32";
-            label32.Size = new Size(102, 15);
+            label32.Size = new Size(94, 15);
             label32.TabIndex = 17;
-            label32.Text = "Расход НБ, м    /с";
+            label32.Text = "Расход НБ, м³/с";
             // 
             // dataGridView3
             // 
@@ -607,7 +515,6 @@
             // 
             // tabPage5
             // 
-            tabPage5.Controls.Add(label33);
             tabPage5.Controls.Add(label34);
             tabPage5.Controls.Add(label35);
             tabPage5.Controls.Add(dataGridView4);
@@ -619,24 +526,14 @@
             tabPage5.Text = "Диспетчерские остатки";
             tabPage5.UseVisualStyleBackColor = true;
             // 
-            // label33
-            // 
-            label33.AutoSize = true;
-            label33.Location = new Point(93, 107);
-            label33.Margin = new Padding(1, 0, 1, 0);
-            label33.Name = "label33";
-            label33.Size = new Size(13, 15);
-            label33.TabIndex = 23;
-            label33.Text = "3";
-            // 
             // label34
             // 
             label34.AutoSize = true;
             label34.Location = new Point(6, 111);
             label34.Name = "label34";
-            label34.Size = new Size(92, 15);
+            label34.Size = new Size(96, 15);
             label34.TabIndex = 22;
-            label34.Text = "Остатки, млн.м";
+            label34.Text = "Остатки, млн.м³";
             // 
             // label35
             // 
@@ -660,7 +557,6 @@
             // 
             // tabPage6
             // 
-            tabPage6.Controls.Add(label36);
             tabPage6.Controls.Add(label37);
             tabPage6.Controls.Add(label38);
             tabPage6.Controls.Add(dataGridView5);
@@ -672,24 +568,14 @@
             tabPage6.Text = "Отбор из вдхр.";
             tabPage6.UseVisualStyleBackColor = true;
             // 
-            // label36
-            // 
-            label36.AutoSize = true;
-            label36.Location = new Point(58, 107);
-            label36.Margin = new Padding(1, 0, 1, 0);
-            label36.Name = "label36";
-            label36.Size = new Size(13, 15);
-            label36.TabIndex = 27;
-            label36.Text = "3";
-            // 
             // label37
             // 
             label37.AutoSize = true;
             label37.Location = new Point(6, 111);
             label37.Name = "label37";
-            label37.Size = new Size(80, 15);
+            label37.Size = new Size(72, 15);
             label37.TabIndex = 26;
-            label37.Text = "Отбор, м    /с";
+            label37.Text = "Отбор, м³/с";
             // 
             // label38
             // 
@@ -739,7 +625,7 @@
             // saveButton1
             // 
             saveButton1.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            saveButton1.Image = (Image)resources.GetObject("saveButton1.Image");
+            saveButton1.Image = Properties.Resources.save;
             saveButton1.ImageTransparentColor = Color.Magenta;
             saveButton1.Name = "saveButton1";
             saveButton1.Size = new Size(23, 22);
@@ -749,7 +635,7 @@
             // openButton2
             // 
             openButton2.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            openButton2.Image = (Image)resources.GetObject("openButton2.Image");
+            openButton2.Image = Properties.Resources.open;
             openButton2.ImageTransparentColor = Color.Magenta;
             openButton2.Name = "openButton2";
             openButton2.Size = new Size(23, 22);
@@ -759,7 +645,7 @@
             // executeButton3
             // 
             executeButton3.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            executeButton3.Image = (Image)resources.GetObject("executeButton3.Image");
+            executeButton3.Image = Properties.Resources.execute1;
             executeButton3.ImageTransparentColor = Color.Magenta;
             executeButton3.Name = "executeButton3";
             executeButton3.Size = new Size(23, 22);
@@ -823,22 +709,17 @@
         private RadioButton radioButton2;
         private RadioButton radioButton1;
         private Label label7;
-        private Label label11;
         private TextBox textBox9;
         private TextBox textBox10;
         private Label label8;
         private Label label20;
-        private Label label17;
         private Label label19;
-        private Label label6;
-        private Label label12;
         private Label label16;
         private TextBox textBox6;
         private TextBox textBox5;
         private TextBox textBox4;
         private TextBox textBox3;
         private TextBox textBox2;
-        private Label label21;
         private Label label22;
         private TextBox textBox7;
         private DataGridView dataGridView1;
@@ -848,23 +729,18 @@
         private Label label23;
         private Button button1;
         private Label label24;
-        private Label label26;
         private Label label25;
         private Button button2;
         private Button button3;
-        private Label label27;
         private Label label28;
         private Label label29;
         private DataGridView dataGridView2;
-        private Label label30;
         private Label label31;
         private Label label32;
         private DataGridView dataGridView3;
-        private Label label33;
         private Label label34;
         private Label label35;
         private DataGridView dataGridView4;
-        private Label label36;
         private Label label37;
         private Label label38;
         private DataGridView dataGridView5;

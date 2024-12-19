@@ -98,7 +98,7 @@
             tabControl1.Location = new Point(12, 28);
             tabControl1.Name = "tabControl1";
             tabControl1.SelectedIndex = 0;
-            tabControl1.Size = new Size(1304, 915);
+            tabControl1.Size = new Size(1516, 719);
             tabControl1.TabIndex = 0;
             // 
             // tabPage1
@@ -108,18 +108,18 @@
             tabPage1.Location = new Point(4, 24);
             tabPage1.Name = "tabPage1";
             tabPage1.Padding = new Padding(3);
-            tabPage1.Size = new Size(1296, 887);
+            tabPage1.Size = new Size(1508, 691);
             tabPage1.TabIndex = 0;
             tabPage1.Text = "Таблицы";
             tabPage1.UseVisualStyleBackColor = true;
             // 
             // dataGridView2
             // 
-            dataGridView2.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            dataGridView2.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             dataGridView2.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dataGridView2.Location = new Point(7, 651);
+            dataGridView2.Location = new Point(975, 6);
             dataGridView2.Name = "dataGridView2";
-            dataGridView2.Size = new Size(527, 230);
+            dataGridView2.Size = new Size(527, 639);
             dataGridView2.TabIndex = 1;
             // 
             // dataGridView1
@@ -144,7 +144,7 @@
             tabPage2.Location = new Point(4, 24);
             tabPage2.Name = "tabPage2";
             tabPage2.Padding = new Padding(3);
-            tabPage2.Size = new Size(1296, 887);
+            tabPage2.Size = new Size(1508, 691);
             tabPage2.TabIndex = 1;
             tabPage2.Text = "Графики";
             tabPage2.UseVisualStyleBackColor = true;
@@ -156,13 +156,13 @@
             chart9.ChartAreas.Add(chartArea1);
             legend1.Name = "Legend1";
             chart9.Legends.Add(legend1);
-            chart9.Location = new Point(1035, 652);
+            chart9.Location = new Point(1038, 507);
             chart9.Name = "chart9";
             series1.ChartArea = "ChartArea1";
             series1.Legend = "Legend1";
             series1.Name = "Series1";
             chart9.Series.Add(series1);
-            chart9.Size = new Size(253, 203);
+            chart9.Size = new Size(308, 161);
             chart9.TabIndex = 8;
             chart9.Text = "chart9";
             // 
@@ -173,13 +173,13 @@
             chart8.ChartAreas.Add(chartArea2);
             legend2.Name = "Legend1";
             chart8.Legends.Add(legend2);
-            chart8.Location = new Point(1035, 443);
+            chart8.Location = new Point(1035, 340);
             chart8.Name = "chart8";
             series2.ChartArea = "ChartArea1";
             series2.Legend = "Legend1";
             series2.Name = "Series1";
             chart8.Series.Add(series2);
-            chart8.Size = new Size(253, 203);
+            chart8.Size = new Size(311, 161);
             chart8.TabIndex = 7;
             chart8.Text = "chart8";
             // 
@@ -190,13 +190,13 @@
             chart7.ChartAreas.Add(chartArea3);
             legend3.Name = "Legend1";
             chart7.Legends.Add(legend3);
-            chart7.Location = new Point(1035, 234);
+            chart7.Location = new Point(1038, 173);
             chart7.Name = "chart7";
             series3.ChartArea = "ChartArea1";
             series3.Legend = "Legend1";
             series3.Name = "Series1";
             chart7.Series.Add(series3);
-            chart7.Size = new Size(253, 203);
+            chart7.Size = new Size(308, 161);
             chart7.TabIndex = 6;
             chart7.Text = "chart7";
             // 
@@ -209,13 +209,13 @@
             legend4.IsDockedInsideChartArea = false;
             legend4.Name = "Legend1";
             chart6.Legends.Add(legend4);
-            chart6.Location = new Point(1035, 25);
+            chart6.Location = new Point(1035, 6);
             chart6.Name = "chart6";
             series4.ChartArea = "ChartArea1";
             series4.Legend = "Legend1";
             series4.Name = "Series1";
             chart6.Series.Add(series4);
-            chart6.Size = new Size(253, 203);
+            chart6.Size = new Size(311, 161);
             chart6.TabIndex = 5;
             chart6.Text = "chart6";
             chart6.Click += chart6_Click;
@@ -226,13 +226,13 @@
             chart5.ChartAreas.Add(chartArea5);
             legend5.Name = "Legend1";
             chart5.Legends.Add(legend5);
-            chart5.Location = new Point(6, 678);
+            chart5.Location = new Point(6, 554);
             chart5.Name = "chart5";
             series5.ChartArea = "ChartArea1";
             series5.Legend = "Legend1";
             series5.Name = "Series1";
             chart5.Series.Add(series5);
-            chart5.Size = new Size(1023, 203);
+            chart5.Size = new Size(1023, 131);
             chart5.TabIndex = 4;
             chart5.Text = "chart5";
             // 
@@ -242,13 +242,13 @@
             chart4.ChartAreas.Add(chartArea6);
             legend6.Name = "Legend1";
             chart4.Legends.Add(legend6);
-            chart4.Location = new Point(3, 510);
+            chart4.Location = new Point(3, 417);
             chart4.Name = "chart4";
             series6.ChartArea = "ChartArea1";
             series6.Legend = "Legend1";
             series6.Name = "Series1";
             chart4.Series.Add(series6);
-            chart4.Size = new Size(1026, 162);
+            chart4.Size = new Size(1026, 131);
             chart4.TabIndex = 3;
             chart4.Text = "chart4";
             // 
@@ -258,13 +258,13 @@
             chart3.ChartAreas.Add(chartArea7);
             legend7.Name = "Legend1";
             chart3.Legends.Add(legend7);
-            chart3.Location = new Point(6, 342);
+            chart3.Location = new Point(6, 280);
             chart3.Name = "chart3";
             series7.ChartArea = "ChartArea1";
             series7.Legend = "Legend1";
             series7.Name = "Series1";
             chart3.Series.Add(series7);
-            chart3.Size = new Size(1026, 162);
+            chart3.Size = new Size(1026, 131);
             chart3.TabIndex = 2;
             chart3.Text = "chart3";
             // 
@@ -274,13 +274,13 @@
             chart2.ChartAreas.Add(chartArea8);
             legend8.Name = "Legend1";
             chart2.Legends.Add(legend8);
-            chart2.Location = new Point(3, 174);
+            chart2.Location = new Point(3, 143);
             chart2.Name = "chart2";
             series8.ChartArea = "ChartArea1";
             series8.Legend = "Legend1";
             series8.Name = "Series1";
             chart2.Series.Add(series8);
-            chart2.Size = new Size(1026, 162);
+            chart2.Size = new Size(1026, 131);
             chart2.TabIndex = 1;
             chart2.Text = "chart2";
             // 
@@ -296,7 +296,7 @@
             series9.Legend = "Legend1";
             series9.Name = "Series1";
             chart1.Series.Add(series9);
-            chart1.Size = new Size(1026, 162);
+            chart1.Size = new Size(1026, 131);
             chart1.TabIndex = 0;
             chart1.Text = "chart1";
             // 
@@ -305,14 +305,14 @@
             toolStrip1.Items.AddRange(new ToolStripItem[] { saveButton1 });
             toolStrip1.Location = new Point(0, 0);
             toolStrip1.Name = "toolStrip1";
-            toolStrip1.Size = new Size(1328, 25);
+            toolStrip1.Size = new Size(1540, 25);
             toolStrip1.TabIndex = 1;
             toolStrip1.Text = "toolStrip1";
             // 
             // saveButton1
             // 
             saveButton1.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            saveButton1.Image = (Image)resources.GetObject("saveButton1.Image");
+            saveButton1.Image = Properties.Resources.save;
             saveButton1.ImageTransparentColor = Color.Magenta;
             saveButton1.Name = "saveButton1";
             saveButton1.Size = new Size(23, 22);
@@ -323,9 +323,10 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1328, 955);
+            ClientSize = new Size(1540, 759);
             Controls.Add(toolStrip1);
             Controls.Add(tabControl1);
+            Icon = (Icon)resources.GetObject("$this.Icon");
             Name = "Form2";
             StartPosition = FormStartPosition.CenterScreen;
             Text = "Сезонное и годичное регулирование - Результаты расчета";
