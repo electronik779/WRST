@@ -807,7 +807,7 @@ namespace WRST
                 //Debug.WriteLine("{0}, {1}, {2}, {3}, {4}", dr[0], dr[1], dr[2], dr[3], dr[4]);
             }
             
-            Form2 form2 = new Form2(tableResults, tableSecurity);
+            Form2 form2 = new Form2(tableResults, tableSecurity, EEP, S);
             form2.Show();
         }
 

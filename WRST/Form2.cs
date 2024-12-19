@@ -15,7 +15,8 @@ namespace WRST
 {
     public partial class Form2 : Form
     {
-        public Form2(DataTable tableResults, DataTable tableSecurity)
+        public Form2(DataTable tableResults, DataTable tableSecurity,
+            double EEP, double S)
         {
             InitializeComponent();
 
@@ -84,6 +85,9 @@ namespace WRST
             list2 = new string[] { "Обеспеченность, %", "кВт" };
             BuildChart(chart9, tableSecurity, "line", list, "right", 1, x, y,
                 0, 100, 20, false, list2);
+
+            label2.Text = Convert.ToString(Math.Round(EEP,0));
+            label4.Text = Convert.ToString(Math.Round(S, 0));
         }
 
         private void Form2_Load(object sender, EventArgs e)

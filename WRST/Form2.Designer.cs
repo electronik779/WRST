@@ -58,6 +58,8 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form2));
             tabControl1 = new TabControl();
             tabPage1 = new TabPage();
+            label2 = new Label();
+            label1 = new Label();
             dataGridView2 = new DataGridView();
             dataGridView1 = new DataGridView();
             tabPage2 = new TabPage();
@@ -73,6 +75,8 @@
             toolStrip1 = new ToolStrip();
             saveButton1 = new ToolStripButton();
             saveFileDialog1 = new SaveFileDialog();
+            label3 = new Label();
+            label4 = new Label();
             tabControl1.SuspendLayout();
             tabPage1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)dataGridView2).BeginInit();
@@ -103,6 +107,10 @@
             // 
             // tabPage1
             // 
+            tabPage1.Controls.Add(label4);
+            tabPage1.Controls.Add(label3);
+            tabPage1.Controls.Add(label2);
+            tabPage1.Controls.Add(label1);
             tabPage1.Controls.Add(dataGridView2);
             tabPage1.Controls.Add(dataGridView1);
             tabPage1.Location = new Point(4, 24);
@@ -112,6 +120,24 @@
             tabPage1.TabIndex = 0;
             tabPage1.Text = "Таблицы";
             tabPage1.UseVisualStyleBackColor = true;
+            // 
+            // label2
+            // 
+            label2.AutoSize = true;
+            label2.Location = new Point(198, 660);
+            label2.Name = "label2";
+            label2.Size = new Size(38, 15);
+            label2.TabIndex = 3;
+            label2.Text = "label2";
+            // 
+            // label1
+            // 
+            label1.AutoSize = true;
+            label1.Location = new Point(6, 660);
+            label1.Name = "label1";
+            label1.Size = new Size(186, 15);
+            label1.TabIndex = 2;
+            label1.Text = "Среднегодовая выработка, кВт ч";
             // 
             // dataGridView2
             // 
@@ -319,6 +345,24 @@
             saveButton1.Text = "Сохранить результат расчета";
             saveButton1.Click += toolStripButton1_Click;
             // 
+            // label3
+            // 
+            label3.AutoSize = true;
+            label3.Location = new Point(341, 660);
+            label3.Name = "label3";
+            label3.Size = new Size(208, 15);
+            label3.TabIndex = 4;
+            label3.Text = "Суммарный объем сбросов, млн.м³";
+            // 
+            // label4
+            // 
+            label4.AutoSize = true;
+            label4.Location = new Point(555, 660);
+            label4.Name = "label4";
+            label4.Size = new Size(38, 15);
+            label4.TabIndex = 5;
+            label4.Text = "label4";
+            // 
             // Form2
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -333,6 +377,7 @@
             Load += Form2_Load;
             tabControl1.ResumeLayout(false);
             tabPage1.ResumeLayout(false);
+            tabPage1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)dataGridView2).EndInit();
             ((System.ComponentModel.ISupportInitialize)dataGridView1).EndInit();
             tabPage2.ResumeLayout(false);
@@ -370,5 +415,9 @@
         private System.Windows.Forms.DataVisualization.Charting.Chart chart1;
         private System.Windows.Forms.DataVisualization.Charting.Chart chart9;
         private System.Windows.Forms.DataVisualization.Charting.Chart chart8;
+        private Label label2;
+        private Label label1;
+        private Label label3;
+        private Label label4;
     }
 }
