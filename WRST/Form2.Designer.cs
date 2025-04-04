@@ -55,9 +55,14 @@
             System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea9 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
             System.Windows.Forms.DataVisualization.Charting.Legend legend9 = new System.Windows.Forms.DataVisualization.Charting.Legend();
             System.Windows.Forms.DataVisualization.Charting.Series series9 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea10 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend10 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series10 = new System.Windows.Forms.DataVisualization.Charting.Series();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form2));
             tabControl1 = new TabControl();
             tabPage1 = new TabPage();
+            label4 = new Label();
+            label3 = new Label();
             label2 = new Label();
             label1 = new Label();
             dataGridView2 = new DataGridView();
@@ -72,11 +77,12 @@
             chart3 = new System.Windows.Forms.DataVisualization.Charting.Chart();
             chart2 = new System.Windows.Forms.DataVisualization.Charting.Chart();
             chart1 = new System.Windows.Forms.DataVisualization.Charting.Chart();
+            tabPage3 = new TabPage();
+            dataGridView3 = new DataGridView();
+            chart10 = new System.Windows.Forms.DataVisualization.Charting.Chart();
             toolStrip1 = new ToolStrip();
             saveButton1 = new ToolStripButton();
             saveFileDialog1 = new SaveFileDialog();
-            label3 = new Label();
-            label4 = new Label();
             tabControl1.SuspendLayout();
             tabPage1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)dataGridView2).BeginInit();
@@ -91,6 +97,9 @@
             ((System.ComponentModel.ISupportInitialize)chart3).BeginInit();
             ((System.ComponentModel.ISupportInitialize)chart2).BeginInit();
             ((System.ComponentModel.ISupportInitialize)chart1).BeginInit();
+            tabPage3.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)dataGridView3).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)chart10).BeginInit();
             toolStrip1.SuspendLayout();
             SuspendLayout();
             // 
@@ -99,6 +108,7 @@
             tabControl1.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             tabControl1.Controls.Add(tabPage1);
             tabControl1.Controls.Add(tabPage2);
+            tabControl1.Controls.Add(tabPage3);
             tabControl1.Location = new Point(12, 28);
             tabControl1.Name = "tabControl1";
             tabControl1.SelectedIndex = 0;
@@ -120,6 +130,24 @@
             tabPage1.TabIndex = 0;
             tabPage1.Text = "Таблицы";
             tabPage1.UseVisualStyleBackColor = true;
+            // 
+            // label4
+            // 
+            label4.AutoSize = true;
+            label4.Location = new Point(555, 660);
+            label4.Name = "label4";
+            label4.Size = new Size(38, 15);
+            label4.TabIndex = 5;
+            label4.Text = "label4";
+            // 
+            // label3
+            // 
+            label3.AutoSize = true;
+            label3.Location = new Point(341, 660);
+            label3.Name = "label3";
+            label3.Size = new Size(208, 15);
+            label3.TabIndex = 4;
+            label3.Text = "Суммарный объем сбросов, млн.м³";
             // 
             // label2
             // 
@@ -244,7 +272,6 @@
             chart6.Size = new Size(311, 161);
             chart6.TabIndex = 5;
             chart6.Text = "chart6";
-            chart6.Click += chart6_Click;
             // 
             // chart5
             // 
@@ -326,6 +353,44 @@
             chart1.TabIndex = 0;
             chart1.Text = "chart1";
             // 
+            // tabPage3
+            // 
+            tabPage3.Controls.Add(dataGridView3);
+            tabPage3.Controls.Add(chart10);
+            tabPage3.Location = new Point(4, 24);
+            tabPage3.Name = "tabPage3";
+            tabPage3.Padding = new Padding(3);
+            tabPage3.Size = new Size(1508, 691);
+            tabPage3.TabIndex = 2;
+            tabPage3.Text = "Диспетчерские графики";
+            tabPage3.UseVisualStyleBackColor = true;
+            // 
+            // dataGridView3
+            // 
+            dataGridView3.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left;
+            dataGridView3.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            dataGridView3.Location = new Point(6, 6);
+            dataGridView3.Name = "dataGridView3";
+            dataGridView3.Size = new Size(390, 679);
+            dataGridView3.TabIndex = 3;
+            // 
+            // chart10
+            // 
+            chart10.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Right;
+            chartArea10.Name = "ChartArea1";
+            chart10.ChartAreas.Add(chartArea10);
+            legend10.Name = "Legend1";
+            chart10.Legends.Add(legend10);
+            chart10.Location = new Point(402, 6);
+            chart10.Name = "chart10";
+            series10.ChartArea = "ChartArea1";
+            series10.Legend = "Legend1";
+            series10.Name = "Series1";
+            chart10.Series.Add(series10);
+            chart10.Size = new Size(1100, 679);
+            chart10.TabIndex = 2;
+            chart10.Text = "chart10";
+            // 
             // toolStrip1
             // 
             toolStrip1.Items.AddRange(new ToolStripItem[] { saveButton1 });
@@ -344,24 +409,6 @@
             saveButton1.Size = new Size(23, 22);
             saveButton1.Text = "Сохранить результат расчета";
             saveButton1.Click += toolStripButton1_Click;
-            // 
-            // label3
-            // 
-            label3.AutoSize = true;
-            label3.Location = new Point(341, 660);
-            label3.Name = "label3";
-            label3.Size = new Size(208, 15);
-            label3.TabIndex = 4;
-            label3.Text = "Суммарный объем сбросов, млн.м³";
-            // 
-            // label4
-            // 
-            label4.AutoSize = true;
-            label4.Location = new Point(555, 660);
-            label4.Name = "label4";
-            label4.Size = new Size(38, 15);
-            label4.TabIndex = 5;
-            label4.Text = "label4";
             // 
             // Form2
             // 
@@ -390,6 +437,9 @@
             ((System.ComponentModel.ISupportInitialize)chart3).EndInit();
             ((System.ComponentModel.ISupportInitialize)chart2).EndInit();
             ((System.ComponentModel.ISupportInitialize)chart1).EndInit();
+            tabPage3.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)dataGridView3).EndInit();
+            ((System.ComponentModel.ISupportInitialize)chart10).EndInit();
             toolStrip1.ResumeLayout(false);
             toolStrip1.PerformLayout();
             ResumeLayout(false);
@@ -419,5 +469,8 @@
         private Label label1;
         private Label label3;
         private Label label4;
+        private TabPage tabPage3;
+        private System.Windows.Forms.DataVisualization.Charting.Chart chart10;
+        private DataGridView dataGridView3;
     }
 }

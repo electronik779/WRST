@@ -1,22 +1,19 @@
 ﻿using System.Data;
-using System.Diagnostics;
-using System.Linq.Expressions;
-using System.Windows.Forms;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace WRST
 {
     public partial class Form1 : Form
     {
         //Таблицы по которым строим tableGridView
-        DataTable tableTributary = new DataTable();
-        DataTable tableUpstream = new DataTable();
-        DataTable tableDownstream = new DataTable();
-        DataTable tableRemainder = new DataTable();
-        DataTable tableSelections = new DataTable();
+        DataTable tableTributary = new DataTable();   // Приток
+        DataTable tableUpstream = new DataTable();    // Параметры вдхр
+        DataTable tableDownstream = new DataTable();  // Батиграфия НБ
+        DataTable tableRemainder = new DataTable();   // Диспетчерские остатки
+        DataTable tableSelections = new DataTable();  // Отборы из вдхр
         DataTable tableResults = new DataTable();
         DataTable tableSecurity = new DataTable();
 
+        DataTable tableExtRemainder = new DataTable();
 
         public Form1()
         {
@@ -27,70 +24,70 @@ namespace WRST
             saveFileDialog1.DefaultExt = "csv";
             saveFileDialog1.AddExtension = true;
         }
+
+        private void TableFormat(DataGridView table, bool HeaderVisible)
+        {
+            table.AllowUserToAddRows = false;
+            table.AllowUserToDeleteRows = false;
+            table.RowHeadersVisible = false;
+            table.ColumnHeadersVisible = HeaderVisible;
+            table.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            table.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            table.AllowUserToOrderColumns = false;
+        }
+
+        private void TableInit(DataTable table, DataGridView tableG, int rows)
+        {
+            table.Columns.Add(new DataColumn("0", typeof(string))); //Создаем столбец
+            for (int i = 0; i < rows; i++)
+            {
+                DataRow row = table.NewRow(); //Добавляем строку
+                row[0] = 0; //Задаем данные (номер столбца - 0) 
+                table.Rows.Add(row); //Добавляем данные в таблицу
+            }
+            tableG.DataSource = table; //Привязываем таблицу к tableGridView
+        }
+
+        private void TableHeader(DataTable table, DataGridView tableG)
+        {
+            for (int i = 0; i < 12; i++)
+            {
+                if (i < 9)
+                {
+                    table.Columns.Add(new DataColumn("0" + (i + 1).ToString(), typeof(string)));
+                }
+                else
+                {
+                    table.Columns.Add(new DataColumn((i + 1).ToString(), typeof(string)));
+                }
+            }
+            DataRow row = table.NewRow();
+            for (int i = 0; i < 12; i++)
+            {
+                row[i] = 0;
+            }
+            table.Rows.Add(row);
+            tableG.DataSource = table;
+            for (int i = 0; i < 12; i++)
+            {
+                tableG.Columns[i].Width = 100;
+            }
+        }
+
         private void Form1_Load(object sender, EventArgs e)
         {
             //Оформление таблиц
-            dataGridView1.AllowUserToAddRows = false;
-            dataGridView1.AllowUserToDeleteRows = false;
-            dataGridView1.RowHeadersVisible = false;
-            dataGridView1.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-            dataGridView1.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-            dataGridView1.AllowUserToOrderColumns = false;
 
-            dataGridView2.AllowUserToAddRows = false;
-            dataGridView2.AllowUserToDeleteRows = false;
-            dataGridView2.RowHeadersVisible = false;
-            dataGridView2.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-            dataGridView2.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-            dataGridView2.ColumnHeadersVisible = false;
-            dataGridView2.AllowUserToOrderColumns = false;
-
-            dataGridView3.AllowUserToAddRows = false;
-            dataGridView3.AllowUserToDeleteRows = false;
-            dataGridView3.RowHeadersVisible = false;
-            dataGridView3.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-            dataGridView3.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-            dataGridView3.ColumnHeadersVisible = false;
-            dataGridView3.AllowUserToOrderColumns = false;
-
-            dataGridView4.AllowUserToAddRows = false;
-            dataGridView4.AllowUserToDeleteRows = false;
-            dataGridView4.RowHeadersVisible = false;
-            dataGridView4.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-            dataGridView4.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-            dataGridView4.AllowUserToOrderColumns = false;
-
-            dataGridView5.AllowUserToAddRows = false;
-            dataGridView5.AllowUserToDeleteRows = false;
-            dataGridView5.RowHeadersVisible = false;
-            dataGridView5.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-            dataGridView5.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-            dataGridView5.AllowUserToOrderColumns = false;
+            TableFormat(dataGridView1, true);
+            TableFormat(dataGridView2, false);
+            TableFormat(dataGridView3, false);
+            TableFormat(dataGridView4, true);
+            TableFormat(dataGridView5, true);
 
             //Начальная инициализация
-            tableTributary.Columns.Add(new DataColumn("0", typeof(string))); //Создаем столбец
-            DataRow rowTributary = tableTributary.NewRow(); //Добавляем строку
-            rowTributary[0] = 0; //Задаем данные (номер столбца - 0) 
-            tableTributary.Rows.Add(rowTributary); //Добавляем данные в таблицу
-            dataGridView1.DataSource = tableTributary; //Привязываем таблицу к tableGridView
-
-            tableUpstream.Columns.Add(new DataColumn("0", typeof(string)));
-            DataRow rowUpstream0 = tableUpstream.NewRow();
-            DataRow rowUpstream1 = tableUpstream.NewRow();
-            rowUpstream0[0] = 0;
-            rowUpstream1[0] = 0;
-            tableUpstream.Rows.Add(rowUpstream0);
-            tableUpstream.Rows.Add(rowUpstream1);
-            dataGridView2.DataSource = tableUpstream;
-
-            tableDownstream.Columns.Add(new DataColumn("0", typeof(string)));
-            DataRow rowDownstream0 = tableDownstream.NewRow();
-            DataRow rowDownstream1 = tableDownstream.NewRow();
-            rowDownstream0[0] = 0;
-            rowDownstream1[0] = 0;
-            tableDownstream.Rows.Add(rowDownstream0);
-            tableDownstream.Rows.Add(rowDownstream1);
-            dataGridView3.DataSource = tableDownstream;
+            TableInit(tableTributary, dataGridView1, 1);
+            TableInit(tableUpstream, dataGridView2, 2);
+            TableInit(tableDownstream, dataGridView3, 2);
 
             textBox1.Text = "0";
             textBox2.Text = "0";
@@ -103,45 +100,8 @@ namespace WRST
             textBox9.Text = "0";
             textBox10.Text = "0";
 
-            for (int i = 0; i < 12; i++)
-            {
-                if (i < 9)
-                {
-                    tableRemainder.Columns.Add(new DataColumn("0" + (i + 1).ToString(), typeof(string)));
-                }
-                else
-                {
-                    tableRemainder.Columns.Add(new DataColumn((i + 1).ToString(), typeof(string)));
-                }
-            }
-            DataRow rowRemainder = tableRemainder.NewRow();
-            for (int i = 0; i < 12; i++)
-            {
-                rowRemainder[i] = 0;
-            }
-            tableRemainder.Rows.Add(rowRemainder);
-            dataGridView4.DataSource = tableRemainder;
-
-            for (int i = 0; i < 12; i++)
-            {
-                if (i < 9)
-                {
-                    tableSelections.Columns.Add(new DataColumn("0" + (i + 1).ToString(), typeof(string)));
-                }
-                else
-                {
-                    tableSelections.Columns.Add(new DataColumn((i + 1).ToString(), typeof(string)));
-                }
-            }
-            DataRow rowSelections = tableSelections.NewRow();
-            for (int i = 0; i < 12; i++)
-            {
-                rowSelections[i] = 0;
-            }
-            tableSelections.Rows.Add(rowSelections);
-            dataGridView5.DataSource = tableSelections;
-
-            
+            TableHeader(tableRemainder, dataGridView4);
+            TableHeader(tableSelections, dataGridView5);
         }
 
         private void radioButton2_CheckedChanged(object sender, EventArgs e)
@@ -154,26 +114,66 @@ namespace WRST
             label20.Text = "Потери напора, м";
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void TableClear(DataTable table)
+        {
+            table.Clear();
+            for (int i = table.Columns.Count - 1; i >= 0; i--)
+            {
+                table.Columns.RemoveAt(i);
+            }
+        }
+
+        private void TableCreate(DataTable table, DataGridView tableG, int cols, int rows)
+        {
+            for (int i = 0; i < cols; i++)
+            {
+                table.Columns.Add(new DataColumn((i + 1).ToString(), typeof(string)));
+            }
+            //Заполняем строку нулями
+            for (int j = 0; j < rows; j++)
+            {
+                DataRow row = table.NewRow();
+                for (int i = 0; i < cols; i++)
+                {
+                    row[i] = 0;
+                }
+                table.Rows.Add(row);
+            }
+            tableG.DataSource = table;
+            for (int i = 0; i < cols; i++)
+            {
+                tableG.Columns[i].Width = 100;
+            }
+        }
+
+        private void button1_Click(object sender, EventArgs e) // Создать табл. приток
         {
             if (string.IsNullOrEmpty(textBox1.Text) || string.IsNullOrEmpty(textBox8.Text))
                 return;
 
             int m = Convert.ToInt32(textBox1.Text);
+
+            if (m == 0)
+            {
+                MessageBox.Show("Необходимо задать номер календарного месяца, с которого начинается расчетный ряд.", "Внимание!",
+                    MessageBoxButtons.OK, icon: MessageBoxIcon.Error);
+                return;
+            }
+
             int n = Convert.ToInt32(textBox8.Text);
             while (n % 12 != 0) { n++; }
             textBox8.Text = n.ToString();
-            int years = n / 12;
+            //int years = n / 12;
 
             button1.Enabled = false;
 
             //Очищаем таблицу
-            tableTributary.Clear();
-            for (int i = tableTributary.Columns.Count - 1; i >= 0; i--)
-            {
-                tableTributary.Columns.RemoveAt(i);
-            }
+
+            TableClear(tableTributary);
+
             //Создаем таблицу по заданному количеству столбцов
+
+            int years = n / 12;
             for (int i = 0; i < n; i++)
             {
                 if (m > years * 12) { m = 1; }
@@ -181,16 +181,21 @@ namespace WRST
                 m++;
             }
             //Заполняем строку нулями
-            DataRow rowTributary = tableTributary.NewRow();
+
+            DataRow row = tableTributary.NewRow();
             for (int i = 0; i < n; i++)
             {
-                rowTributary[i] = 0;
+                row[i] = 0;
             }
-            tableTributary.Rows.Add(rowTributary);
+            tableTributary.Rows.Add(row);
             dataGridView1.DataSource = tableTributary;
+            for (int i = 0; i < n; i++)
+            {
+                dataGridView1.Columns[i].Width = 100;
+            }
         }
 
-        private void button2_Click(object sender, EventArgs e)
+        private void button2_Click(object sender, EventArgs e)  // Создать табл. вдхр
         {
             if (string.IsNullOrEmpty(textBox9.Text))
                 return;
@@ -199,29 +204,12 @@ namespace WRST
 
             int n = Convert.ToInt32(textBox9.Text);
 
-            tableUpstream.Clear();
-            for (int i = tableUpstream.Columns.Count - 1; i >= 0; i--)
-            {
-                tableUpstream.Columns.RemoveAt(i);
-            }
+            TableClear(tableUpstream);
 
-            for (int i = 0; i < n; i++)
-            {
-                tableUpstream.Columns.Add(new DataColumn(i.ToString(), typeof(string)));
-            }
-            DataRow rowUpstream0 = tableUpstream.NewRow();
-            DataRow rowUpstream1 = tableUpstream.NewRow();
-            for (int i = 0; i < n; i++)
-            {
-                rowUpstream0[i] = 0;
-                rowUpstream1[i] = 0;
-            }
-            tableUpstream.Rows.Add(rowUpstream0);
-            tableUpstream.Rows.Add(rowUpstream1);
-            dataGridView2.DataSource = tableUpstream;
+            TableCreate(tableUpstream, dataGridView2, n, 2);
         }
 
-        private void button3_Click(object sender, EventArgs e)
+        private void button3_Click(object sender, EventArgs e)  // Создать табл. НБ
         {
             if (string.IsNullOrEmpty(textBox10.Text))
                 return;
@@ -230,26 +218,9 @@ namespace WRST
 
             int n = Convert.ToInt32(textBox10.Text);
 
-            tableDownstream.Clear();
-            for (int i = tableDownstream.Columns.Count - 1; i >= 0; i--)
-            {
-                tableDownstream.Columns.RemoveAt(i);
-            }
+            TableClear(tableDownstream);
 
-            for (int i = 0; i < n; i++)
-            {
-                tableDownstream.Columns.Add(new DataColumn(i.ToString(), typeof(string)));
-            }
-            DataRow rowDownstream0 = tableDownstream.NewRow();
-            DataRow rowDownstream1 = tableDownstream.NewRow();
-            for (int i = 0; i < n; i++)
-            {
-                rowDownstream0[i] = 0;
-                rowDownstream1[i] = 0;
-            }
-            tableDownstream.Rows.Add(rowDownstream0);
-            tableDownstream.Rows.Add(rowDownstream1);
-            dataGridView3.DataSource = tableDownstream;
+            TableCreate(tableDownstream, dataGridView3, n, 2);
         }
 
         private void textBox11_TextChanged(object sender, EventArgs e)
@@ -267,7 +238,7 @@ namespace WRST
             button3.Enabled = true;
         }
 
-        private void toolStripButton1_Click(object sender, EventArgs e)
+        private void toolStripButton1_Click(object sender, EventArgs e) //Сохранение
         {
             if (saveFileDialog1.ShowDialog() == DialogResult.OK)
             {
@@ -281,10 +252,10 @@ namespace WRST
 
                 List<string> block1 = new List<string>();
                 block1.Add(textBox1.Text);
-                if(radioButton1.Checked == true)
-                    { block1.Add("0"); }
+                if (radioButton1.Checked == true)
+                { block1.Add("0"); }
                 else
-                    { block1.Add("1"); }
+                { block1.Add("1"); }
                 block1.Add(textBox2.Text);
                 block1.Add(textBox3.Text);
                 block1.Add(textBox4.Text);
@@ -297,8 +268,8 @@ namespace WRST
                 double tmp;
                 for (int i = 0; i < Convert.ToInt32(textBox8.Text); i++)
                 {
-                    tmp = Convert.ToDouble (dataGridView1.Rows[0].Cells[i].Value);
-                    block2.Add(Convert.ToString (tmp));
+                    tmp = Convert.ToDouble(dataGridView1.Rows[0].Cells[i].Value);
+                    block2.Add(Convert.ToString(tmp));
                 }
 
                 List<string> block3 = new List<string>();
@@ -333,7 +304,7 @@ namespace WRST
                     tmp = Convert.ToDouble(dataGridView4.Rows[0].Cells[i].Value);
                     block5.Add(Convert.ToString(tmp));
                 }
-                
+
                 List<string> block6 = new List<string>();
                 for (int i = 0; i < 12; i++)
                 {
@@ -352,7 +323,27 @@ namespace WRST
             }
         }
 
-        private void toolStripButton2_Click(object sender, EventArgs e)
+        private void TableFill(DataTable table, DataGridView tableG, List<string> block, int cols, int rows, int shift)
+        {
+            for (int i = 0; i < cols; i++)
+            {
+                table.Rows[0][i] = block?.ElementAtOrDefault(i + shift) ?? string.Empty;
+            }
+            if (rows == 2)
+            {
+                for (int i = cols; i < cols * 2; i++)
+                {
+                    table.Rows[1][i - cols] = block?.ElementAtOrDefault(i + shift) ?? string.Empty;
+                }
+            }
+            tableG.DataSource = table;
+            for (int i = 0; i < cols; i++)
+            {
+                tableG.Columns[i].Width = 100;
+            }
+        }
+
+        private void toolStripButton2_Click(object sender, EventArgs e) // Загрузка
         {
             if (openFileDialog1.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
@@ -398,11 +389,7 @@ namespace WRST
                     if (dataGridView1.ColumnCount != n)
                     {
                         //Очищаем таблицу
-                        tableTributary.Clear();
-                        for (int i = tableTributary.Columns.Count - 1; i >= 0; i--)
-                        {
-                            tableTributary.Columns.RemoveAt(i);
-                        }
+                        TableClear(tableTributary);
                         //Создаем таблицу по заданному количеству столбцов
                         for (int i = 0; i < n; i++)
                         {
@@ -411,122 +398,46 @@ namespace WRST
                             m++;
                         }
                     }
-                    DataRow rowTributary = tableTributary.NewRow();
-                    for (int i = 0; i < n; i++)
+                    //Debug.WriteLine("1 {0}", dataGridView1.RowCount);
+                    if (dataGridView1.RowCount != 1)
                     {
-                        rowTributary[i] = block2?.ElementAtOrDefault(i + 1) ?? string.Empty;
+                        DataRow rowTributary = tableTributary.NewRow();
+                        for (int i = 0; i < 1; i++)
+                        {
+                            rowTributary[i] = 0;
+                        }
+                        tableTributary.Rows.Add(rowTributary);
+                        dataGridView1.DataSource = tableTributary;
                     }
-                    tableTributary.Rows.Add(rowTributary);
-                    dataGridView1.DataSource = tableTributary;
 
+                    //Debug.WriteLine("2 {0}", dataGridView1.RowCount);
+
+                    TableFill(tableTributary, dataGridView1, block2, n, 1, 1);
 
                     textBox9.Text = block3?.ElementAtOrDefault(0) ?? string.Empty;
                     n = Convert.ToInt32(textBox9.Text);
                     if (dataGridView2.ColumnCount != n)
                     {
-                        tableUpstream.Clear();
-                        for (int i = tableUpstream.Columns.Count - 1; i >= 0; i--)
-                        {
-                            tableUpstream.Columns.RemoveAt(i);
-                        }
-                        for (int i = 0; i < n; i++)
-                        {
-                            tableUpstream.Columns.Add(new DataColumn(i.ToString(), typeof(string)));
-                        }
+                        TableClear(tableUpstream);
+
+                        TableCreate(tableUpstream, dataGridView2, n, 2);
                     }
-                    DataRow rowUpstream0 = tableUpstream.NewRow();
-                    DataRow rowUpstream1 = tableUpstream.NewRow();
-                    for (int i = 0; i < n; i++)
-                    {
-                        rowUpstream0[i] = block3?.ElementAtOrDefault(i + 1) ?? string.Empty;
-                    }
-                    for (int i = n; i < n * 2; i++)
-                    {
-                        rowUpstream1[i - n] = block3?.ElementAtOrDefault(i + 1) ?? string.Empty;
-                    }
-                    tableUpstream.Rows.Add(rowUpstream0);
-                    tableUpstream.Rows.Add(rowUpstream1);
-                    dataGridView2.DataSource = tableUpstream;
+                    TableFill(tableUpstream, dataGridView2, block3, n, 2, 1);
 
 
                     textBox10.Text = block4?.ElementAtOrDefault(0) ?? string.Empty;
                     n = Convert.ToInt32(textBox10.Text);
                     if (dataGridView3.ColumnCount != n)
                     {
-                        tableDownstream.Clear();
-                        for (int i = tableDownstream.Columns.Count - 1; i >= 0; i--)
-                        {
-                            tableDownstream.Columns.RemoveAt(i);
-                        }
-                        for (int i = 0; i < n; i++)
-                        {
-                            tableDownstream.Columns.Add(new DataColumn(i.ToString(), typeof(string)));
-                        }
-                    }
-                    DataRow rowDownstream0 = tableDownstream.NewRow();
-                    DataRow rowDownstream1 = tableDownstream.NewRow();
-                    for (int i = 0; i < n; i++)
-                    {
-                        rowDownstream0[i] = block4?.ElementAtOrDefault(i + 1) ?? string.Empty;
-                    }
-                    for (int i = n; i < n * 2; i++)
-                    {
-                        rowDownstream1[i - n] = block4?.ElementAtOrDefault(i + 1) ?? string.Empty;
-                    }
-                    tableDownstream.Rows.Add(rowDownstream0);
-                    tableDownstream.Rows.Add(rowDownstream1);
-                    dataGridView3.DataSource = tableDownstream;
+                        TableClear(tableDownstream);
 
+                        TableCreate(tableDownstream, dataGridView3, n, 2);
+                    }
+                    TableFill(tableDownstream, dataGridView3, block4, n, 2, 1);
 
-                    tableRemainder.Clear();
-                    for (int i = tableRemainder.Columns.Count - 1; i >= 0; i--)
-                    {
-                        tableRemainder.Columns.RemoveAt(i);
-                    }
-                    for (int i = 0; i < 12; i++)
-                    {
-                        if (i < 9)
-                        {
-                            tableRemainder.Columns.Add(new DataColumn("0" + (i + 1).ToString(), typeof(string)));
-                        }
-                        else
-                        {
-                            tableRemainder.Columns.Add(new DataColumn((i + 1).ToString(), typeof(string)));
-                        }
-                    }
-                    DataRow rowRemainder = tableRemainder.NewRow();
-                    for (int i = 0; i < 12; i++)
-                    {
-                        rowRemainder[i] = block5?.ElementAtOrDefault(i) ?? string.Empty;
-                    }
-                    tableRemainder.Rows.Add(rowRemainder);
-                    dataGridView4.DataSource = tableRemainder;
+                    TableFill(tableRemainder, dataGridView4, block5, 12, 1, 0);
 
-
-
-                    tableSelections.Clear();
-                    for (int i = tableSelections.Columns.Count - 1; i >= 0; i--)
-                    {
-                        tableSelections.Columns.RemoveAt(i);
-                    }
-                    for (int i = 0; i < 12; i++)
-                    {
-                        if (i < 9)
-                        {
-                            tableSelections.Columns.Add(new DataColumn("0" + (i + 1).ToString(), typeof(string)));
-                        }
-                        else
-                        {
-                            tableSelections.Columns.Add(new DataColumn((i + 1).ToString(), typeof(string)));
-                        }
-                    }
-                    DataRow rowSelections = tableSelections.NewRow();
-                    for (int i = 0; i < 12; i++)
-                    {
-                        rowSelections[i] = block6?.ElementAtOrDefault(i) ?? string.Empty;
-                    }
-                    tableSelections.Rows.Add(rowSelections);
-                    dataGridView5.DataSource = tableSelections;
+                    TableFill(tableSelections, dataGridView5, block6, 12, 1, 0);
                 }
                 catch (Exception ex)
                 {
@@ -550,9 +461,9 @@ namespace WRST
 
         private void Tb_KeyPress(object sender, KeyPressEventArgs e)
         {
-            var tb = (TextBox)sender;
-            //Разрешаем только цифры
-            e.Handled = char.IsLetter(e.KeyChar);
+            //var tb = (TextBox)sender;
+            ////Разрешаем только цифры
+            //e.Handled = char.IsLetter(e.KeyChar);
         }
 
         private void toolStripButton3_Click(object sender, EventArgs e)
@@ -642,7 +553,7 @@ namespace WRST
             double[] B_Q = new double[400];
             double[] B_QP = new double[400];
             double[] B_PH = new double[400];
-            double[] B_PN = new double[400];;
+            double[] B_PN = new double[400]; ;
 
             int M = 0;
             int MD = M1 - 1;
@@ -748,11 +659,7 @@ namespace WRST
             { "#", "Месяц", "Приток, м³/с", "Расход ГЭС, м³/с", "Сбросы, м³/с", "Отм. ВБ, м",
                 "Отм. НБ, м", "Напор, м", "Мощность, кВт", "Избыт. объем, млн.м³"};
 
-            tableResults.Clear();
-            for (int i = tableResults.Columns.Count - 1; i >= 0; i--)
-            {
-                tableResults.Columns.RemoveAt(i);
-            }
+            TableClear(tableResults);
 
             foreach (string colName in columnsNamesResult)
             {
@@ -779,11 +686,7 @@ namespace WRST
             List<string> ColSecurity = new List<string>() { "Обеспеченность, %", "Расход бытовой, м³/с",
             "Расход ГЭС, м³/с", "Напор, м", "Мощность ГЭС, среднесуточная, кВт"};
 
-            tableSecurity.Clear();
-            for (int i = tableSecurity.Columns.Count - 1; i >= 0; i--)
-            {
-                tableSecurity.Columns.RemoveAt(i);
-            }
+            TableClear(tableSecurity);
 
             foreach (string str in ColSecurity)
             {
@@ -798,16 +701,40 @@ namespace WRST
             for (int i = 0; i < MF; i++)
             {
                 DataRow dr = tableSecurity.NewRow();
-                dr[0] = Math.Round(100 - ((double)i + 1) / ((double)MF + 1) * 100,2);
-                dr[1] = Math.Round(B_Q[i] , 1);
+                dr[0] = Math.Round(100 - ((double)i + 1) / ((double)MF + 1) * 100, 2);
+                dr[1] = Math.Round(B_Q[i], 1);
                 dr[2] = Math.Round(B_QP[i], 1);
                 dr[3] = Math.Round(B_PH[i], 2);
                 dr[4] = Math.Round(B_PN[i], 0);
                 tableSecurity.Rows.Add(dr);
                 //Debug.WriteLine("{0}, {1}, {2}, {3}, {4}", dr[0], dr[1], dr[2], dr[3], dr[4]);
             }
-            
-            Form2 form2 = new Form2(tableResults, tableSecurity, EEP, S);
+
+            List<string> columnsExtRemainder = new List<string>()
+            { "#", "Месяц", "Дисп. - задан.", "Дисп. - расч."};
+
+            TableClear(tableExtRemainder);
+
+            foreach (string colName in columnsExtRemainder)
+            {
+                tableExtRemainder.Columns.Add(new DataColumn(colName, typeof(double)));
+            }
+            M = M1;
+            if (M > 11) M = 0;
+            for (int i = 0; i < MF; i++)
+            {
+                DataRow dr = tableExtRemainder.NewRow();
+                dr[0] = i + 1;
+                dr[1] = M + 1;
+                dr[2] = VD[M];
+                dr[3] = Math.Round(DVM[i] + VD[M], 1);
+                M++;
+                if (M > 11) M = 0;
+
+                tableExtRemainder.Rows.Add(dr);
+            }
+
+            Form2 form2 = new Form2(tableResults, tableSecurity, tableExtRemainder, EEP, S, VU, QR);
             form2.Show();
         }
 
@@ -837,22 +764,22 @@ namespace WRST
                     //    Y[i], Y[i1], DX, DYDX, V);
                     break;
                 }
-            }   
+            }
             return V;
         }
 
         private double[] Rank(int _MF, double[] _A)
-        {            
+        {
             int K = 0;
-            int N =_MF;
+            int N = _MF;
             int L = 0;
             double[] A = new double[400];
             //double[] B = new double[400];
-            double [] AR = new double[400];
+            double[] AR = new double[400];
 
-            for(int i = 0; i < N; i++)
+            for (int i = 0; i < N; i++)
             {
-                A[i]= _A[i];
+                A[i] = _A[i];
             }
 
             while (N > 0)

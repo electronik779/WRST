@@ -1,4 +1,5 @@
 ﻿using System.Data;
+using System.Globalization;
 using System.Text;
 using System.Windows.Forms.DataVisualization.Charting;
 
@@ -6,12 +7,17 @@ namespace WRST
 {
     public partial class Form2 : Form
     {
-        public Form2(DataTable tableResults, DataTable tableSecurity,
-            double EEP, double S)
+        double QRG;
+        
+        public Form2(DataTable tableResults, DataTable tableSecurity, DataTable tableExtRemainder,
+            double EEP, double S, double VU, double QR)
         {
             InitializeComponent();
 
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+
+            dataGridView1.CellFormatting += new DataGridViewCellFormattingEventHandler(dataGridView1_CellFormatting);
+            QRG = QR;
 
             saveFileDialog1.Filter = "CSV файлы (*.csv)|*.csv";
             saveFileDialog1.DefaultExt = "csv";
@@ -19,88 +25,116 @@ namespace WRST
 
             dataGridView1.DataSource = tableResults;
             dataGridView2.DataSource = tableSecurity;
+            dataGridView3.DataSource = tableExtRemainder;
+
             int ResultCount = tableResults.Rows.Count;
             int SecurityCount = tableSecurity.Rows.Count;
 
             int[] x = new int[] { 0, 0, 0 };
             int[] y = new int[] { 2, 3, 4 };
             string[] list = new string[] { "Приток", "Расход ГЭС", "Сбросы" };
-            string[] list2 = new string[] { "Месяц", "м³/с" };
-            BuildChart(chart1, tableResults, "column", list, "left", 3, x, y, 
-                1, ResultCount, 1, false, list2);
+            string[] list2 = new string[] { "#", "м³/с" };
+            BuildChart(chart1, tableResults, "column", list, "left", 3, x, y,
+                1, ResultCount, 0, 0, 1, 0, false, list2);
             x = new int[] { 0 };
             y = new int[] { 5 };
             list = new string[] { "Уровень ВБ" };
-            list2 = new string[] { "Месяц", "м" };
-            BuildChart(chart2, tableResults, "line", list, "left", 1, x, y, 
-                1, ResultCount, 1, true, list2);
+            list2 = new string[] { "#", "м" };
+            BuildChart(chart2, tableResults, "line", list, "left", 1, x, y,
+                1, ResultCount, 0, 0, 1, 0, true, list2);
             x = new int[] { 0 };
             y = new int[] { 6 };
-            list = new string[] { "Уровень НБ, м" };
-            list2 = new string[] { "Месяц", "м" };
-            BuildChart(chart3, tableResults, "line", list, "left", 1, x, y, 
-                1, ResultCount, 1, true, list2);
+            list = new string[] { "Уровень НБ" };
+            list2 = new string[] { "#", "м" };
+            BuildChart(chart3, tableResults, "column", list, "left", 1, x, y,
+                1, ResultCount, 0, 0, 1, 0, true, list2);
             x = new int[] { 0 };
             y = new int[] { 7 };
             list = new string[] { "Напор" };
-            list2 = new string[] { "Месяц", "м" };
-            BuildChart(chart4, tableResults, "column", list, "left", 1, x, y, 
-                1, ResultCount, 1, true, list2);
+            list2 = new string[] { "#", "м" };
+            BuildChart(chart4, tableResults, "column", list, "left", 1, x, y,
+                1, ResultCount, 0, 0, 1, 0, true, list2);
             x = new int[] { 0 };
             y = new int[] { 8 };
             list = new string[] { "Мощность" };
-            list2 = new string[] { "Месяц", "кВт" };
-            BuildChart(chart5, tableResults, "column", list, "left", 1, x, y, 
-                1, ResultCount, 1, false, list2);
+            list2 = new string[] { "#", "кВт" };
+            BuildChart(chart5, tableResults, "column", list, "left", 1, x, y,
+                1, ResultCount, 0, 0, 1, 0, false, list2);
             x = new int[] { 0 };
             y = new int[] { 1 };
             list = new string[] { "Приток" };
             list2 = new string[] { "Обеспеченность, %", "м³/с" };
-            BuildChart(chart6, tableSecurity, "line", list, "right", 1, x, y, 
-                0, 100, 20, false, list2);
+            BuildChart(chart6, tableSecurity, "line", list, "right", 1, x, y,
+                0, 100, 0, 0, 20, 0, false, list2);
             x = new int[] { 0 };
             y = new int[] { 2 };
             list = new string[] { "Расход ГЭС" };
             list2 = new string[] { "Обеспеченность, %", "м³/с" };
             BuildChart(chart7, tableSecurity, "line", list, "right", 1, x, y,
-                0, 100, 20, false, list2);
+                0, 100, 0, 0, 20, 0, false, list2);
             x = new int[] { 0 };
             y = new int[] { 3 };
             list = new string[] { "Напор" };
             list2 = new string[] { "Обеспеченность, %", "м" };
             BuildChart(chart8, tableSecurity, "line", list, "right", 1, x, y,
-                0, 100, 20, true, list2);
+                0, 100, 0, 0, 20, 0, true, list2);
             x = new int[] { 0 };
             y = new int[] { 4 };
             list = new string[] { "Мощность" };
             list2 = new string[] { "Обеспеченность, %", "кВт" };
             BuildChart(chart9, tableSecurity, "line", list, "right", 1, x, y,
-                0, 100, 20, false, list2);
+                0, 100, 0, 0, 20, 0, false, list2);
 
-            label2.Text = Convert.ToString(Math.Round(EEP,0));
-            label4.Text = Convert.ToString(Math.Round(S, 0));
+            x = new int[] { 0, 0 };
+            y = new int[] { 2, 3 };
+            list = new string[] { "Диспетчерские остатки - задано", "Диспетчерские остатки - расчет" };
+            list2 = new string[] { "#", "млн.м³" };
+            BuildChart(chart10, tableExtRemainder, "line", list, "left", 2, x, y,
+                1, ResultCount, 0, Convert.ToInt32(VU), 1, Convert.ToInt32(VU / 8), false, list2);
+
+            label2.Text = (Math.Round(EEP, 0)).ToString("#,#", CultureInfo.CurrentCulture);
+            label4.Text = (Math.Round(S, 0)).ToString("#,#", CultureInfo.CurrentCulture);
+
+            //Debug.WriteLine("dataGridView1.RowCount= {0}, QR= {1}", dataGridView1.RowCount, QR);
+        }
+
+        private void dataGridView1_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
+        {
+            if (e.ColumnIndex == 3 && Convert.ToDouble(e.Value) < QRG)
+            {
+                e.CellStyle.BackColor = Color.Coral;
+            }
+            if (e.ColumnIndex == 3 && Convert.ToDouble(e.Value) < 0)
+            {
+                e.CellStyle.BackColor = Color.Red;
+            }
+        }
+
+        private void TableFormat(DataGridView table)
+        {
+            table.AllowUserToAddRows = false;
+            table.AllowUserToDeleteRows = false;
+            table.RowHeadersVisible = false;
+            table.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            table.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            table.AllowUserToOrderColumns = false;
+
+            for (int i = 0; i < table.Columns.Count; i++)
+            {
+                table.Columns[i].Width = 100;
+            }
         }
 
         private void Form2_Load(object sender, EventArgs e)
         {
-            dataGridView1.AllowUserToAddRows = false;
-            dataGridView1.AllowUserToDeleteRows = false;
-            dataGridView1.RowHeadersVisible = false;
-            dataGridView1.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-            dataGridView1.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-            dataGridView1.AllowUserToOrderColumns = false;
-
-            dataGridView2.AllowUserToAddRows = false;
-            dataGridView2.AllowUserToDeleteRows = false;
-            dataGridView2.RowHeadersVisible = false;
-            dataGridView2.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-            dataGridView2.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
-            dataGridView2.AllowUserToOrderColumns = false;
+            TableFormat(dataGridView1);
+            TableFormat(dataGridView2);
+            TableFormat(dataGridView3);
         }
 
         private void BuildChart(Chart ch, DataTable data,
-            string type, string[] list, string pos, int n, int[] x, int[] y, 
-            int Xmin, int Xmax, int step, bool isLimit, string[] axis)
+            string type, string[] list, string pos, int n, int[] x, int[] y,
+            int Xmin, int Xmax, int Ymin, int Ymax, int stepX, int stepY, bool isLimit, string[] axis)
         //название диаграммы,
         //название таблицы данных,
         //тип графика: column - столбчетая, остальное - линия,
@@ -111,7 +145,10 @@ namespace WRST
         //номер столбца DataTable с координатами Y,
         //минимальное значение оси X,
         //максимальное значение оси X,
+        //минимальное значение оси Y,
+        //максимальное значение оси Y,
         //шаг подписей оси X,
+        //шаг подписей оси Y,
         //ограничивать min - max оси Y
         //список названий осей - первая X, вторая Y.
         {
@@ -122,9 +159,11 @@ namespace WRST
             ch.ChartAreas.Add(new ChartArea("ChartArea"));
             ch.ChartAreas[0].AxisX.Minimum = Xmin;
             ch.ChartAreas[0].AxisX.Maximum = Xmax;
-            ch.ChartAreas[0].AxisX.Interval = step;
+            ch.ChartAreas[0].AxisX.Interval = stepX;
             ch.Legends[0].DockedToChartArea = "ChartArea";
             ch.Legends[0].IsDockedInsideChartArea = true;
+
+            if (stepY != 0) ch.ChartAreas[0].AxisY.Interval = stepY;
 
             if (pos == "left")
             {
@@ -163,6 +202,14 @@ namespace WRST
                     //Debug.WriteLine("{0}, {1}", MinY, MaxY);
                     ch.ChartAreas[0].AxisY.Minimum = MinY;
                     ch.ChartAreas[0].AxisY.Maximum = MaxY;
+                }
+                else
+                {
+                    if (Ymin != Ymax)
+                    {
+                        ch.ChartAreas[0].AxisY.Minimum = Ymin;
+                        ch.ChartAreas[0].AxisY.Maximum = Ymax;
+                    }
                 }
 
                 // Добавляем серию
@@ -219,7 +266,7 @@ namespace WRST
                             double tmp;
                             tmp = Convert.ToDouble(dataGridView1.Rows[j].Cells[i].Value);
                             //Debug.WriteLine("{0}, {1}, {2}", j, i, tmp);
-                            list.Add (tmp.ToString());
+                            list.Add(tmp.ToString());
                         }
                         writer.WriteLine(string.Join(';', list));
                     }
@@ -252,11 +299,6 @@ namespace WRST
                     writer.WriteLine(string.Join(";", columnsNames)); ;
                 }
             }
-        }
-
-        private void chart6_Click(object sender, EventArgs e)
-        {
-
         }
     }
 }
