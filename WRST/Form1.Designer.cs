@@ -148,7 +148,6 @@
             textBox7.Name = "textBox7";
             textBox7.Size = new Size(100, 23);
             textBox7.TabIndex = 31;
-            textBox7.KeyPress += Tb_KeyPress;
             // 
             // label22
             // 
@@ -165,7 +164,6 @@
             textBox6.Name = "textBox6";
             textBox6.Size = new Size(100, 23);
             textBox6.TabIndex = 28;
-            textBox6.KeyPress += Tb_KeyPress;
             // 
             // textBox5
             // 
@@ -173,7 +171,6 @@
             textBox5.Name = "textBox5";
             textBox5.Size = new Size(100, 23);
             textBox5.TabIndex = 27;
-            textBox5.KeyPress += Tb_KeyPress;
             // 
             // textBox4
             // 
@@ -181,7 +178,6 @@
             textBox4.Name = "textBox4";
             textBox4.Size = new Size(100, 23);
             textBox4.TabIndex = 26;
-            textBox4.KeyPress += Tb_KeyPress;
             // 
             // textBox3
             // 
@@ -189,7 +185,6 @@
             textBox3.Name = "textBox3";
             textBox3.Size = new Size(100, 23);
             textBox3.TabIndex = 25;
-            textBox3.KeyPress += Tb_KeyPress;
             // 
             // textBox2
             // 
@@ -197,7 +192,6 @@
             textBox2.Name = "textBox2";
             textBox2.Size = new Size(100, 23);
             textBox2.TabIndex = 24;
-            textBox2.KeyPress += Tb_KeyPress;
             // 
             // label20
             // 
@@ -232,7 +226,7 @@
             textBox1.Name = "textBox1";
             textBox1.Size = new Size(100, 23);
             textBox1.TabIndex = 9;
-            textBox1.KeyPress += Tb_KeyPress;
+            textBox1.TextChanged += textBox1_TextChanged;
             // 
             // radioButton2
             // 
@@ -347,7 +341,6 @@
             dataGridView1.RowHeadersWidth = 51;
             dataGridView1.Size = new Size(545, 73);
             dataGridView1.TabIndex = 0;
-            dataGridView1.KeyPress += Tb_KeyPress;
             // 
             // textBox8
             // 
@@ -355,8 +348,7 @@
             textBox8.Name = "textBox8";
             textBox8.Size = new Size(100, 23);
             textBox8.TabIndex = 7;
-            textBox8.TextChanged += textBox11_TextChanged;
-            textBox8.KeyPress += Tb_KeyPress;
+            textBox8.TextChanged += textBox8_TextChanged;
             // 
             // label23
             // 
@@ -410,7 +402,6 @@
             dataGridView2.RowHeadersWidth = 51;
             dataGridView2.Size = new Size(545, 73);
             dataGridView2.TabIndex = 12;
-            dataGridView2.KeyPress += Tb_KeyPress;
             // 
             // button2
             // 
@@ -428,8 +419,7 @@
             textBox9.Name = "textBox9";
             textBox9.Size = new Size(100, 23);
             textBox9.TabIndex = 5;
-            textBox9.TextChanged += textBox3_TextChanged;
-            textBox9.KeyPress += Tb_KeyPress;
+            textBox9.TextChanged += textBox9_TextChanged;
             // 
             // label7
             // 
@@ -483,7 +473,6 @@
             dataGridView3.RowHeadersWidth = 51;
             dataGridView3.Size = new Size(545, 73);
             dataGridView3.TabIndex = 16;
-            dataGridView3.KeyPress += Tb_KeyPress;
             // 
             // button3
             // 
@@ -501,8 +490,7 @@
             textBox10.Name = "textBox10";
             textBox10.Size = new Size(100, 23);
             textBox10.TabIndex = 7;
-            textBox10.TextChanged += textBox4_TextChanged;
-            textBox10.KeyPress += Tb_KeyPress;
+            textBox10.TextChanged += textBox10_TextChanged;
             // 
             // label8
             // 
@@ -553,7 +541,6 @@
             dataGridView4.RowHeadersWidth = 51;
             dataGridView4.Size = new Size(545, 73);
             dataGridView4.TabIndex = 20;
-            dataGridView4.KeyPress += Tb_KeyPress;
             // 
             // tabPage6
             // 
@@ -595,7 +582,6 @@
             dataGridView5.RowHeadersWidth = 51;
             dataGridView5.Size = new Size(545, 73);
             dataGridView5.TabIndex = 24;
-            dataGridView5.KeyPress += Tb_KeyPress;
             // 
             // Column1
             // 

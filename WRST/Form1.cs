@@ -1,4 +1,5 @@
 ﻿using System.Data;
+using System.Globalization;
 
 namespace WRST
 {
@@ -151,7 +152,20 @@ namespace WRST
             if (string.IsNullOrEmpty(textBox1.Text) || string.IsNullOrEmpty(textBox8.Text))
                 return;
 
-            int m = Convert.ToInt32(textBox1.Text);
+            int m;
+            try
+            {
+                m = Convert.ToInt32(textBox1.Text);
+            }
+            //catch (Exception ex)
+            catch
+            {
+                //textBox1.BackColor = Color.Red;
+                //MessageBox.Show("Необходимо ввести целое число. \n\n" + ex, "Внимание!",
+                //    MessageBoxButtons.OK, icon: MessageBoxIcon.Error);
+                NotInteger(textBox1);
+                return;
+            }
 
             if (m == 0)
             {
@@ -160,7 +174,16 @@ namespace WRST
                 return;
             }
 
-            int n = Convert.ToInt32(textBox8.Text);
+            int n;
+            try
+            {
+                n = Convert.ToInt32(textBox8.Text);
+            }
+            catch
+            {
+                NotInteger(textBox8);
+                return;
+            }
             while (n % 12 != 0) { n++; }
             textBox8.Text = n.ToString();
             //int years = n / 12;
@@ -202,7 +225,16 @@ namespace WRST
 
             button2.Enabled = false;
 
-            int n = Convert.ToInt32(textBox9.Text);
+            int n;
+            try
+            {
+                n = Convert.ToInt32(textBox9.Text);
+            }
+            catch
+            {
+                NotInteger(textBox9);
+                return;
+            }
 
             TableClear(tableUpstream);
 
@@ -216,26 +248,42 @@ namespace WRST
 
             button3.Enabled = false;
 
-            int n = Convert.ToInt32(textBox10.Text);
+            int n;
+            try
+            {
+                n = Convert.ToInt32(textBox10.Text);
+            }
+            catch
+            {
+                NotInteger(textBox10);
+                return;
+            }
 
             TableClear(tableDownstream);
 
             TableCreate(tableDownstream, dataGridView3, n, 2);
         }
-
-        private void textBox11_TextChanged(object sender, EventArgs e)
+        private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+            // сброс цвета фона textBox
+            if (textBox1.BackColor == Color.Red) { textBox1.BackColor = SystemColors.Window; }
+        }
+        private void textBox8_TextChanged(object sender, EventArgs e)
         {
             button1.Enabled = true;
+            if (textBox8.BackColor == Color.Red) { textBox8.BackColor = SystemColors.Window; }
         }
 
-        private void textBox3_TextChanged(object sender, EventArgs e)
+        private void textBox9_TextChanged(object sender, EventArgs e)
         {
             button2.Enabled = true;
+            if (textBox9.BackColor == Color.Red) { textBox9.BackColor = SystemColors.Window; }
         }
 
-        private void textBox4_TextChanged(object sender, EventArgs e)
+        private void textBox10_TextChanged(object sender, EventArgs e)
         {
             button3.Enabled = true;
+            if (textBox10.BackColor == Color.Red) { textBox10.BackColor = SystemColors.Window; }
         }
 
         private void toolStripButton1_Click(object sender, EventArgs e) //Сохранение
@@ -459,13 +507,6 @@ namespace WRST
             }
         }
 
-        private void Tb_KeyPress(object sender, KeyPressEventArgs e)
-        {
-            //var tb = (TextBox)sender;
-            ////Разрешаем только цифры
-            //e.Handled = char.IsLetter(e.KeyChar);
-        }
-
         private void toolStripButton3_Click(object sender, EventArgs e)
         {
             int MF = 0;
@@ -486,49 +527,170 @@ namespace WRST
             double EFF = 0;
             double[] VD = new double[12];
             double[] QU = new double[12];
+
             try
             {
                 MF = Convert.ToInt32(textBox8.Text);
+            }
+            catch
+            {
+                NotInteger(textBox8);
+                return;
+            }
+            try
+            {
                 M1 = Convert.ToInt32(textBox1.Text) - 1;
+            }
+            catch
+            {
+                NotInteger(textBox1);
+                return;
+            }
+            try
+            {
                 NF = Convert.ToInt32(textBox9.Text);
+            }
+            catch
+            {
+                NotInteger(textBox9);
+                return;
+            }
+            try
+            {
                 JF = Convert.ToInt32(textBox10.Text);
-                LA = false;
-                if (radioButton2.Checked == true) { LA = true; }
-                for (int i = 0; i < MF; i++)
+            }
+            catch
+            {
+                NotInteger(textBox10);
+                return;
+            }
+
+            LA = false;
+            if (radioButton2.Checked == true) { LA = true; }
+
+            for (int i = 0; i < MF; i++)
+            {
+                try
                 {
-                    Q[i] = Convert.ToDouble(dataGridView1.Rows[0].Cells[i].Value);
+                    Q[i] = GetDouble((string)dataGridView1.Rows[0].Cells[i].Value, 0d);
                 }
-                for (int i = 0; i < NF; i++)
+                catch (Exception ex)
                 {
-                    VV[i] = Convert.ToDouble(dataGridView2.Rows[0].Cells[i].Value);
-                    ZUU[i] = Convert.ToDouble(dataGridView2.Rows[1].Cells[i].Value);
+                    NotDouble(ex, "Вкладка Приток: \nГде-то в таблице введено не число.");
+                    return;
                 }
-                for (int i = 0; i < JF; i++)
+            }
+            for (int i = 0; i < NF; i++)
+            {
+                try
                 {
-                    QLL[i] = Convert.ToDouble(dataGridView3.Rows[0].Cells[i].Value);
-                    ZLL[i] = Convert.ToDouble(dataGridView3.Rows[1].Cells[i].Value);
+                    VV[i] = GetDouble((string)dataGridView2.Rows[0].Cells[i].Value, 0d);
+                    ZUU[i] = GetDouble((string)dataGridView2.Rows[1].Cells[i].Value, 0d);
+                    //Debug.WriteLine("{0}, {1}", i, ZUU[i]);
                 }
-                VU = Convert.ToDouble(textBox2.Text);
-                VR = Convert.ToDouble(textBox3.Text);
-                QR = Convert.ToDouble(textBox4.Text);
-                QPF = Convert.ToDouble(textBox5.Text);
-                DK = Convert.ToDouble(textBox6.Text);
-                EFF = Convert.ToDouble(textBox7.Text);
-                VD = new double[12];
-                QU = new double[12];
-                for (int i = 0; i < 12; i++)
+                catch (Exception ex)
                 {
-                    VD[i] = Convert.ToDouble(dataGridView4.Rows[0].Cells[i].Value);
-                    //Debug.WriteLine("{0}, {1}",i, VD[i]);
-                    QU[i] = Convert.ToDouble(dataGridView5.Rows[0].Cells[i].Value);
+                    NotDouble(ex, "Вкладка Параметры вдхр.: \nГде-то в таблице введено не число.");
+                    return;
                 }
+            }
+            for (int i = 0; i < JF; i++)
+            {
+                try
+                {
+                    QLL[i] = GetDouble((string)dataGridView3.Rows[0].Cells[i].Value, 0d);
+                    ZLL[i] = GetDouble((string)dataGridView3.Rows[1].Cells[i].Value, 0d);
+                }
+                catch (Exception ex)
+                {
+                    NotDouble(ex, "Вкладка Батиграфия НБ: \nГде-то в таблице введено не число.");
+                    return;
+                }
+            }
+            try
+            {
+                VU = GetDouble(textBox2.Text, 0d);
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Введено не число / поле ввода пустое \n\n" + ex, "Внимание!",
-                    MessageBoxButtons.OK, icon: MessageBoxIcon.Error);
+                textBox2.BackColor = Color.Red;
+                NotDouble(ex, "");
                 return;
             }
+            try
+            {
+                VR = GetDouble(textBox3.Text, 0d);
+            }
+            catch (Exception ex)
+            {
+                textBox3.BackColor = Color.Red;
+                NotDouble(ex, "");
+                return;
+            }
+            try
+            {
+                QR = GetDouble(textBox4.Text, 0d);
+            }
+            catch (Exception ex)
+            {
+                textBox4.BackColor = Color.Red;
+                NotDouble(ex, "");
+                return;
+            }
+            try
+            {
+                QPF = GetDouble(textBox5.Text, 0d);
+            }
+            catch (Exception ex)
+            {
+                textBox5.BackColor = Color.Red;
+                NotDouble(ex, "");
+                return;
+            }
+            try
+            {
+                DK = GetDouble(textBox6.Text, 0d);
+            }
+            catch (Exception ex)
+            {
+                textBox6.BackColor = Color.Red;
+                NotDouble(ex, "");
+                return;
+            }
+            try
+            {
+                EFF = GetDouble(textBox7.Text, 0d);
+            }
+            catch (Exception ex)
+            {
+                textBox7.BackColor = Color.Red;
+                NotDouble(ex, "");
+                return;
+            }
+            VD = new double[12];
+            QU = new double[12];
+            for (int i = 0; i < 12; i++)
+            {
+                try
+                {
+                    VD[i] = GetDouble((string)dataGridView4.Rows[0].Cells[i].Value, 0d);
+                }
+                catch (Exception ex)
+                {
+                    NotDouble(ex, "Вкладка Диспетчерские остатки: \nГде-то в таблице введено не число.");
+                    return;
+                }
+                try
+                {
+                    QU[i] = GetDouble((string)dataGridView5.Rows[0].Cells[i].Value, 0d);
+                }
+                catch (Exception ex)
+                {
+                    NotDouble(ex, "Вкладка Отбор из вдхр.: \nГде-то в таблице введено не число.");
+                    return;
+                }
+            }
+
             double[] DVM = new double[400];
             double QP1;
             double QS1;
@@ -652,8 +814,6 @@ namespace WRST
                 EP = EP + EP1;
             }
             double EEP = EP * 12 / MF;
-
-
 
             List<string> columnsNamesResult = new List<string>()
             { "#", "Месяц", "Приток, м³/с", "Расход ГЭС, м³/с", "Сбросы, м³/с", "Отм. ВБ, м",
@@ -816,6 +976,34 @@ namespace WRST
             //    //Debug.WriteLine("L={0}, i={1}, MF={2}", L, i, _MF);
             //}
             return AR;
+        }
+        private double GetDouble(string str, double defaultValue)
+        {
+            double result;
+            //Try parsing in the current culture
+            if (!double.TryParse(str, System.Globalization.NumberStyles.Any, CultureInfo.CurrentCulture, out result) &&
+                //Then try in US english
+                !double.TryParse(str, System.Globalization.NumberStyles.Any, CultureInfo.GetCultureInfo("en-US"), out result) &&
+                //Then in neutral language
+                !double.TryParse(str, System.Globalization.NumberStyles.Any, CultureInfo.InvariantCulture, out result))
+            {
+                result = defaultValue;
+                throw new ArgumentException("Необходимо ввести число.");
+            }
+
+            return result;
+        }
+
+        private void NotInteger(TextBox textBox)
+        {
+            textBox.BackColor = Color.Red;
+            MessageBox.Show("Необходимо ввести целое число.", "Внимание!",
+                MessageBoxButtons.OK, icon: MessageBoxIcon.Error);
+        }
+        private void NotDouble(Exception ex, string tab)
+        {
+            MessageBox.Show($"{tab} {ex.Message}", "Внимание!",
+                MessageBoxButtons.OK, icon: MessageBoxIcon.Error);
         }
     }
 }
