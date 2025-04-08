@@ -268,6 +268,36 @@ namespace WRST
             // сброс цвета фона textBox
             if (textBox1.BackColor == Color.Red) { textBox1.BackColor = SystemColors.Window; }
         }
+        private void textBox2_TextChanged(object sender, EventArgs e)
+        {
+            // сброс цвета фона textBox
+            if (textBox2.BackColor == Color.Red) { textBox2.BackColor = SystemColors.Window; }
+        }
+        private void textBox3_TextChanged(object sender, EventArgs e)
+        {
+            // сброс цвета фона textBox
+            if (textBox3.BackColor == Color.Red) { textBox3.BackColor = SystemColors.Window; }
+        }
+        private void textBox4_TextChanged(object sender, EventArgs e)
+        {
+            // сброс цвета фона textBox
+            if (textBox4.BackColor == Color.Red) { textBox4.BackColor = SystemColors.Window; }
+        }
+        private void textBox5_TextChanged(object sender, EventArgs e)
+        {
+            // сброс цвета фона textBox
+            if (textBox5.BackColor == Color.Red) { textBox5.BackColor = SystemColors.Window; }
+        }
+        private void textBox6_TextChanged(object sender, EventArgs e)
+        {
+            // сброс цвета фона textBox
+            if (textBox6.BackColor == Color.Red) { textBox6.BackColor = SystemColors.Window; }
+        }
+        private void textBox7_TextChanged(object sender, EventArgs e)
+        {
+            // сброс цвета фона textBox
+            if (textBox7.BackColor == Color.Red) { textBox7.BackColor = SystemColors.Window; }
+        }
         private void textBox8_TextChanged(object sender, EventArgs e)
         {
             button1.Enabled = true;
