@@ -503,9 +503,9 @@
             label8.AutoSize = true;
             label8.Location = new Point(6, 41);
             label8.Name = "label8";
-            label8.Size = new Size(343, 15);
+            label8.Size = new Size(334, 15);
             label8.TabIndex = 6;
-            label8.Text = "Количество узловых точек кривой объемов водохранилища";
+            label8.Text = "Количество узловых точек кривой отметок нижнего бьефа";
             // 
             // tabPage5
             // 
