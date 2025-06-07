@@ -85,6 +85,7 @@
             executeButton3 = new ToolStripButton();
             openFileDialog1 = new OpenFileDialog();
             saveFileDialog1 = new SaveFileDialog();
+            label1 = new Label();
             tabControl1.SuspendLayout();
             tabPage1.SuspendLayout();
             tabPage2.SuspendLayout();
@@ -345,7 +346,7 @@
             dataGridView1.Location = new Point(105, 76);
             dataGridView1.Name = "dataGridView1";
             dataGridView1.RowHeadersWidth = 51;
-            dataGridView1.Size = new Size(545, 73);
+            dataGridView1.Size = new Size(545, 80);
             dataGridView1.TabIndex = 0;
             // 
             // textBox8
@@ -406,7 +407,7 @@
             dataGridView2.Location = new Point(105, 76);
             dataGridView2.Name = "dataGridView2";
             dataGridView2.RowHeadersWidth = 51;
-            dataGridView2.Size = new Size(545, 73);
+            dataGridView2.Size = new Size(545, 80);
             dataGridView2.TabIndex = 12;
             // 
             // button2
@@ -477,7 +478,7 @@
             dataGridView3.Location = new Point(105, 76);
             dataGridView3.Name = "dataGridView3";
             dataGridView3.RowHeadersWidth = 51;
-            dataGridView3.Size = new Size(545, 73);
+            dataGridView3.Size = new Size(545, 80);
             dataGridView3.TabIndex = 16;
             // 
             // button3
@@ -509,6 +510,7 @@
             // 
             // tabPage5
             // 
+            tabPage5.Controls.Add(label1);
             tabPage5.Controls.Add(label34);
             tabPage5.Controls.Add(label35);
             tabPage5.Controls.Add(dataGridView4);
@@ -545,7 +547,7 @@
             dataGridView4.Location = new Point(105, 76);
             dataGridView4.Name = "dataGridView4";
             dataGridView4.RowHeadersWidth = 51;
-            dataGridView4.Size = new Size(545, 73);
+            dataGridView4.Size = new Size(545, 80);
             dataGridView4.TabIndex = 20;
             // 
             // tabPage6
@@ -586,7 +588,7 @@
             dataGridView5.Location = new Point(105, 76);
             dataGridView5.Name = "dataGridView5";
             dataGridView5.RowHeadersWidth = 51;
-            dataGridView5.Size = new Size(545, 73);
+            dataGridView5.Size = new Size(545, 80);
             dataGridView5.TabIndex = 24;
             // 
             // Column1
@@ -647,6 +649,15 @@
             // openFileDialog1
             // 
             openFileDialog1.FileName = "openFileDialog1";
+            // 
+            // label1
+            // 
+            label1.AutoSize = true;
+            label1.Location = new Point(105, 46);
+            label1.Name = "label1";
+            label1.Size = new Size(234, 15);
+            label1.TabIndex = 23;
+            label1.Text = "Диспетчерские остатки на конец месяца:";
             // 
             // Form1
             // 
@@ -742,5 +753,6 @@
         private ToolStripButton executeButton3;
         private OpenFileDialog openFileDialog1;
         private SaveFileDialog saveFileDialog1;
+        private Label label1;
     }
 }
