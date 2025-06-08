@@ -420,7 +420,7 @@
             Icon = (Icon)resources.GetObject("$this.Icon");
             Name = "Form2";
             StartPosition = FormStartPosition.CenterScreen;
-            Text = "Сезонное и годичное регулирование - Результаты расчета";
+            Text = "Сезонное (годичное) регулирование - Результаты расчета";
             Load += Form2_Load;
             tabControl1.ResumeLayout(false);
             tabPage1.ResumeLayout(false);

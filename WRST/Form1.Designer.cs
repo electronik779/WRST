@@ -70,6 +70,7 @@
             textBox10 = new TextBox();
             label8 = new Label();
             tabPage5 = new TabPage();
+            label1 = new Label();
             label34 = new Label();
             label35 = new Label();
             dataGridView4 = new DataGridView();
@@ -85,7 +86,6 @@
             executeButton3 = new ToolStripButton();
             openFileDialog1 = new OpenFileDialog();
             saveFileDialog1 = new SaveFileDialog();
-            label1 = new Label();
             tabControl1.SuspendLayout();
             tabPage1.SuspendLayout();
             tabPage2.SuspendLayout();
@@ -522,6 +522,15 @@
             tabPage5.Text = "Диспетчерские остатки";
             tabPage5.UseVisualStyleBackColor = true;
             // 
+            // label1
+            // 
+            label1.AutoSize = true;
+            label1.Location = new Point(105, 46);
+            label1.Name = "label1";
+            label1.Size = new Size(234, 15);
+            label1.TabIndex = 23;
+            label1.Text = "Диспетчерские остатки на конец месяца:";
+            // 
             // label34
             // 
             label34.AutoSize = true;
@@ -650,15 +659,6 @@
             // 
             openFileDialog1.FileName = "openFileDialog1";
             // 
-            // label1
-            // 
-            label1.AutoSize = true;
-            label1.Location = new Point(105, 46);
-            label1.Name = "label1";
-            label1.Size = new Size(234, 15);
-            label1.TabIndex = 23;
-            label1.Text = "Диспетчерские остатки на конец месяца:";
-            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -669,7 +669,7 @@
             Icon = (Icon)resources.GetObject("$this.Icon");
             Name = "Form1";
             StartPosition = FormStartPosition.CenterScreen;
-            Text = "Сезонное и годичное регулирование";
+            Text = "Сезонное (годичное) регулирование";
             Load += Form1_Load;
             tabControl1.ResumeLayout(false);
             tabPage1.ResumeLayout(false);
