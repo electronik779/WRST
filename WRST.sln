@@ -5,16 +5,28 @@ VisualStudioVersion = 17.10.35122.118
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WRST", "WRST\WRST.csproj", "{E22A8BE3-347D-415B-80A2-349268F76B26}"
 EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "WRST_v0.1", "WRST_v0.1\WRST_v0.1.vdproj", "{660AA41C-741E-5099-C0BC-17BC36B74C41}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
+		Debug|x64 = Debug|x64
 		Release|Any CPU = Release|Any CPU
+		Release|x64 = Release|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{E22A8BE3-347D-415B-80A2-349268F76B26}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{E22A8BE3-347D-415B-80A2-349268F76B26}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E22A8BE3-347D-415B-80A2-349268F76B26}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E22A8BE3-347D-415B-80A2-349268F76B26}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E22A8BE3-347D-415B-80A2-349268F76B26}.Debug|x64.ActiveCfg = Debug|x64
+		{E22A8BE3-347D-415B-80A2-349268F76B26}.Debug|x64.Build.0 = Debug|x64
+		{E22A8BE3-347D-415B-80A2-349268F76B26}.Release|Any CPU.ActiveCfg = Release|x64
+		{E22A8BE3-347D-415B-80A2-349268F76B26}.Release|Any CPU.Build.0 = Release|x64
+		{E22A8BE3-347D-415B-80A2-349268F76B26}.Release|x64.ActiveCfg = Release|x64
+		{E22A8BE3-347D-415B-80A2-349268F76B26}.Release|x64.Build.0 = Release|x64
+		{660AA41C-741E-5099-C0BC-17BC36B74C41}.Debug|Any CPU.ActiveCfg = Debug
+		{660AA41C-741E-5099-C0BC-17BC36B74C41}.Debug|x64.ActiveCfg = Debug
+		{660AA41C-741E-5099-C0BC-17BC36B74C41}.Release|Any CPU.ActiveCfg = Release
+		{660AA41C-741E-5099-C0BC-17BC36B74C41}.Release|x64.ActiveCfg = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
