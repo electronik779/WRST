@@ -5,8 +5,6 @@ VisualStudioVersion = 17.10.35122.118
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WRST", "WRST\WRST.csproj", "{E22A8BE3-347D-415B-80A2-349268F76B26}"
 EndProject
-Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "WRST_v1.0", "WRST_v1.0\WRST_v1.0.vdproj", "{56F70606-66E3-4FE1-4D19-760FA8602D6F}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -23,10 +21,6 @@ Global
 		{E22A8BE3-347D-415B-80A2-349268F76B26}.Release|Any CPU.Build.0 = Release|x64
 		{E22A8BE3-347D-415B-80A2-349268F76B26}.Release|x64.ActiveCfg = Release|x64
 		{E22A8BE3-347D-415B-80A2-349268F76B26}.Release|x64.Build.0 = Release|x64
-		{56F70606-66E3-4FE1-4D19-760FA8602D6F}.Debug|Any CPU.ActiveCfg = Debug
-		{56F70606-66E3-4FE1-4D19-760FA8602D6F}.Debug|x64.ActiveCfg = Debug
-		{56F70606-66E3-4FE1-4D19-760FA8602D6F}.Release|Any CPU.ActiveCfg = Release
-		{56F70606-66E3-4FE1-4D19-760FA8602D6F}.Release|x64.ActiveCfg = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -8,7 +8,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <SupportedOSPlatformVersion>8.0</SupportedOSPlatformVersion>
     <StartupObject>WRST.Program</StartupObject>
-    <ApplicationIcon>Seasonal.ico</ApplicationIcon>
+    <ApplicationIcon>Seasonal_n.ico</ApplicationIcon>
     <ProduceReferenceAssembly>False</ProduceReferenceAssembly>
     <SignAssembly>False</SignAssembly>
     <ApplicationManifest>app.manifest</ApplicationManifest>
@@ -16,7 +16,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="Seasonal.ico" />
+    <Content Include="Seasonal_n.ico" />
   </ItemGroup>
 
   <ItemGroup>
