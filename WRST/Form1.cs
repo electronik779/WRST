@@ -1032,7 +1032,8 @@ namespace WRST
         }
         private void NotDouble(Exception ex, string tab)
         {
-            MessageBox.Show($"{tab} {ex.Message}", "Внимание!",
+            //MessageBox.Show($"{tab} {ex.Message}", "Внимание!",
+            MessageBox.Show($"{tab}", "Внимание!",
                 MessageBoxButtons.OK, icon: MessageBoxIcon.Error);
         }
     }

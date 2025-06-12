@@ -23,6 +23,15 @@ namespace WRST
             saveFileDialog1.DefaultExt = "csv";
             saveFileDialog1.AddExtension = true;
 
+            if (tableResults.Rows.Count == 0 || tableResults.Columns.Count == 0 ||
+                tableSecurity.Rows.Count == 0 || tableSecurity.Columns.Count == 0 ||
+                tableExtRemainder.Rows.Count == 0 || tableExtRemainder.Columns.Count == 0) 
+            {
+                MessageBox.Show("Расчет не выполнен. \nПроверьте исходные данные.", "Внимание!",
+                    MessageBoxButtons.OK, icon: MessageBoxIcon.Error);
+                return;
+            }
+
             dataGridView1.DataSource = tableResults;
             dataGridView2.DataSource = tableSecurity;
             dataGridView3.DataSource = tableExtRemainder;
@@ -181,6 +190,7 @@ namespace WRST
                 ch.ChartAreas[0].AxisY.Title = axis[1];
             }
 
+            //if(seriesNum)
             for (int seriesNum = 0; seriesNum < n; seriesNum++)
             {
                 if (isLimit)
