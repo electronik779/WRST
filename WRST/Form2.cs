@@ -25,7 +25,8 @@ namespace WRST
 
             if (tableResults.Rows.Count == 0 || tableResults.Columns.Count == 0 ||
                 tableSecurity.Rows.Count == 0 || tableSecurity.Columns.Count == 0 ||
-                tableExtRemainder.Rows.Count == 0 || tableExtRemainder.Columns.Count == 0) 
+                tableExtRemainder.Rows.Count == 0 || tableExtRemainder.Columns.Count == 0 ||
+                tableResults.Rows.Count == 0 || tableSecurity.Rows.Count == 0) 
             {
                 MessageBox.Show("Расчет не выполнен. \nПроверьте исходные данные.", "Внимание!",
                     MessageBoxButtons.OK, icon: MessageBoxIcon.Error);
@@ -93,14 +94,14 @@ namespace WRST
             list2 = new string[] { "Обеспеченность, %", "кВт" };
             BuildChart(chart9, tableSecurity, "line", list, "right", 1, x, y,
                 0, 100, 0, 0, 20, 0, false, list2);
-
+            
             x = new int[] { 0, 0 };
             y = new int[] { 2, 3 };
             list = new string[] { "Диспетчерские остатки - задано", "Диспетчерские остатки - расчет" };
             list2 = new string[] { "#", "млн.м³" };
             BuildChart(chart10, tableExtRemainder, "line", list, "left", 2, x, y,
                 1, ResultCount, 0, Convert.ToInt32(VU), 1, Convert.ToInt32(VU / 8), false, list2);
-
+            
             label2.Text = (Math.Round(EEP, 0)).ToString("#,#", CultureInfo.CurrentCulture);
             label4.Text = (Math.Round(S, 0)).ToString("#,#", CultureInfo.CurrentCulture);
 
@@ -161,6 +162,8 @@ namespace WRST
         //ограничивать min - max оси Y
         //список названий осей - первая X, вторая Y.
         {
+            if(Xmax - Xmin <= 0 || Ymax - Ymin <= 0) return;
+
             // Создаем новый объект диаграммы
             ch.ChartAreas.Clear();
             ch.Series.Clear();

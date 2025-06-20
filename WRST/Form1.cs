@@ -1036,5 +1036,30 @@ namespace WRST
             MessageBox.Show($"{tab}", "Внимание!",
                 MessageBoxButtons.OK, icon: MessageBoxIcon.Error);
         }
+
+        private void textBox8_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                button1_Click(sender, e);
+                e.Handled = true;
+            }
+        }
+        private void textBox9_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                button2_Click(sender, e);
+                e.Handled = true;
+            }
+        }
+        private void textBox10_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                button3_Click(sender, e);
+                e.Handled = true;
+            }
+        }
     }
 }
