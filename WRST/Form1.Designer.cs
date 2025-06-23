@@ -471,7 +471,7 @@
             tabPage4.Padding = new Padding(3, 4, 3, 4);
             tabPage4.Size = new Size(751, 418);
             tabPage4.TabIndex = 3;
-            tabPage4.Text = "Батиграфия НБ";
+            tabPage4.Text = "Параметры НБ";
             tabPage4.UseVisualStyleBackColor = true;
             // 
             // label31

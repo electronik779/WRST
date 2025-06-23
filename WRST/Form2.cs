@@ -1,4 +1,5 @@
 ﻿using System.Data;
+using System.Diagnostics;
 using System.Globalization;
 using System.Text;
 using System.Windows.Forms.DataVisualization.Charting;
@@ -46,48 +47,56 @@ namespace WRST
             string[] list2 = new string[] { "#", "м³/с" };
             BuildChart(chart1, tableResults, "column", list, "left", 3, x, y,
                 1, ResultCount, 0, 0, 1, 0, false, list2);
+
             x = new int[] { 0 };
             y = new int[] { 5 };
             list = new string[] { "Уровень ВБ" };
             list2 = new string[] { "#", "м" };
             BuildChart(chart2, tableResults, "line", list, "left", 1, x, y,
                 1, ResultCount, 0, 0, 1, 0, true, list2);
+
             x = new int[] { 0 };
             y = new int[] { 6 };
             list = new string[] { "Уровень НБ" };
             list2 = new string[] { "#", "м" };
             BuildChart(chart3, tableResults, "column", list, "left", 1, x, y,
                 1, ResultCount, 0, 0, 1, 0, true, list2);
+
             x = new int[] { 0 };
             y = new int[] { 7 };
             list = new string[] { "Напор" };
             list2 = new string[] { "#", "м" };
             BuildChart(chart4, tableResults, "column", list, "left", 1, x, y,
                 1, ResultCount, 0, 0, 1, 0, true, list2);
+
             x = new int[] { 0 };
             y = new int[] { 8 };
             list = new string[] { "Мощность" };
             list2 = new string[] { "#", "кВт" };
             BuildChart(chart5, tableResults, "column", list, "left", 1, x, y,
                 1, ResultCount, 0, 0, 1, 0, false, list2);
+
             x = new int[] { 0 };
             y = new int[] { 1 };
             list = new string[] { "Приток" };
             list2 = new string[] { "Обеспеченность, %", "м³/с" };
             BuildChart(chart6, tableSecurity, "line", list, "right", 1, x, y,
                 0, 100, 0, 0, 20, 0, false, list2);
+
             x = new int[] { 0 };
             y = new int[] { 2 };
             list = new string[] { "Расход ГЭС" };
             list2 = new string[] { "Обеспеченность, %", "м³/с" };
             BuildChart(chart7, tableSecurity, "line", list, "right", 1, x, y,
                 0, 100, 0, 0, 20, 0, false, list2);
+
             x = new int[] { 0 };
             y = new int[] { 3 };
             list = new string[] { "Напор" };
             list2 = new string[] { "Обеспеченность, %", "м" };
             BuildChart(chart8, tableSecurity, "line", list, "right", 1, x, y,
                 0, 100, 0, 0, 20, 0, true, list2);
+
             x = new int[] { 0 };
             y = new int[] { 4 };
             list = new string[] { "Мощность" };
@@ -162,7 +171,9 @@ namespace WRST
         //ограничивать min - max оси Y
         //список названий осей - первая X, вторая Y.
         {
-            if(Xmax - Xmin <= 0 || Ymax - Ymin <= 0) return;
+            //Debug.WriteLine("Xmax {0}, Xmin {1}, Ymax {2}, Ymin {3}, Xmax-Xmin {4}, Ymax-Ymin {5}", 
+            //    Xmax, Xmin, Ymax, Ymin, Xmax - Xmin, Ymax - Ymin);
+            if (Xmax - Xmin <= 0) return;
 
             // Создаем новый объект диаграммы
             ch.ChartAreas.Clear();
@@ -193,7 +204,6 @@ namespace WRST
                 ch.ChartAreas[0].AxisY.Title = axis[1];
             }
 
-            //if(seriesNum)
             for (int seriesNum = 0; seriesNum < n; seriesNum++)
             {
                 if (isLimit)
@@ -216,13 +226,15 @@ namespace WRST
                     ch.ChartAreas[0].AxisY.Minimum = MinY;
                     ch.ChartAreas[0].AxisY.Maximum = MaxY;
                 }
-                else
-                {
-                    if (Ymin != Ymax)
+                else if (Ymin != Ymax)
                     {
                         ch.ChartAreas[0].AxisY.Minimum = Ymin;
                         ch.ChartAreas[0].AxisY.Maximum = Ymax;
                     }
+
+                else
+                {
+                    return;
                 }
 
                 // Добавляем серию

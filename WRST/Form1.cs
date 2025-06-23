@@ -561,6 +561,7 @@ namespace WRST
             try
             {
                 MF = Convert.ToInt32(textBox8.Text);
+                if (MF == 0) { Zero(textBox8, "Приток"); }
             }
             catch
             {
@@ -570,6 +571,7 @@ namespace WRST
             try
             {
                 M1 = Convert.ToInt32(textBox1.Text) - 1;
+                if (M1 < 0) { Zero(textBox1, "Общие данные"); }
             }
             catch
             {
@@ -579,6 +581,7 @@ namespace WRST
             try
             {
                 NF = Convert.ToInt32(textBox9.Text);
+                if (NF == 0) { Zero(textBox9, "Параметры вдхр."); }
             }
             catch
             {
@@ -588,6 +591,7 @@ namespace WRST
             try
             {
                 JF = Convert.ToInt32(textBox10.Text);
+                if (JF == 0) { Zero(textBox10, "Параметры НБ"); }
             }
             catch
             {
@@ -640,6 +644,7 @@ namespace WRST
             try
             {
                 VU = GetDouble(textBox2.Text, 0d);
+                if (VU == 0) { Zero(textBox2, "Общие данные"); }
             }
             catch (Exception ex)
             {
@@ -650,6 +655,7 @@ namespace WRST
             try
             {
                 VR = GetDouble(textBox3.Text, 0d);
+                if (VR == 0) { Zero(textBox3, "Общие данные"); }
             }
             catch (Exception ex)
             {
@@ -660,6 +666,7 @@ namespace WRST
             try
             {
                 QR = GetDouble(textBox4.Text, 0d);
+                if (QR == 0) { Zero(textBox4, "Общие данные"); }
             }
             catch (Exception ex)
             {
@@ -670,6 +677,7 @@ namespace WRST
             try
             {
                 QPF = GetDouble(textBox5.Text, 0d);
+                if (QPF == 0) { Zero(textBox5, "Общие данные"); }
             }
             catch (Exception ex)
             {
@@ -690,6 +698,7 @@ namespace WRST
             try
             {
                 EFF = GetDouble(textBox7.Text, 0d);
+                if (EFF == 0) { Zero(textBox7, "Общие данные"); }
             }
             catch (Exception ex)
             {
@@ -1034,6 +1043,13 @@ namespace WRST
         {
             //MessageBox.Show($"{tab} {ex.Message}", "Внимание!",
             MessageBox.Show($"{tab}", "Внимание!",
+                MessageBoxButtons.OK, icon: MessageBoxIcon.Error);
+        }
+
+        private void Zero(TextBox textBox, string tab)
+        {
+            textBox.BackColor = Color.Red;
+            MessageBox.Show($"Вкладка {tab}. Значение не может быть равно нулю.", "Внимание!",
                 MessageBoxButtons.OK, icon: MessageBoxIcon.Error);
         }
 
