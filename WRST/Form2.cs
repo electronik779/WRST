@@ -173,7 +173,7 @@ namespace WRST
         {
             //Debug.WriteLine("Xmax {0}, Xmin {1}, Ymax {2}, Ymin {3}, Xmax-Xmin {4}, Ymax-Ymin {5}", 
             //    Xmax, Xmin, Ymax, Ymin, Xmax - Xmin, Ymax - Ymin);
-            if (Xmax - Xmin <= 0) return;
+            //if (Xmax - Xmin <= 0) return;
 
             // Создаем новый объект диаграммы
             ch.ChartAreas.Clear();
@@ -226,17 +226,14 @@ namespace WRST
                     ch.ChartAreas[0].AxisY.Minimum = MinY;
                     ch.ChartAreas[0].AxisY.Maximum = MaxY;
                 }
-                else if (Ymin != Ymax)
-                    {
-                        ch.ChartAreas[0].AxisY.Minimum = Ymin;
-                        ch.ChartAreas[0].AxisY.Maximum = Ymax;
-                    }
-
                 else
-                {
-                    return;
+                { 
+                    if (Ymin != Ymax)
+                    {
+                    ch.ChartAreas[0].AxisY.Minimum = Ymin;
+                    ch.ChartAreas[0].AxisY.Maximum = Ymax;
+                    }
                 }
-
                 // Добавляем серию
                 Series series = new Series
                 {

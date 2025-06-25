@@ -5,6 +5,8 @@ namespace WRST
 {
     public partial class Form1 : Form
     {
+        bool err = false;
+
         //Таблицы по которым строим tableGridView
         DataTable tableTributary = new DataTable();   // Приток
         DataTable tableUpstream = new DataTable();    // Параметры вдхр
@@ -621,6 +623,11 @@ namespace WRST
                     VV[i] = GetDouble((string)dataGridView2.Rows[0].Cells[i].Value, 0d);
                     ZUU[i] = GetDouble((string)dataGridView2.Rows[1].Cells[i].Value, 0d);
                     //Debug.WriteLine("{0}, {1}", i, ZUU[i]);
+                    //if (!CheckArrayOrder(VV)) 
+                    //{ 
+                    //    TableErr("Параметры вдхр. Объемы");
+                    //    return;
+                    //}
                 }
                 catch (Exception ex)
                 {
@@ -634,6 +641,11 @@ namespace WRST
                 {
                     QLL[i] = GetDouble((string)dataGridView3.Rows[0].Cells[i].Value, 0d);
                     ZLL[i] = GetDouble((string)dataGridView3.Rows[1].Cells[i].Value, 0d);
+                    //if (!CheckArrayOrder(QLL))
+                    //{
+                    //    TableErr("Параметры НБ. Расходы");
+                    //    return;
+                    //}
                 }
                 catch (Exception ex)
                 {
@@ -910,7 +922,7 @@ namespace WRST
             }
 
             List<string> columnsExtRemainder = new List<string>()
-            { "#", "Месяц", "Дисп. - задан.", "Дисп. - расч."};
+            { "#", "Месяц", "Дисп. - задан., млн.м³", "Дисп. - расч., млн.м³"};
 
             TableClear(tableExtRemainder);
 
@@ -1016,6 +1028,25 @@ namespace WRST
             //}
             return AR;
         }
+
+        private void TableErr(string str)
+        {
+            MessageBox.Show($"{str} необходимо задавать по возрастанию.", "Внимание!",
+                MessageBoxButtons.OK, icon: MessageBoxIcon.Error);
+        }
+
+        private bool CheckArrayOrder(double[] A) 
+        {
+            for (int i = 0; i < A.Length; i++)
+            { 
+                if (A[i] > A[i+1])
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
         private double GetDouble(string str, double defaultValue)
         {
             double result;
