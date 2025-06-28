@@ -6,8 +6,6 @@ namespace WRST
 {
     public partial class Form1 : Form
     {
-        bool err = false;
-
         //Таблицы по которым строим tableGridView
         DataTable tableTributary = new DataTable();   // Приток
         DataTable tableUpstream = new DataTable();    // Параметры вдхр

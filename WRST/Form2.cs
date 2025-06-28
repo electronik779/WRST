@@ -109,7 +109,7 @@ namespace WRST
             list = new string[] { "Диспетчерские остатки - задано", "Диспетчерские остатки - расчет" };
             list2 = new string[] { "#", "млн.м³" };
             BuildChart(chart10, tableExtRemainder, "line", list, "left", 2, x, y,
-                1, ResultCount, 0, Convert.ToInt32(VU), 1, Convert.ToInt32(VU / 8), false, list2);
+                1, ResultCount, 0, 0, 1, 0, false, list2);
             
             label2.Text = (Math.Round(EEP, 0)).ToString("#,#", CultureInfo.CurrentCulture);
             label4.Text = (Math.Round(S, 0)).ToString("#,#", CultureInfo.CurrentCulture);
@@ -175,6 +175,9 @@ namespace WRST
             //    Xmax, Xmin, Ymax, Ymin, Xmax - Xmin, Ymax - Ymin);
             //if (Xmax - Xmin <= 0) return;
 
+            // Кратность значений Макс и Мин
+            double multiple = 5;
+
             // Создаем новый объект диаграммы
             ch.ChartAreas.Clear();
             ch.Series.Clear();
@@ -204,23 +207,33 @@ namespace WRST
                 ch.ChartAreas[0].AxisY.Title = axis[1];
             }
 
+            double MaxY = Math.Ceiling((double)data.Rows[0][y[0]] / multiple ) * multiple;
+            double MinY = Math.Floor((double)data.Rows[0][y[0]] / multiple) * multiple;
             for (int seriesNum = 0; seriesNum < n; seriesNum++)
             {
-                int MaxY = Convert.ToInt32(data.Rows[0][y[seriesNum]]);
-                int MinY = Convert.ToInt32(data.Rows[0][y[seriesNum]]);
+                //int MaxY = Convert.ToInt32(data.Rows[0][y[seriesNum]]);
+                //int MinY = Convert.ToInt32(data.Rows[0][y[seriesNum]]);
                 //Debug.WriteLine("{0}, {1}, {2}", seriesNum, MinY, MaxY);
+                if ((double)data.Rows[0][y[seriesNum]] > MaxY)
+                {
+                    MaxY = Math.Ceiling((double)data.Rows[0][y[seriesNum]] / multiple) * multiple;
+                }
+                if ((double)data.Rows[0][y[seriesNum]] < MinY)
+                {
+                    MinY = Math.Floor((double)data.Rows[0][y[seriesNum]] / multiple) * multiple;
+                }
 
                 if (isLimit || (Ymin == Ymax))
                 {
                     for (int i = 0; i < data.Rows.Count; i++)
                     {
-                        double Fig1 = Math.Floor(Convert.ToDouble(data.Rows[i][y[seriesNum]]));
-                        double Fig2 = Math.Ceiling(Convert.ToDouble(data.Rows[i][y[seriesNum]]));
+                        double Fig1 = Math.Floor((double)data.Rows[i][y[seriesNum]] / multiple) * multiple;
+                        double Fig2 = Math.Ceiling((double)data.Rows[i][y[seriesNum]] / multiple) * multiple;
                         if (Fig1 < MinY)
-                        { MinY = Convert.ToInt32(Fig1); }
+                        { MinY = Math.Floor(Fig1 * multiple) / multiple; }
 
                         if (Fig2 > MaxY)
-                        { MaxY = Convert.ToInt32(Fig2); }
+                        { MaxY = Math.Ceiling(Fig2 * multiple) / multiple; }
                     }
 
                     //Debug.WriteLine("{0}, {1}", MinY, MaxY);
