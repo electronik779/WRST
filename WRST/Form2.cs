@@ -29,7 +29,7 @@ namespace WRST
                 tableExtRemainder.Rows.Count == 0 || tableExtRemainder.Columns.Count == 0 ||
                 tableResults.Rows.Count == 0 || tableSecurity.Rows.Count == 0) 
             {
-                MessageBox.Show("Расчет не выполнен. \nПроверьте исходные данные.", "Внимание!",
+                MessageBox.Show("Расчет не выполнен.\nПроверьте исходные данные.", "Внимание!",
                     MessageBoxButtons.OK, icon: MessageBoxIcon.Error);
                 return;
             }
@@ -206,11 +206,12 @@ namespace WRST
 
             for (int seriesNum = 0; seriesNum < n; seriesNum++)
             {
-                if (isLimit)
+                int MaxY = Convert.ToInt32(data.Rows[0][y[seriesNum]]);
+                int MinY = Convert.ToInt32(data.Rows[0][y[seriesNum]]);
+                //Debug.WriteLine("{0}, {1}, {2}", seriesNum, MinY, MaxY);
+
+                if (isLimit || (Ymin == Ymax))
                 {
-                    int MaxY = Convert.ToInt32(data.Rows[0][y[seriesNum]]);
-                    int MinY = Convert.ToInt32(data.Rows[0][y[seriesNum]]);
-                    //Debug.WriteLine("{0}, {1}, {2}", seriesNum, MinY, MaxY);
                     for (int i = 0; i < data.Rows.Count; i++)
                     {
                         double Fig1 = Math.Floor(Convert.ToDouble(data.Rows[i][y[seriesNum]]));

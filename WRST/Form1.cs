@@ -1,4 +1,5 @@
 ﻿using System.Data;
+using System.Diagnostics;
 using System.Globalization;
 
 namespace WRST
@@ -616,6 +617,7 @@ namespace WRST
                     return;
                 }
             }
+
             for (int i = 0; i < NF; i++)
             {
                 try
@@ -623,11 +625,6 @@ namespace WRST
                     VV[i] = GetDouble((string)dataGridView2.Rows[0].Cells[i].Value, 0d);
                     ZUU[i] = GetDouble((string)dataGridView2.Rows[1].Cells[i].Value, 0d);
                     //Debug.WriteLine("{0}, {1}", i, ZUU[i]);
-                    //if (!CheckArrayOrder(VV)) 
-                    //{ 
-                    //    TableErr("Параметры вдхр. Объемы");
-                    //    return;
-                    //}
                 }
                 catch (Exception ex)
                 {
@@ -635,6 +632,12 @@ namespace WRST
                     return;
                 }
             }
+            if (!CheckArrayOrder(VV, NF))
+            {
+                TableErr("Параметры вдхр. Объемы");
+                return;
+            }
+
             for (int i = 0; i < JF; i++)
             {
                 try
@@ -881,14 +884,14 @@ namespace WRST
                 DataRow dr = tableResults.NewRow();
                 dr[0] = i + 1;
                 dr[1] = MDK[i] + 1;
-                dr[2] = Math.Round(Q[i], 1);
-                dr[3] = Math.Round(QP[i], 1);
-                dr[4] = Math.Round(QS[i], 1);
-                dr[5] = Math.Round(ZU[i], 1);
-                dr[6] = Math.Round(ZL[i], 1);
-                dr[7] = Math.Round(PH[i], 2);
-                dr[8] = Math.Round(PN[i], 0);
-                dr[9] = Math.Round(DVM[i], 1);
+                if (!double.IsNaN(Q[i])) { dr[2] = Math.Round(Q[i], 1); } else { Error(); return; }
+                if (!double.IsNaN(QP[i])) { dr[3] = Math.Round(QP[i], 1); } else { Error(); return; }
+                if (!double.IsNaN(QS[i])) { dr[4] = Math.Round(QS[i], 1); } else { Error(); return; }
+                if (!double.IsNaN(ZU[i])) { dr[5] = Math.Round(ZU[i], 1); } else { Error(); return; }
+                if (!double.IsNaN(ZL[i])) { dr[6] = Math.Round(ZL[i], 1); } else { Error(); return; }
+                if (!double.IsNaN(PH[i])) { dr[7] = Math.Round(PH[i], 2); } else { Error(); return; }
+                if (!double.IsNaN(PN[i])) { dr[8] = Math.Round(PN[i], 0); } else { Error(); return; }
+                if (!double.IsNaN(DVM[i])) { dr[9] = Math.Round(DVM[i], 1); } else { Error(); return; }
 
                 tableResults.Rows.Add(dr);
             }
@@ -1029,17 +1032,24 @@ namespace WRST
             return AR;
         }
 
+        private void Error()
+        {
+            MessageBox.Show($"Расчет не выполнен.\nПроверьте корректность исходных данных.", "Внимание!",
+                MessageBoxButtons.OK, icon: MessageBoxIcon.Error);
+        }
+
         private void TableErr(string str)
         {
             MessageBox.Show($"{str} необходимо задавать по возрастанию.", "Внимание!",
                 MessageBoxButtons.OK, icon: MessageBoxIcon.Error);
         }
 
-        private bool CheckArrayOrder(double[] A) 
+        private bool CheckArrayOrder(double[] A, int N) 
         {
-            for (int i = 0; i < A.Length; i++)
-            { 
-                if (A[i] > A[i+1])
+            for (int i = 0; i < N - 1; i++)
+            {
+                Debug.WriteLine("A.L={0}, i={1}, A={2}, A+1={3}", N, i, A[i], A[i + 1]);
+                if (A[i] >= A[i + 1])
                 {
                     return false;
                 }
