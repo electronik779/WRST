@@ -189,8 +189,6 @@ namespace WRST
             ch.Legends[0].DockedToChartArea = "ChartArea";
             ch.Legends[0].IsDockedInsideChartArea = true;
 
-            if (stepY != 0) ch.ChartAreas[0].AxisY.Interval = stepY;
-
             if (pos == "left")
             {
                 ch.Legends[0].Docking = Docking.Left;
@@ -230,32 +228,39 @@ namespace WRST
                         double Fig1 = Math.Floor((double)data.Rows[i][y[seriesNum]] / multiple) * multiple;
                         double Fig2 = Math.Ceiling((double)data.Rows[i][y[seriesNum]] / multiple) * multiple;
                         if (Fig1 < MinY)
-                        { MinY = Math.Floor(Fig1 * multiple) / multiple; }
+                        { MinY = Fig1; }
 
                         if (Fig2 > MaxY)
-                        { MaxY = Math.Ceiling(Fig2 * multiple) / multiple; }
+                        { MaxY = Fig2; }
                     }
 
-                    //Debug.WriteLine("{0}, {1}", MinY, MaxY);
-                    ch.ChartAreas[0].AxisY.Minimum = MinY;
-                    ch.ChartAreas[0].AxisY.Maximum = MaxY;
+                    if (MaxY == MinY)
+                    {
+                        MaxY += multiple;
+                        MinY -= multiple;
+                    }
                 }
                 else
                 { 
                     if (Ymin != Ymax)
                     {
-                    ch.ChartAreas[0].AxisY.Minimum = Ymin;
-                    ch.ChartAreas[0].AxisY.Maximum = Ymax;
+                        MinY = Ymin;
+                        MaxY = Ymax;
                     }
                 }
+                //Debug.WriteLine("{0}, {1}", MinY, MaxY);
+                ch.ChartAreas[0].AxisY.Minimum = MinY;
+                ch.ChartAreas[0].AxisY.Maximum = MaxY;
+                if (stepY != 0) ch.ChartAreas[0].AxisY.Interval = stepY;
+
                 // Добавляем серию
                 Series series = new Series
-                {
-                    //ChartType = SeriesChartType.Line,
-                    //Color = GetSeriesColor(seriesNum),
-                    BorderWidth = 2,
-                    Name = list[seriesNum]
-                };
+                    {
+                        //ChartType = SeriesChartType.Line,
+                        //Color = GetSeriesColor(seriesNum),
+                        BorderWidth = 2,
+                        Name = list[seriesNum]
+                    };
 
                 // Цикл по строкам DataTable
                 for (int i = 0; i < data.Rows.Count; i++)

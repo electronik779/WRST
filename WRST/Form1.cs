@@ -540,6 +540,13 @@ namespace WRST
 
         private void toolStripButton3_Click(object sender, EventArgs e)
         {
+            // Проверяем, существует ли Form2
+            if (Application.OpenForms["Form2"] != null)
+            {
+                // Если Form2 открыта, закрываем ее
+                ((Form)Application.OpenForms["Form2"]).Close();
+            }
+
             int MF = 0;
             int M1 = 0;
             int NF = 0;
@@ -632,7 +639,7 @@ namespace WRST
             }
             if (!CheckArrayOrder(VV, NF))
             {
-                TableErr("Параметры вдхр. Объемы");
+                TableErr("Параметры вдхр.\nОбъемы");
                 return;
             }
 
@@ -642,11 +649,6 @@ namespace WRST
                 {
                     QLL[i] = GetDouble((string)dataGridView3.Rows[0].Cells[i].Value, 0d);
                     ZLL[i] = GetDouble((string)dataGridView3.Rows[1].Cells[i].Value, 0d);
-                    //if (!CheckArrayOrder(QLL))
-                    //{
-                    //    TableErr("Параметры НБ. Расходы");
-                    //    return;
-                    //}
                 }
                 catch (Exception ex)
                 {
@@ -654,6 +656,12 @@ namespace WRST
                     return;
                 }
             }
+            if (!CheckArrayOrder(QLL, JF))
+            {
+                TableErr("Параметры НБ.\nРасходы");
+                return;
+            }
+
             try
             {
                 VU = GetDouble(textBox2.Text, 0d);
@@ -1046,7 +1054,7 @@ namespace WRST
         {
             for (int i = 0; i < N - 1; i++)
             {
-                Debug.WriteLine("A.L={0}, i={1}, A={2}, A+1={3}", N, i, A[i], A[i + 1]);
+                //Debug.WriteLine("A.L={0}, i={1}, A={2}, A+1={3}", N, i, A[i], A[i + 1]);
                 if (A[i] >= A[i + 1])
                 {
                     return false;
