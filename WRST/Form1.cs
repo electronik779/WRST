@@ -157,6 +157,7 @@ namespace WRST
             try
             {
                 m = Convert.ToInt32(textBox1.Text);
+                if (m > 12) { LimitMsg("12"); m = 12; textBox1.Text = "12"; }
             }
             //catch (Exception ex)
             catch
@@ -179,6 +180,7 @@ namespace WRST
             try
             {
                 n = Convert.ToInt32(textBox8.Text);
+                if (n > 600) { LimitMsg("600"); n = 600; textBox8.Text = "600"; }
             }
             catch
             {
@@ -230,6 +232,7 @@ namespace WRST
             try
             {
                 n = Convert.ToInt32(textBox9.Text);
+                if (n > 20) { LimitMsg("20"); n = 20; textBox9.Text = "20"; }
             }
             catch
             {
@@ -253,6 +256,7 @@ namespace WRST
             try
             {
                 n = Convert.ToInt32(textBox10.Text);
+                if (n > 20) { LimitMsg("20"); n = 20; textBox10.Text = "20"; }
             }
             catch
             {
@@ -552,11 +556,11 @@ namespace WRST
             int NF = 0;
             int JF = 0;
             bool LA = false;
-            double[] Q = new double[400];
-            double[] VV = new double[10];
-            double[] ZUU = new double[10];
-            double[] QLL = new double[10];
-            double[] ZLL = new double[10];
+            double[] Q = new double[600];
+            double[] VV = new double[20];
+            double[] ZUU = new double[20];
+            double[] QLL = new double[20];
+            double[] ZLL = new double[20];
             double VU = 0;
             double VR = 0;
             double QR = 0;
@@ -569,7 +573,8 @@ namespace WRST
             try
             {
                 MF = Convert.ToInt32(textBox8.Text);
-                if (MF == 0) { Zero(textBox8, "Приток"); }
+                if (MF == 0) { ZeroMsg(textBox8, "Приток"); }
+                //if (MF > 600) { LimitMsg("600"); MF = 600; textBox8.Text = "600"; }
             }
             catch
             {
@@ -579,7 +584,8 @@ namespace WRST
             try
             {
                 M1 = Convert.ToInt32(textBox1.Text) - 1;
-                if (M1 < 0) { Zero(textBox1, "Общие данные"); }
+                if (M1 < 0) { ZeroMsg(textBox1, "Общие данные"); }
+                if (M1 > 11) { LimitMsg("12"); M1 = 11; textBox1.Text = "12"; }
             }
             catch
             {
@@ -589,7 +595,8 @@ namespace WRST
             try
             {
                 NF = Convert.ToInt32(textBox9.Text);
-                if (NF == 0) { Zero(textBox9, "Параметры вдхр."); }
+                if (NF == 0) { ZeroMsg(textBox9, "Параметры вдхр."); }
+                //if (NF > 20) { LimitMsg("20"); NF = 20; textBox9.Text = "20"; }
             }
             catch
             {
@@ -599,7 +606,8 @@ namespace WRST
             try
             {
                 JF = Convert.ToInt32(textBox10.Text);
-                if (JF == 0) { Zero(textBox10, "Параметры НБ"); }
+                if (JF == 0) { ZeroMsg(textBox10, "Параметры НБ"); }
+                //if (JF > 20) { LimitMsg("20"); JF = 20; textBox10.Text = "20"; }
             }
             catch
             {
@@ -665,7 +673,7 @@ namespace WRST
             try
             {
                 VU = GetDouble(textBox2.Text, 0d);
-                if (VU == 0) { Zero(textBox2, "Общие данные"); }
+                if (VU == 0) { ZeroMsg(textBox2, "Общие данные"); }
             }
             catch (Exception ex)
             {
@@ -676,7 +684,7 @@ namespace WRST
             try
             {
                 VR = GetDouble(textBox3.Text, 0d);
-                if (VR == 0) { Zero(textBox3, "Общие данные"); }
+                if (VR == 0) { ZeroMsg(textBox3, "Общие данные"); }
             }
             catch (Exception ex)
             {
@@ -687,7 +695,7 @@ namespace WRST
             try
             {
                 QR = GetDouble(textBox4.Text, 0d);
-                if (QR == 0) { Zero(textBox4, "Общие данные"); }
+                if (QR == 0) { ZeroMsg(textBox4, "Общие данные"); }
             }
             catch (Exception ex)
             {
@@ -698,7 +706,7 @@ namespace WRST
             try
             {
                 QPF = GetDouble(textBox5.Text, 0d);
-                if (QPF == 0) { Zero(textBox5, "Общие данные"); }
+                if (QPF == 0) { ZeroMsg(textBox5, "Общие данные"); }
             }
             catch (Exception ex)
             {
@@ -719,7 +727,7 @@ namespace WRST
             try
             {
                 EFF = GetDouble(textBox7.Text, 0d);
-                if (EFF == 0) { Zero(textBox7, "Общие данные"); }
+                if (EFF == 0) { ZeroMsg(textBox7, "Общие данные"); }
             }
             catch (Exception ex)
             {
@@ -751,19 +759,19 @@ namespace WRST
                 }
             }
 
-            double[] DVM = new double[400];
+            double[] DVM = new double[600];
             double QP1;
             double QS1;
             double DV1;
             double VM1;
             double VD1;
-            double[] MDK = new double[400];
-            double[] QP = new double[400];
-            double[] QS = new double[400];
-            double[] ZU = new double[400];
-            double[] ZL = new double[400];
-            double[] PH = new double[400];
-            double[] PN = new double[400];
+            double[] MDK = new double[600];
+            double[] QP = new double[600];
+            double[] QS = new double[600];
+            double[] ZU = new double[600];
+            double[] ZL = new double[600];
+            double[] PH = new double[600];
+            double[] PN = new double[600];
             double PHL;
             double VM11;
             double ZU1;
@@ -772,10 +780,10 @@ namespace WRST
             double PH1;
             double PN1;
 
-            double[] B_Q = new double[400];
-            double[] B_QP = new double[400];
-            double[] B_PH = new double[400];
-            double[] B_PN = new double[400]; ;
+            double[] B_Q = new double[600];
+            double[] B_QP = new double[600];
+            double[] B_PH = new double[600];
+            double[] B_PN = new double[600]; ;
 
             int M = 0;
             int MD = M1 - 1;
@@ -890,14 +898,14 @@ namespace WRST
                 DataRow dr = tableResults.NewRow();
                 dr[0] = i + 1;
                 dr[1] = MDK[i] + 1;
-                if (!double.IsNaN(Q[i])) { dr[2] = Math.Round(Q[i], 1); } else { Error(); return; }
-                if (!double.IsNaN(QP[i])) { dr[3] = Math.Round(QP[i], 1); } else { Error(); return; }
-                if (!double.IsNaN(QS[i])) { dr[4] = Math.Round(QS[i], 1); } else { Error(); return; }
-                if (!double.IsNaN(ZU[i])) { dr[5] = Math.Round(ZU[i], 1); } else { Error(); return; }
-                if (!double.IsNaN(ZL[i])) { dr[6] = Math.Round(ZL[i], 1); } else { Error(); return; }
-                if (!double.IsNaN(PH[i])) { dr[7] = Math.Round(PH[i], 2); } else { Error(); return; }
-                if (!double.IsNaN(PN[i])) { dr[8] = Math.Round(PN[i], 0); } else { Error(); return; }
-                if (!double.IsNaN(DVM[i])) { dr[9] = Math.Round(DVM[i], 1); } else { Error(); return; }
+                if (!double.IsNaN(Q[i])) { dr[2] = Math.Round(Q[i], 1); } else { ErrorMsg(); return; }
+                if (!double.IsNaN(QP[i])) { dr[3] = Math.Round(QP[i], 1); } else { ErrorMsg(); return; }
+                if (!double.IsNaN(QS[i])) { dr[4] = Math.Round(QS[i], 1); } else { ErrorMsg(); return; }
+                if (!double.IsNaN(ZU[i])) { dr[5] = Math.Round(ZU[i], 1); } else { ErrorMsg(); return; }
+                if (!double.IsNaN(ZL[i])) { dr[6] = Math.Round(ZL[i], 1); } else { ErrorMsg(); return; }
+                if (!double.IsNaN(PH[i])) { dr[7] = Math.Round(PH[i], 2); } else { ErrorMsg(); return; }
+                if (!double.IsNaN(PN[i])) { dr[8] = Math.Round(PN[i], 0); } else { ErrorMsg(); return; }
+                if (!double.IsNaN(DVM[i])) { dr[9] = Math.Round(DVM[i], 1); } else { ErrorMsg(); return; }
 
                 tableResults.Rows.Add(dr);
             }
@@ -993,9 +1001,9 @@ namespace WRST
             int K = 0;
             int N = _MF;
             int L = 0;
-            double[] A = new double[400];
+            double[] A = new double[600];
             //double[] B = new double[400];
-            double[] AR = new double[400];
+            double[] AR = new double[600];
 
             for (int i = 0; i < N; i++)
             {
@@ -1038,7 +1046,7 @@ namespace WRST
             return AR;
         }
 
-        private void Error()
+        private void ErrorMsg()
         {
             MessageBox.Show($"Расчет не выполнен.\nПроверьте корректность исходных данных.", "Внимание!",
                 MessageBoxButtons.OK, icon: MessageBoxIcon.Error);
@@ -1093,11 +1101,17 @@ namespace WRST
                 MessageBoxButtons.OK, icon: MessageBoxIcon.Error);
         }
 
-        private void Zero(TextBox textBox, string tab)
+        private void ZeroMsg(TextBox textBox, string tab)
         {
             textBox.BackColor = Color.Red;
             MessageBox.Show($"Вкладка {tab}. Значение не может быть равно нулю.", "Внимание!",
                 MessageBoxButtons.OK, icon: MessageBoxIcon.Error);
+        }
+
+        private void LimitMsg(string str)
+        {
+            MessageBox.Show($"Значение не должно превышать {str}.", "Внимание!",
+                MessageBoxButtons.OK, icon: MessageBoxIcon.Information);
         }
 
         private void textBox8_KeyDown(object sender, KeyEventArgs e)

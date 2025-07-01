@@ -137,7 +137,7 @@
             tabPage1.Controls.Add(label2);
             tabPage1.Location = new Point(4, 24);
             tabPage1.Name = "tabPage1";
-            tabPage1.Padding = new Padding(3, 3, 3, 3);
+            tabPage1.Padding = new Padding(3);
             tabPage1.Size = new Size(656, 310);
             tabPage1.TabIndex = 0;
             tabPage1.Text = "Общие данные";
@@ -154,7 +154,7 @@
             // label22
             // 
             label22.AutoSize = true;
-            label22.Location = new Point(3, 279);
+            label22.Location = new Point(3, 274);
             label22.Name = "label22";
             label22.Size = new Size(76, 15);
             label22.TabIndex = 30;
@@ -203,7 +203,7 @@
             // label20
             // 
             label20.AutoSize = true;
-            label20.Location = new Point(3, 250);
+            label20.Location = new Point(3, 245);
             label20.Name = "label20";
             label20.Size = new Size(106, 15);
             label20.TabIndex = 23;
@@ -212,7 +212,7 @@
             // label19
             // 
             label19.AutoSize = true;
-            label19.Location = new Point(3, 221);
+            label19.Location = new Point(3, 216);
             label19.Name = "label19";
             label19.Size = new Size(244, 15);
             label19.TabIndex = 20;
@@ -221,7 +221,7 @@
             // label16
             // 
             label16.AutoSize = true;
-            label16.Location = new Point(3, 163);
+            label16.Location = new Point(3, 158);
             label16.Name = "label16";
             label16.Size = new Size(238, 15);
             label16.TabIndex = 13;
@@ -262,7 +262,7 @@
             // label5
             // 
             label5.AutoSize = true;
-            label5.Location = new Point(3, 192);
+            label5.Location = new Point(3, 187);
             label5.Name = "label5";
             label5.Size = new Size(286, 15);
             label5.TabIndex = 5;
@@ -271,7 +271,7 @@
             // label3
             // 
             label3.AutoSize = true;
-            label3.Location = new Point(3, 134);
+            label3.Location = new Point(3, 129);
             label3.Name = "label3";
             label3.Size = new Size(241, 15);
             label3.TabIndex = 3;
@@ -305,7 +305,7 @@
             tabPage2.Controls.Add(label23);
             tabPage2.Location = new Point(4, 24);
             tabPage2.Name = "tabPage2";
-            tabPage2.Padding = new Padding(3, 3, 3, 3);
+            tabPage2.Padding = new Padding(3);
             tabPage2.Size = new Size(656, 310);
             tabPage2.TabIndex = 1;
             tabPage2.Text = "Приток";
@@ -377,7 +377,7 @@
             tabPage3.Controls.Add(label7);
             tabPage3.Location = new Point(4, 24);
             tabPage3.Name = "tabPage3";
-            tabPage3.Padding = new Padding(3, 3, 3, 3);
+            tabPage3.Padding = new Padding(3);
             tabPage3.Size = new Size(656, 310);
             tabPage3.TabIndex = 2;
             tabPage3.Text = "Параметры вдхр.";
@@ -449,7 +449,7 @@
             tabPage4.Controls.Add(label8);
             tabPage4.Location = new Point(4, 24);
             tabPage4.Name = "tabPage4";
-            tabPage4.Padding = new Padding(3, 3, 3, 3);
+            tabPage4.Padding = new Padding(3);
             tabPage4.Size = new Size(656, 310);
             tabPage4.TabIndex = 3;
             tabPage4.Text = "Параметры НБ";
@@ -519,7 +519,7 @@
             tabPage5.Controls.Add(dataGridView4);
             tabPage5.Location = new Point(4, 24);
             tabPage5.Name = "tabPage5";
-            tabPage5.Padding = new Padding(3, 3, 3, 3);
+            tabPage5.Padding = new Padding(3);
             tabPage5.Size = new Size(656, 310);
             tabPage5.TabIndex = 5;
             tabPage5.Text = "Диспетчерские остатки";
@@ -569,7 +569,7 @@
             tabPage6.Controls.Add(dataGridView5);
             tabPage6.Location = new Point(4, 24);
             tabPage6.Name = "tabPage6";
-            tabPage6.Padding = new Padding(3, 3, 3, 3);
+            tabPage6.Padding = new Padding(3);
             tabPage6.Size = new Size(656, 310);
             tabPage6.TabIndex = 6;
             tabPage6.Text = "Отбор из вдхр.";
