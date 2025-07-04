@@ -791,11 +791,11 @@ namespace WRST
             double VM = VD[MD];
             double DV = 0;
 
-            while (M < MF)
+            while (M <= MF)
             {
                 QP1 = QR + DV / 2.63;
                 //Debug.WriteLine("Start[{0}]. QR={1}, DV={2}, QP1={3}", M, QR, DV, QP1);
-                if (QP1 >= QPF) { QP1 = QPF; }
+                if (QP1 > QPF) { QP1 = QPF; }
                 QS1 = 0;
                 MD++;
                 if (MD > 11) { MD = 0; }
