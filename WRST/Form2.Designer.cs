@@ -83,6 +83,7 @@
             toolStrip1 = new ToolStrip();
             saveButton1 = new ToolStripButton();
             saveFileDialog1 = new SaveFileDialog();
+            label5 = new Label();
             tabControl1.SuspendLayout();
             tabPage1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)dataGridView2).BeginInit();
@@ -360,6 +361,7 @@
             // 
             // tabPage3
             // 
+            tabPage3.Controls.Add(label5);
             tabPage3.Controls.Add(dataGridView3);
             tabPage3.Controls.Add(chart10);
             tabPage3.Location = new Point(4, 24);
@@ -415,6 +417,15 @@
             saveButton1.Text = "Сохранить результат расчета";
             saveButton1.Click += toolStripButton1_Click;
             // 
+            // label5
+            // 
+            label5.AutoSize = true;
+            label5.Location = new Point(789, 6);
+            label5.Name = "label5";
+            label5.Size = new Size(231, 15);
+            label5.TabIndex = 4;
+            label5.Text = "Диспетчерские остатки на конец месяца";
+            // 
             // Form2
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -443,6 +454,7 @@
             ((System.ComponentModel.ISupportInitialize)chart2).EndInit();
             ((System.ComponentModel.ISupportInitialize)chart1).EndInit();
             tabPage3.ResumeLayout(false);
+            tabPage3.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)dataGridView3).EndInit();
             ((System.ComponentModel.ISupportInitialize)chart10).EndInit();
             toolStrip1.ResumeLayout(false);
@@ -477,5 +489,6 @@
         private TabPage tabPage3;
         private System.Windows.Forms.DataVisualization.Charting.Chart chart10;
         private DataGridView dataGridView3;
+        private Label label5;
     }
 }

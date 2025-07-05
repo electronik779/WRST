@@ -106,7 +106,8 @@ namespace WRST
             
             x = new int[] { 0, 0 };
             y = new int[] { 2, 3 };
-            list = new string[] { "Диспетчерские остатки - задано", "Диспетчерские остатки - расчет" };
+            list = new string[] { "Противоперебойная линия - задано", 
+                "Диспетчерские остатки - расчет" };
             list2 = new string[] { "#", "млн.м³" };
             BuildChart(chart10, tableExtRemainder, "line", list, "left", 2, x, y,
                 1, ResultCount, 0, 0, 1, 0, false, list2);

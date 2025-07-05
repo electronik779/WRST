@@ -157,7 +157,7 @@ namespace WRST
             try
             {
                 m = Convert.ToInt32(textBox1.Text);
-                if (m > 12) { LimitMsg("12"); m = 12; textBox1.Text = "12"; }
+                if (m > 12) { LimitMsg("12"); m = 12; textBox1.Text = "12"; }//Месяцев в году 12
             }
             //catch (Exception ex)
             catch
@@ -180,7 +180,7 @@ namespace WRST
             try
             {
                 n = Convert.ToInt32(textBox8.Text);
-                if (n > 600) { LimitMsg("600"); n = 600; textBox8.Text = "600"; }
+                if (n > 600) { LimitMsg("600"); n = 600; textBox8.Text = "600"; }//Кол-во эл-тов массива Q
             }
             catch
             {
@@ -232,7 +232,7 @@ namespace WRST
             try
             {
                 n = Convert.ToInt32(textBox9.Text);
-                if (n > 20) { LimitMsg("20"); n = 20; textBox9.Text = "20"; }
+                if (n > 20) { LimitMsg("20"); n = 20; textBox9.Text = "20"; }//Кол-во эл-тов массивов VV и ZUU
             }
             catch
             {
@@ -256,7 +256,7 @@ namespace WRST
             try
             {
                 n = Convert.ToInt32(textBox10.Text);
-                if (n > 20) { LimitMsg("20"); n = 20; textBox10.Text = "20"; }
+                if (n > 20) { LimitMsg("20"); n = 20; textBox10.Text = "20"; }//Кол-во эл-тов массива QLL и ZLL
             }
             catch
             {
@@ -585,7 +585,7 @@ namespace WRST
             {
                 M1 = Convert.ToInt32(textBox1.Text) - 1;
                 if (M1 < 0) { ZeroMsg(textBox1, "Общие данные"); }
-                if (M1 > 11) { LimitMsg("12"); M1 = 11; textBox1.Text = "12"; }
+                if (M1 > 11) { LimitMsg("12"); M1 = 11; textBox1.Text = "12"; }//Кол-во месяцев в году
             }
             catch
             {
