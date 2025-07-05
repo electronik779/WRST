@@ -1,5 +1,4 @@
 ﻿using System.Data;
-using System.Diagnostics;
 using System.Globalization;
 using System.Text;
 using System.Windows.Forms.DataVisualization.Charting;
@@ -9,7 +8,7 @@ namespace WRST
     public partial class Form2 : Form
     {
         double QRG;
-        
+
         public Form2(DataTable tableResults, DataTable tableSecurity, DataTable tableExtRemainder,
             double EEP, double S, double VU, double QR)
         {
@@ -27,7 +26,7 @@ namespace WRST
             if (tableResults.Rows.Count == 0 || tableResults.Columns.Count == 0 ||
                 tableSecurity.Rows.Count == 0 || tableSecurity.Columns.Count == 0 ||
                 tableExtRemainder.Rows.Count == 0 || tableExtRemainder.Columns.Count == 0 ||
-                tableResults.Rows.Count == 0 || tableSecurity.Rows.Count == 0) 
+                tableResults.Rows.Count == 0 || tableSecurity.Rows.Count == 0)
             {
                 MessageBox.Show("Расчет не выполнен.\nПроверьте исходные данные.", "Внимание!",
                     MessageBoxButtons.OK, icon: MessageBoxIcon.Error);
@@ -103,15 +102,15 @@ namespace WRST
             list2 = new string[] { "Обеспеченность, %", "кВт" };
             BuildChart(chart9, tableSecurity, "line", list, "right", 1, x, y,
                 0, 100, 0, 0, 20, 0, false, list2);
-            
+
             x = new int[] { 0, 0 };
             y = new int[] { 2, 3 };
-            list = new string[] { "Противоперебойная линия - задано", 
+            list = new string[] { "Противоперебойная линия - задано",
                 "Диспетчерские остатки - расчет" };
             list2 = new string[] { "#", "млн.м³" };
             BuildChart(chart10, tableExtRemainder, "line", list, "left", 2, x, y,
                 1, ResultCount, 0, 0, 1, 0, false, list2);
-            
+
             label2.Text = (Math.Round(EEP, 0)).ToString("#,#", CultureInfo.CurrentCulture);
             label4.Text = (Math.Round(S, 0)).ToString("#,#", CultureInfo.CurrentCulture);
 
@@ -206,7 +205,7 @@ namespace WRST
                 ch.ChartAreas[0].AxisY.Title = axis[1];
             }
 
-            double MaxY = Math.Ceiling((double)data.Rows[0][y[0]] / multiple ) * multiple;
+            double MaxY = Math.Ceiling((double)data.Rows[0][y[0]] / multiple) * multiple;
             double MinY = Math.Floor((double)data.Rows[0][y[0]] / multiple) * multiple;
             for (int seriesNum = 0; seriesNum < n; seriesNum++)
             {
@@ -242,7 +241,7 @@ namespace WRST
                     }
                 }
                 else
-                { 
+                {
                     if (Ymin != Ymax)
                     {
                         MinY = Ymin;
@@ -256,12 +255,12 @@ namespace WRST
 
                 // Добавляем серию
                 Series series = new Series
-                    {
-                        //ChartType = SeriesChartType.Line,
-                        //Color = GetSeriesColor(seriesNum),
-                        BorderWidth = 2,
-                        Name = list[seriesNum]
-                    };
+                {
+                    //ChartType = SeriesChartType.Line,
+                    //Color = GetSeriesColor(seriesNum),
+                    BorderWidth = 2,
+                    Name = list[seriesNum]
+                };
 
                 // Цикл по строкам DataTable
                 for (int i = 0; i < data.Rows.Count; i++)

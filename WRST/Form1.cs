@@ -1,5 +1,4 @@
 ﻿using System.Data;
-using System.Diagnostics;
 using System.Globalization;
 
 namespace WRST
@@ -1058,7 +1057,7 @@ namespace WRST
                 MessageBoxButtons.OK, icon: MessageBoxIcon.Error);
         }
 
-        private bool CheckArrayOrder(double[] A, int N) 
+        private bool CheckArrayOrder(double[] A, int N)
         {
             for (int i = 0; i < N - 1; i++)
             {
