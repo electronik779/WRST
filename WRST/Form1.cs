@@ -350,7 +350,7 @@ namespace WRST
                 double tmp;
                 for (int i = 0; i < Convert.ToInt32(textBox8.Text); i++)
                 {
-                    tmp = Convert.ToDouble(dataGridView1.Rows[0].Cells[i].Value);
+                    tmp = GetDouble((string)dataGridView1.Rows[0].Cells[i].Value, 0d);
                     block2.Add(Convert.ToString(tmp));
                 }
 
@@ -358,12 +358,12 @@ namespace WRST
                 block3.Add(textBox9.Text);
                 for (int i = 0; i < Convert.ToInt32(textBox9.Text); i++)
                 {
-                    tmp = Convert.ToDouble(dataGridView2.Rows[0].Cells[i].Value);
+                    tmp = GetDouble((string)dataGridView2.Rows[0].Cells[i].Value, 0d);
                     block3.Add(Convert.ToString(tmp));
                 }
                 for (int i = 0; i < Convert.ToInt32(textBox9.Text); i++)
                 {
-                    tmp = Convert.ToDouble(dataGridView2.Rows[1].Cells[i].Value);
+                    tmp = GetDouble((string)dataGridView2.Rows[1].Cells[i].Value, 0d);
                     block3.Add(Convert.ToString(tmp));
                 }
 
@@ -371,26 +371,26 @@ namespace WRST
                 block4.Add(textBox10.Text);
                 for (int i = 0; i < Convert.ToInt32(textBox10.Text); i++)
                 {
-                    tmp = Convert.ToDouble(dataGridView3.Rows[0].Cells[i].Value);
+                    tmp = GetDouble((string)dataGridView3.Rows[0].Cells[i].Value, 0d);
                     block4.Add(Convert.ToString(tmp));
                 }
                 for (int i = 0; i < Convert.ToInt32(textBox10.Text); i++)
                 {
-                    tmp = Convert.ToDouble(dataGridView3.Rows[1].Cells[i].Value);
+                    tmp = GetDouble((string)dataGridView3.Rows[1].Cells[i].Value, 0d);
                     block4.Add(Convert.ToString(tmp));
                 }
 
                 List<string> block5 = new List<string>();
                 for (int i = 0; i < 12; i++)
                 {
-                    tmp = Convert.ToDouble(dataGridView4.Rows[0].Cells[i].Value);
+                    tmp = GetDouble((string)dataGridView4.Rows[0].Cells[i].Value, 0d);
                     block5.Add(Convert.ToString(tmp));
                 }
 
                 List<string> block6 = new List<string>();
                 for (int i = 0; i < 12; i++)
                 {
-                    tmp = Convert.ToDouble(dataGridView5.Rows[0].Cells[i].Value);
+                    tmp = GetDouble((string)dataGridView5.Rows[0].Cells[i].Value, 0d);
                     block6.Add(Convert.ToString(tmp));
                 }
                 using (StreamWriter writer = new StreamWriter(filename))
