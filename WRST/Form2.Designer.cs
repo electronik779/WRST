@@ -78,12 +78,12 @@
             chart2 = new System.Windows.Forms.DataVisualization.Charting.Chart();
             chart1 = new System.Windows.Forms.DataVisualization.Charting.Chart();
             tabPage3 = new TabPage();
+            label5 = new Label();
             dataGridView3 = new DataGridView();
             chart10 = new System.Windows.Forms.DataVisualization.Charting.Chart();
             toolStrip1 = new ToolStrip();
             saveButton1 = new ToolStripButton();
             saveFileDialog1 = new SaveFileDialog();
-            label5 = new Label();
             tabControl1.SuspendLayout();
             tabPage1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)dataGridView2).BeginInit();
@@ -369,8 +369,17 @@
             tabPage3.Padding = new Padding(3);
             tabPage3.Size = new Size(1508, 691);
             tabPage3.TabIndex = 2;
-            tabPage3.Text = "Диспетчерские графики";
+            tabPage3.Text = "Диспетчерский график";
             tabPage3.UseVisualStyleBackColor = true;
+            // 
+            // label5
+            // 
+            label5.AutoSize = true;
+            label5.Location = new Point(789, 6);
+            label5.Name = "label5";
+            label5.Size = new Size(231, 15);
+            label5.TabIndex = 4;
+            label5.Text = "Диспетчерские остатки на конец месяца";
             // 
             // dataGridView3
             // 
@@ -416,15 +425,6 @@
             saveButton1.Size = new Size(23, 22);
             saveButton1.Text = "Сохранить результат расчета";
             saveButton1.Click += toolStripButton1_Click;
-            // 
-            // label5
-            // 
-            label5.AutoSize = true;
-            label5.Location = new Point(789, 6);
-            label5.Name = "label5";
-            label5.Size = new Size(231, 15);
-            label5.TabIndex = 4;
-            label5.Text = "Диспетчерские остатки на конец месяца";
             // 
             // Form2
             // 
