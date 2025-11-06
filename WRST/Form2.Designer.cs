@@ -118,6 +118,7 @@
             // 
             // tabPage1
             // 
+            tabPage1.AutoScroll = true;
             tabPage1.Controls.Add(label4);
             tabPage1.Controls.Add(label3);
             tabPage1.Controls.Add(label2);
@@ -174,7 +175,6 @@
             // 
             // dataGridView2
             // 
-            dataGridView2.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Right;
             dataGridView2.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             dataGridView2.Location = new Point(975, 6);
             dataGridView2.Name = "dataGridView2";
@@ -183,7 +183,6 @@
             // 
             // dataGridView1
             // 
-            dataGridView1.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             dataGridView1.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             dataGridView1.Location = new Point(6, 6);
             dataGridView1.Name = "dataGridView1";
@@ -192,6 +191,7 @@
             // 
             // tabPage2
             // 
+            tabPage2.AutoScroll = true;
             tabPage2.Controls.Add(chart9);
             tabPage2.Controls.Add(chart8);
             tabPage2.Controls.Add(chart7);
@@ -211,12 +211,11 @@
             // 
             // chart9
             // 
-            chart9.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             chartArea1.Name = "ChartArea1";
             chart9.ChartAreas.Add(chartArea1);
             legend1.Name = "Legend1";
             chart9.Legends.Add(legend1);
-            chart9.Location = new Point(1038, 507);
+            chart9.Location = new Point(1191, 507);
             chart9.Name = "chart9";
             series1.ChartArea = "ChartArea1";
             series1.Legend = "Legend1";
@@ -228,12 +227,11 @@
             // 
             // chart8
             // 
-            chart8.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             chartArea2.Name = "ChartArea1";
             chart8.ChartAreas.Add(chartArea2);
             legend2.Name = "Legend1";
             chart8.Legends.Add(legend2);
-            chart8.Location = new Point(1035, 340);
+            chart8.Location = new Point(1197, 340);
             chart8.Name = "chart8";
             series2.ChartArea = "ChartArea1";
             series2.Legend = "Legend1";
@@ -245,12 +243,11 @@
             // 
             // chart7
             // 
-            chart7.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             chartArea3.Name = "ChartArea1";
             chart7.ChartAreas.Add(chartArea3);
             legend3.Name = "Legend1";
             chart7.Legends.Add(legend3);
-            chart7.Location = new Point(1038, 173);
+            chart7.Location = new Point(1197, 173);
             chart7.Name = "chart7";
             series3.ChartArea = "ChartArea1";
             series3.Legend = "Legend1";
@@ -262,14 +259,13 @@
             // 
             // chart6
             // 
-            chart6.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             chartArea4.Name = "ChartArea1";
             chart6.ChartAreas.Add(chartArea4);
             legend4.DockedToChartArea = "ChartArea1";
             legend4.IsDockedInsideChartArea = false;
             legend4.Name = "Legend1";
             chart6.Legends.Add(legend4);
-            chart6.Location = new Point(1035, 6);
+            chart6.Location = new Point(1191, 6);
             chart6.Name = "chart6";
             series4.ChartArea = "ChartArea1";
             series4.Legend = "Legend1";
@@ -361,6 +357,7 @@
             // 
             // tabPage3
             // 
+            tabPage3.AutoScroll = true;
             tabPage3.Controls.Add(label5);
             tabPage3.Controls.Add(dataGridView3);
             tabPage3.Controls.Add(chart10);
@@ -383,7 +380,6 @@
             // 
             // dataGridView3
             // 
-            dataGridView3.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left;
             dataGridView3.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             dataGridView3.Location = new Point(6, 6);
             dataGridView3.Name = "dataGridView3";
@@ -392,7 +388,6 @@
             // 
             // chart10
             // 
-            chart10.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Right;
             chartArea10.Name = "ChartArea1";
             chart10.ChartAreas.Add(chartArea10);
             legend10.Name = "Legend1";
