@@ -1,4 +1,5 @@
 ﻿using System.Data;
+using System.Diagnostics;
 using System.Globalization;
 
 namespace WRST
@@ -566,12 +567,12 @@ namespace WRST
             double QPF = 0;
             double DK = 0;
             double EFF = 0;
-            double[] VD = new double[12];
+            double[] VD = new double[12]; // Диспетчерский график
             double[] QU = new double[12];
 
             try
             {
-                MF = Convert.ToInt32(textBox8.Text);
+                MF = Convert.ToInt32(textBox8.Text); //Количество месяцев
                 if (MF == 0) { ZeroMsg(textBox8, "Приток"); }
                 //if (MF > 600) { LimitMsg("600"); MF = 600; textBox8.Text = "600"; }
             }
@@ -946,19 +947,39 @@ namespace WRST
             {
                 tableExtRemainder.Columns.Add(new DataColumn(colName, typeof(double)));
             }
-            M = M1;
-            if (M > 11) M = 0;
-            for (int i = 0; i < MF; i++)
-            {
-                DataRow dr = tableExtRemainder.NewRow();
-                dr[0] = i + 1;
-                dr[1] = M + 1;
-                dr[2] = VD[M];
-                dr[3] = Math.Round(DVM[i] + VD[M], 1);
-                M++;
-                if (M > 11) M = 0;
+            M = M1; // Месяц начала расчета 
+            //if (M > 11) M = 0;
+            //for (int i = 0; i < MF; i++)
+            //{
+            //    DataRow dr = tableExtRemainder.NewRow();
+            //    dr[0] = i + 1;
+            //    dr[1] = M + 1;
+            //    dr[2] = VD[M];
+            //    dr[3] = Math.Round(DVM[i] + VD[M], 1);
+            //    M++;
+            //    if (M > 11) M = 0;
 
+            //    tableExtRemainder.Rows.Add(dr);
+            //}
+            int Pointer = MF - M;
+            int Counter = 0;
+            int Month = 0;
+
+            while (Counter < MF) 
+            {
+                //Debug.WriteLine("Pointer= {0}, Counter= {1}, Month= {2}", Pointer, Counter, Month);
+                DataRow dr = tableExtRemainder.NewRow();
+                dr[0] = Counter + 1;
+                dr[1] = Counter + 1;
+                dr[2] = VD[Month];
+                dr[3] = Math.Round(DVM[Pointer] + VD[Month], 1);
                 tableExtRemainder.Rows.Add(dr);
+
+                Counter++;
+                Pointer++;
+                if (Pointer == MF) { Pointer = 0; }
+                Month++;
+                if (Month > 11) { Month = 0; }
             }
 
             Form2 form2 = new Form2(tableResults, tableSecurity, tableExtRemainder, EEP, S, VU, QR);
