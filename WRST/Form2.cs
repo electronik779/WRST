@@ -7,7 +7,7 @@ namespace WRST
 {
     public partial class Form2 : Form
     {
-        double QRG;
+        private double QRG;
 
         public Form2(DataTable tableResults, DataTable tableSecurity, DataTable tableExtRemainder,
             double EEP, double S, double VU, double QR)
