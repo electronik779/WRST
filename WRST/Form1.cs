@@ -550,8 +550,8 @@ namespace WRST
                 ((Form)Application.OpenForms["Form2"]).Close();
             }
 
-            int MF = 0;
-            int M1 = 0;
+            int MF = 0; // Кол-во расчетных месяцев
+            int M1 = 0; // Месяц начала расчета
             int NF = 0;
             int JF = 0;
             bool LA = false;
@@ -582,7 +582,7 @@ namespace WRST
             }
             try
             {
-                M1 = Convert.ToInt32(textBox1.Text) - 1;
+                M1 = Convert.ToInt32(textBox1.Text) - 1; // Т.к. нумерация месяцев с 0 по 11.
                 if (M1 < 0) { ZeroMsg(textBox1, "Общие данные"); }
                 if (M1 > 11) { LimitMsg("12"); M1 = 11; textBox1.Text = "12"; }//Кол-во месяцев в году
             }
@@ -785,7 +785,7 @@ namespace WRST
             double[] B_PN = new double[600]; ;
 
             int M = 0;
-            int MD = M1 - 1;
+            int MD = M1 - 1; // Текущий месяц. Начинаем от месяца перед начальным.
             if (MD <= -1) { MD = 11; }
             double VM = VD[MD];
             double DV = 0;
@@ -938,7 +938,7 @@ namespace WRST
             }
 
             List<string> columnsExtRemainder = new List<string>()
-            { "#", "Месяц", "Дисп. - задан., млн.м³", "Дисп. - расч., млн.м³"};
+            { "#", "Месяц", "Дисп. - задан., млн.м³", "Остатки - расч., млн.м³"};
 
             TableClear(tableExtRemainder);
 
