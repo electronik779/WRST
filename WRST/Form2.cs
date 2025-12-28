@@ -114,12 +114,12 @@ namespace WRST
             x = new int[] { 1 };
             y = new int[] { 2 };
             list = new string[] { "Противоперебойная линия" };
-            list2 = new string[] { "Конец месяца", "млн.м³" };
+            list2 = new string[] { "Месяц", "млн.м³" };
             BuildChart(chart10, tableExtRemainder, "line", list, "left", 1, x, y,
                 1, 12, 0, 0, 1, 0, false, list2, 0, 12, true);
 
-            double tmp = (double)tableExtRemainder.Rows[tableExtRemainder.Rows.Count - 1][0] / 12;
-            //Debug.WriteLine("Number_of_years= {0}", tmp);
+            double tmp = (double)tableExtRemainder.Rows.Count / 12;
+            Debug.WriteLine("Number_of_years= {0}", tmp);
             int Number_of_years = Convert.ToInt32(tmp);
 
             for (int i = 0; i < Number_of_years; i++)
@@ -127,7 +127,7 @@ namespace WRST
                 x = new int[] { 1 };
                 y = new int[] { 3 };
                 list = new string[] { "Год " + (i + 1) };
-                list2 = new string[] { "Конец месяца", "млн.м³" };
+                list2 = new string[] { "Месяц", "млн.м³" };
                 int start = i * 12;
                 int end = (i + 1) * 12;
                 if (start < 0) start = 0;
@@ -283,6 +283,14 @@ namespace WRST
 
                             if (Fig2 > MaxY)
                             { MaxY = Fig2; }
+
+                            Fig1 = Math.Floor((double)data.Rows[i][3] / multiple) * multiple;
+                            Fig2 = Math.Ceiling((double)data.Rows[i][3] / multiple) * multiple;
+                            if (Fig1 < MinY)
+                            { MinY = Fig1; }
+
+                            if (Fig2 > MaxY)
+                            { MaxY = Fig2; }
                         }
                     }
 
@@ -343,7 +351,7 @@ namespace WRST
                 else
                 {
                     int Count = 0;
-                    Debug.WriteLine("Begin= {0}, End= {1}", Begin_row, End_row);
+                    //Debug.WriteLine("Begin= {0}, End= {1}", Begin_row, End_row);
                     for (int i = Begin_row; i < End_row; i++)
                     {
                         //Debug.WriteLine("i = {0}", i);

@@ -969,8 +969,8 @@ namespace WRST
             {
                 //Debug.WriteLine("Pointer= {0}, Counter= {1}, Month= {2}", Pointer, Counter, Month);
                 DataRow dr = tableExtRemainder.NewRow();
-                dr[0] = Counter + 1;
-                dr[1] = Counter + 1;
+                dr[0] = Pointer + 1;
+                dr[1] = Month + 1;
                 dr[2] = VD[Month];
                 dr[3] = Math.Round(DVM[Pointer] + VD[Month], 1);
                 tableExtRemainder.Rows.Add(dr);
