@@ -17,6 +17,8 @@ namespace WRST
 
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 
+            int VUi = Convert.ToInt32(VU);
+
             dataGridView1.CellFormatting += new DataGridViewCellFormattingEventHandler(dataGridView1_CellFormatting);
             QRG = QR;
 
@@ -113,10 +115,10 @@ namespace WRST
 
             x = new int[] { 1 };
             y = new int[] { 2 };
-            list = new string[] { "Противоперебойная линия" };
+            list = new string[] { "Диспетчерский график" };
             list2 = new string[] { "Месяц", "млн.м³" };
             BuildChart(chart10, tableExtRemainder, "line", list, "left", 1, x, y,
-                1, 12, 0, 0, 1, 0, false, list2, 0, 12, true);
+                1, 12, 0, VUi, 1, 0, false, list2, 0, 12, true);
 
             double tmp = (double)tableExtRemainder.Rows.Count / 12;
             Debug.WriteLine("Number_of_years= {0}", tmp);
@@ -133,7 +135,7 @@ namespace WRST
                 if (start < 0) start = 0;
                 //Debug.WriteLine("Year= {0}, start= {1}, end= {2}", i, start, end);
                 BuildChart(chart10, tableExtRemainder, "line", list, "left", 1, x, y,
-                    1, 12, 0, 0, 1, 0, false, list2, start, end, false);
+                    1, 12, 0, VUi, 1, 0, false, list2, start, end, false);
             }
 
             label2.Text = (Math.Round(EEP, 0)).ToString("#,#", CultureInfo.CurrentCulture);
@@ -216,6 +218,7 @@ namespace WRST
                 ch.ChartAreas.Add(new ChartArea("ChartArea"));
                 ch.ChartAreas[0].AxisX.Minimum = Xmin;
                 ch.ChartAreas[0].AxisX.Maximum = Xmax;
+                if (Xmax - Xmin > 100) stepX = Convert.ToInt32(Math.Round(((double)(Xmax - Xmin)) / 100, MidpointRounding.AwayFromZero)) + 1;
                 ch.ChartAreas[0].AxisX.Interval = stepX;
                 ch.Legends[0].DockedToChartArea = "ChartArea";
                 ch.Legends[0].IsDockedInsideChartArea = true;
@@ -274,24 +277,24 @@ namespace WRST
                             if (Fig2 > MaxY)
                             { MaxY = Fig2; }
                         }
-                        else
-                        {
-                            double Fig1 = Math.Floor((double)data.Rows[i][2] / multiple) * multiple;
-                            double Fig2 = Math.Ceiling((double)data.Rows[i][2] / multiple) * multiple;
-                            if (Fig1 < MinY)
-                            { MinY = Fig1; }
+                        //else
+                        //{
+                        //    double Fig1 = Math.Floor((double)data.Rows[i][2] / multiple) * multiple;
+                        //    double Fig2 = Math.Ceiling((double)data.Rows[i][2] / multiple) * multiple;
+                        //    if (Fig1 < MinY)
+                        //    { MinY = Fig1; }
 
-                            if (Fig2 > MaxY)
-                            { MaxY = Fig2; }
+                        //    if (Fig2 > MaxY)
+                        //    { MaxY = Fig2; }
 
-                            Fig1 = Math.Floor((double)data.Rows[i][3] / multiple) * multiple;
-                            Fig2 = Math.Ceiling((double)data.Rows[i][3] / multiple) * multiple;
-                            if (Fig1 < MinY)
-                            { MinY = Fig1; }
+                        //    Fig1 = Math.Floor((double)data.Rows[i][3] / multiple) * multiple;
+                        //    Fig2 = Math.Ceiling((double)data.Rows[i][3] / multiple) * multiple;
+                        //    if (Fig1 < MinY)
+                        //    { MinY = Fig1; }
 
-                            if (Fig2 > MaxY)
-                            { MaxY = Fig2; }
-                        }
+                        //    if (Fig2 > MaxY)
+                        //    { MaxY = Fig2; }
+                        //}
                     }
 
                     if (MaxY == MinY)

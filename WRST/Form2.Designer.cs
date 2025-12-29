@@ -200,11 +200,11 @@
             dataGridViewCellStyle2.SelectionForeColor = SystemColors.HighlightText;
             dataGridViewCellStyle2.WrapMode = DataGridViewTriState.False;
             dataGridView2.DefaultCellStyle = dataGridViewCellStyle2;
-            dataGridView2.Location = new Point(1114, 8);
+            dataGridView2.Location = new Point(1148, 8);
             dataGridView2.Margin = new Padding(3, 4, 3, 4);
             dataGridView2.Name = "dataGridView2";
             dataGridView2.RowHeadersWidth = 51;
-            dataGridView2.Size = new Size(602, 852);
+            dataGridView2.Size = new Size(568, 852);
             dataGridView2.TabIndex = 1;
             // 
             // dataGridView1
@@ -230,7 +230,7 @@
             dataGridView1.Margin = new Padding(3, 4, 3, 4);
             dataGridView1.Name = "dataGridView1";
             dataGridView1.RowHeadersWidth = 51;
-            dataGridView1.Size = new Size(1173, 852);
+            dataGridView1.Size = new Size(1135, 852);
             dataGridView1.TabIndex = 0;
             // 
             // tabPage2
