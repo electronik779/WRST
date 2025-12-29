@@ -208,7 +208,7 @@ $$Q_{гар}=\frac{N_{об}}{9,81 H_{т}^{дек} \eta_т \eta_г},\quad \mathno
   - График 4 - обеспеченность мощностей ГЭС.
 
 ## Вкладка "Диспетчерские графики"
-![image](https://github.com/user-attachments/assets/f284d87e-3a32-411d-bfa3-3ff1c9ccb8ad)
+<img width="1762" height="1027" alt="image" src="https://github.com/user-attachments/assets/823ebd73-e017-4e2e-9f18-395c59a3afdd" />
 
 На вкладке даны таблица и график.
 
