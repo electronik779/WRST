@@ -84,28 +84,28 @@ namespace WRST
             list = new string[] { "Приток" };
             list2 = new string[] { "Обеспеченность, %", "м³/с" };
             BuildChart(chart6, tableSecurity_graph, "line", list, "right", 1, x, y,
-                0, 100, 0, 0, 20, 0, false, list2, 0, -1, true);
+                0, 100, 0, 0, 10, 0, false, list2, 0, -1, true);
 
             x = new int[] { 0 };
             y = new int[] { 2 };
             list = new string[] { "Расход ГЭС" };
             list2 = new string[] { "Обеспеченность, %", "м³/с" };
             BuildChart(chart7, tableSecurity_graph, "line", list, "right", 1, x, y,
-                0, 100, 0, 0, 20, 0, false, list2, 0, -1, true);
+                0, 100, 0, 0, 10, 0, false, list2, 0, -1, true);
 
             x = new int[] { 0 };
             y = new int[] { 3 };
             list = new string[] { "Напор" };
             list2 = new string[] { "Обеспеченность, %", "м" };
             BuildChart(chart8, tableSecurity_graph, "line", list, "right", 1, x, y,
-                0, 100, 0, 0, 20, 0, true, list2, 0, -1, true);
+                0, 100, 0, 0, 10, 0, true, list2, 0, -1, true);
 
             x = new int[] { 0 };
             y = new int[] { 4 };
             list = new string[] { "Мощность" };
             list2 = new string[] { "Обеспеченность, %", "кВт" };
             BuildChart(chart9, tableSecurity_graph, "line", list, "right", 1, x, y,
-                0, 100, 0, 0, 20, 0, false, list2, 0, -1, true);
+                0, 100, 0, 0, 10, 0, false, list2, 0, -1, true);
 
             //x = new int[] { 0, 0 };
             //y = new int[] { 2, 3 };

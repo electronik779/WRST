@@ -260,14 +260,14 @@
             chart9.ChartAreas.Add(chartArea1);
             legend1.Name = "Legend1";
             chart9.Legends.Add(legend1);
-            chart9.Location = new Point(1361, 676);
+            chart9.Location = new Point(1186, 676);
             chart9.Margin = new Padding(3, 4, 3, 4);
             chart9.Name = "chart9";
             series1.ChartArea = "ChartArea1";
             series1.Legend = "Legend1";
             series1.Name = "Series1";
             chart9.Series.Add(series1);
-            chart9.Size = new Size(352, 215);
+            chart9.Size = new Size(527, 215);
             chart9.TabIndex = 8;
             chart9.Text = "chart9";
             // 
@@ -277,14 +277,14 @@
             chart8.ChartAreas.Add(chartArea2);
             legend2.Name = "Legend1";
             chart8.Legends.Add(legend2);
-            chart8.Location = new Point(1368, 453);
+            chart8.Location = new Point(1186, 453);
             chart8.Margin = new Padding(3, 4, 3, 4);
             chart8.Name = "chart8";
             series2.ChartArea = "ChartArea1";
             series2.Legend = "Legend1";
             series2.Name = "Series1";
             chart8.Series.Add(series2);
-            chart8.Size = new Size(355, 215);
+            chart8.Size = new Size(537, 215);
             chart8.TabIndex = 7;
             chart8.Text = "chart8";
             // 
@@ -294,14 +294,14 @@
             chart7.ChartAreas.Add(chartArea3);
             legend3.Name = "Legend1";
             chart7.Legends.Add(legend3);
-            chart7.Location = new Point(1368, 231);
+            chart7.Location = new Point(1182, 231);
             chart7.Margin = new Padding(3, 4, 3, 4);
             chart7.Name = "chart7";
             series3.ChartArea = "ChartArea1";
             series3.Legend = "Legend1";
             series3.Name = "Series1";
             chart7.Series.Add(series3);
-            chart7.Size = new Size(352, 215);
+            chart7.Size = new Size(538, 215);
             chart7.TabIndex = 6;
             chart7.Text = "chart7";
             // 
@@ -313,14 +313,14 @@
             legend4.IsDockedInsideChartArea = false;
             legend4.Name = "Legend1";
             chart6.Legends.Add(legend4);
-            chart6.Location = new Point(1361, 8);
+            chart6.Location = new Point(1182, 8);
             chart6.Margin = new Padding(3, 4, 3, 4);
             chart6.Name = "chart6";
             series4.ChartArea = "ChartArea1";
             series4.Legend = "Legend1";
             series4.Name = "Series1";
             chart6.Series.Add(series4);
-            chart6.Size = new Size(355, 215);
+            chart6.Size = new Size(534, 215);
             chart6.TabIndex = 5;
             chart6.Text = "chart6";
             // 
