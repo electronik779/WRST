@@ -10,7 +10,7 @@ namespace WRST
     {
         private double QRG;
 
-        public Form2(DataTable tableResults, DataTable tableSecurity, DataTable tableExtRemainder,
+        public Form2(DataTable tableResults, DataTable tableSecurity, DataTable tableSecurity_graph, DataTable tableExtRemainder,
             double EEP, double S, double VU, double QR)
         {
             InitializeComponent();
@@ -28,8 +28,9 @@ namespace WRST
 
             if (tableResults.Rows.Count == 0 || tableResults.Columns.Count == 0 ||
                 tableSecurity.Rows.Count == 0 || tableSecurity.Columns.Count == 0 ||
+                tableSecurity_graph.Rows.Count == 0 || tableSecurity_graph.Columns.Count == 0 ||
                 tableExtRemainder.Rows.Count == 0 || tableExtRemainder.Columns.Count == 0 ||
-                tableResults.Rows.Count == 0 || tableSecurity.Rows.Count == 0)
+                tableResults.Rows.Count == 0 || tableResults.Columns.Count == 0)
             {
                 MessageBox.Show("Расчет не выполнен.\nПроверьте исходные данные.", "Внимание!",
                     MessageBoxButtons.OK, icon: MessageBoxIcon.Error);
@@ -41,7 +42,7 @@ namespace WRST
             dataGridView3.DataSource = tableExtRemainder;
 
             int ResultCount = tableResults.Rows.Count;
-            int SecurityCount = tableSecurity.Rows.Count;
+            //int SecurityCount = tableSecurity.Rows.Count;
 
             int[] x = new int[] { 0, 0, 0 };
             int[] y = new int[] { 2, 3, 4 };
@@ -82,28 +83,28 @@ namespace WRST
             y = new int[] { 1 };
             list = new string[] { "Приток" };
             list2 = new string[] { "Обеспеченность, %", "м³/с" };
-            BuildChart(chart6, tableSecurity, "line", list, "right", 1, x, y,
+            BuildChart(chart6, tableSecurity_graph, "line", list, "right", 1, x, y,
                 0, 100, 0, 0, 20, 0, false, list2, 0, -1, true);
 
             x = new int[] { 0 };
             y = new int[] { 2 };
             list = new string[] { "Расход ГЭС" };
             list2 = new string[] { "Обеспеченность, %", "м³/с" };
-            BuildChart(chart7, tableSecurity, "line", list, "right", 1, x, y,
+            BuildChart(chart7, tableSecurity_graph, "line", list, "right", 1, x, y,
                 0, 100, 0, 0, 20, 0, false, list2, 0, -1, true);
 
             x = new int[] { 0 };
             y = new int[] { 3 };
             list = new string[] { "Напор" };
             list2 = new string[] { "Обеспеченность, %", "м" };
-            BuildChart(chart8, tableSecurity, "line", list, "right", 1, x, y,
+            BuildChart(chart8, tableSecurity_graph, "line", list, "right", 1, x, y,
                 0, 100, 0, 0, 20, 0, true, list2, 0, -1, true);
 
             x = new int[] { 0 };
             y = new int[] { 4 };
             list = new string[] { "Мощность" };
             list2 = new string[] { "Обеспеченность, %", "кВт" };
-            BuildChart(chart9, tableSecurity, "line", list, "right", 1, x, y,
+            BuildChart(chart9, tableSecurity_graph, "line", list, "right", 1, x, y,
                 0, 100, 0, 0, 20, 0, false, list2, 0, -1, true);
 
             //x = new int[] { 0, 0 };
@@ -121,7 +122,7 @@ namespace WRST
                 1, 12, 0, VUi, 1, 0, false, list2, 0, 12, true);
 
             double tmp = (double)tableExtRemainder.Rows.Count / 12;
-            Debug.WriteLine("Number_of_years= {0}", tmp);
+            //Debug.WriteLine("Number_of_years= {0}", tmp);
             int Number_of_years = Convert.ToInt32(tmp);
 
             for (int i = 0; i < Number_of_years; i++)
@@ -156,7 +157,7 @@ namespace WRST
             }
         }
 
-        private void TableFormat(DataGridView table)
+        private void TableFormat(DataGridView table, int Width)
         {
             table.AllowUserToAddRows = false;
             table.AllowUserToDeleteRows = false;
@@ -167,15 +168,15 @@ namespace WRST
 
             for (int i = 0; i < table.Columns.Count; i++)
             {
-                table.Columns[i].Width = 100;
+                table.Columns[i].Width = Width;
             }
         }
 
         private void Form2_Load(object sender, EventArgs e)
         {
-            TableFormat(dataGridView1);
-            TableFormat(dataGridView2);
-            TableFormat(dataGridView3);
+            TableFormat(dataGridView1, 100);
+            TableFormat(dataGridView2, 110);
+            TableFormat(dataGridView3, 100);
         }
 
         private void BuildChart(Chart ch, DataTable data,

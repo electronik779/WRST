@@ -13,9 +13,9 @@ namespace WRST
         DataTable tableRemainder = new DataTable();   // Диспетчерские остатки
         DataTable tableSelections = new DataTable();  // Отборы из вдхр
         DataTable tableResults = new DataTable();
-        DataTable tableSecurity = new DataTable();
-
-        DataTable tableExtRemainder = new DataTable();
+        DataTable tableSecurity = new DataTable();    // Обеспеченность
+        DataTable tableSecurity_graph = new DataTable();    
+        DataTable tableExtRemainder = new DataTable();// Диспетчерский график
 
         public Form1()
         {
@@ -783,7 +783,8 @@ namespace WRST
             double[] B_Q = new double[600];
             double[] B_QP = new double[600];
             double[] B_PH = new double[600];
-            double[] B_PN = new double[600]; ;
+            double[] B_PN = new double[600];
+            double[] B_S = new double[600];
 
             int M = 0;
             int MD = M1 - 1; // Текущий месяц. Начинаем от месяца перед начальным.
@@ -911,14 +912,16 @@ namespace WRST
             }
             //dataGridView6.DataSource = tableResults;
 
-            List<string> ColSecurity = new List<string>() { "Обеспеченность, %", "Расход бытовой, м³/с",
-            "Расход ГЭС, м³/с", "Напор, м", "Мощность ГЭС, среднесуточная, кВт"};
+            List<string> ColSecurity = new List<string>() { "Обеспе-\nченность, %", "Расход бытовой, м³/с",
+            "Расход ГЭС, м³/с", "Напор, м", "Мощность ГЭС, средн.сут., кВт"};
 
             TableClear(tableSecurity);
+            TableClear(tableSecurity_graph);
 
             foreach (string str in ColSecurity)
             {
                 tableSecurity.Columns.Add(new DataColumn(str, typeof(double)));
+                tableSecurity_graph.Columns.Add(new DataColumn(str, typeof(double)));
             }
 
             B_Q = Rank(MF, Q);
@@ -928,15 +931,42 @@ namespace WRST
 
             for (int i = 0; i < MF; i++)
             {
-                DataRow dr = tableSecurity.NewRow();
-                dr[0] = Math.Round(100 - ((double)i + 1) / ((double)MF + 1) * 100, 2);
-                dr[1] = Math.Round(B_Q[i], 1);
-                dr[2] = Math.Round(B_QP[i], 1);
-                dr[3] = Math.Round(B_PH[i], 2);
-                dr[4] = Math.Round(B_PN[i], 0);
-                tableSecurity.Rows.Add(dr);
+                DataRow dr = tableSecurity_graph.NewRow();
+                B_S[i] = 100 - ((double)i + 1) / ((double)MF + 1) * 100;
+                dr[0] = B_S[i];
+                dr[1] = B_Q[i];
+                dr[2] = B_QP[i];
+                dr[3] = B_PH[i];
+                dr[4] = B_PN[i];
+                tableSecurity_graph.Rows.Add(dr);
+                B_S[i] = ((double)i + 1) / ((double)MF + 1) * 100;
                 //Debug.WriteLine("{0}, {1}, {2}, {3}, {4}", dr[0], dr[1], dr[2], dr[3], dr[4]);
             }
+
+            DataRow dataRow = tableSecurity.NewRow();
+            dataRow[0] = Math.Round(B_S[0], 2);
+            dataRow[1] = Math.Round(B_Q[0], 1);
+            dataRow[2] = Math.Round(B_QP[0], 1);
+            dataRow[3] = Math.Round(B_PH[0], 2);
+            dataRow[4] = Math.Round(B_PN[0], 0);
+            tableSecurity.Rows.Add(dataRow);
+            for (int i = 5; i < 96; i += 5)
+            {
+                DataRow dr = tableSecurity.NewRow();
+                dr[0] = i;
+                dr[1] = Math.Round(Lag11((double)i, MF, B_S, B_Q), 1);
+                dr[2] = Math.Round(Lag11((double)i, MF, B_S, B_QP), 1);
+                dr[3] = Math.Round(Lag11((double)i, MF, B_S, B_PH), 2);
+                dr[4] = Math.Round(Lag11((double)i, MF, B_S, B_PN), 0);
+                tableSecurity.Rows.Add(dr);
+            }
+            DataRow dataRow1 = tableSecurity.NewRow();
+            dataRow1[0] = Math.Round(B_S[MF - 1], 2);
+            dataRow1[1] = Math.Round(B_Q[MF - 1], 1);
+            dataRow1[2] = Math.Round(B_QP[MF - 1], 1);
+            dataRow1[3] = Math.Round(B_PH[MF - 1], 2);
+            dataRow1[4] = Math.Round(B_PN[MF - 1], 0);
+            tableSecurity.Rows.Add(dataRow1);
 
             List<string> columnsExtRemainder = new List<string>()
             { "#", "Месяц", "Дисп. - задан., млн.м³", "Остатки - расч., млн.м³"};
@@ -982,38 +1012,59 @@ namespace WRST
                 if (Month > 11) { Month = 0; }
             }
 
-            Form2 form2 = new Form2(tableResults, tableSecurity, tableExtRemainder, EEP, S, VU, QR);
+            Form2 form2 = new Form2(tableResults, tableSecurity, tableSecurity_graph, tableExtRemainder, EEP, S, VU, QR);
             form2.Show();
         }
 
-        private double Lag11(double D, int N, double[] X, double[] Y)
+        //private double Lag11(double D, int N, double[] X, double[] Y)
+        //{
+        //    double V = 0;
+        //    int i1;
+        //    double DX;
+        //    double DYDX;
+        //    for (int i = 1; i < N; i++)
+        //    {
+        //        Debug.WriteLine("i={0}, D={1}, X[i]={2}, D-X[i]={3}", i, D, X[i], D - X[i]);
+        //        if (D - X[i] <= 0)
+        //        {
+        //            i1 = i - 1;
+        //            DX = X[i] - X[i1];
+        //            DYDX = (Y[i] - Y[i1]) / DX;
+        //            V = (Y[i] * (D - X[i1]) - Y[i1] * (D - X[i])) / DX;
+        //            Debug.WriteLine("i={0}, i1={1}, X[i]={2}, D={3}, X[i1]={4}, Y[i]={5}," +
+        //                " Y[i1]={6}, DX={7}, DYDX={8}, V={9}", i, i1, X[i], D, X[i1],
+        //                Y[i], Y[i1], DX, DYDX, V);
+        //            return V;
+        //        }
+        //    }
+        //    DX = X[N - 1] - X[N - 2];
+        //    DYDX = (Y[N - 1] - Y[N - 2]) / DX;
+        //    V = (Y[N - 1] * (D - X[N - 2]) - Y[N - 2] * (D - X[N - 1])) / DX;
+        //    Debug.WriteLine("i={0}, i1={1}, X[i]={2}, D={3}, X[i1]={4}, Y[i]={5}," +
+        //        " Y[i1]={6}, DX={7}, DYDX={8}, V={9}", N - 1, N - 2, X[N - 1], D, X[N - 2],
+        //        Y[N - 1], Y[N - 2], DX, DYDX, V);
+        //    return V;
+        //}
+
+        private double Lag11(double Arg, int Num, double[] X, double[] Y)
         {
-            double V = 0;
             int i1;
             double DX;
-            double DYDX;
-            for (int i = 1; i < N; i++)
+            double Fun = 0;
+            for (int i = 1; i < Num; i++)
             {
-                DX = X[N - 1] - X[N - 2];
-                DYDX = (Y[N - 1] - Y[N - 2]) / DX;
-                V = (Y[N - 1] * (D - X[N - 2]) - Y[N - 2] * (D - X[N - 1])) / DX;
-                //Debug.WriteLine("i={0}, i1={1}, X[i]={2}, D={3}, X[i1]={4}, Y[i]={5}," +
-                //    " Y[i1]={6}, DX={7}, DYDX={8}, V={9}", N - 1, N - 2, X[N - 1], D, X[N - 2],
-                //    Y[N - 1], Y[N - 2], DX, DYDX, V);
-                //Debug.WriteLine("i={0}, D={1}, X[i]={2}, D-X[i]={3}", i, D, X[i], D - X[i]);
-                if (D - X[i] <= 0)
+                if (Arg - X[i] <= 0)
                 {
                     i1 = i - 1;
                     DX = X[i] - X[i1];
-                    DYDX = (Y[i] - Y[i1]) / DX;
-                    V = (Y[i] * (D - X[i1]) - Y[i1] * (D - X[i])) / DX;
-                    //Debug.WriteLine("i={0}, i1={1}, X[i]={2}, D={3}, X[i1]={4}, Y[i]={5}," +
-                    //    " Y[i1]={6}, DX={7}, DYDX={8}, V={9}", i, i1, X[i], D, X[i1],
-                    //    Y[i], Y[i1], DX, DYDX, V);
-                    break;
+                    Fun = (Y[i] * (Arg - X[i1]) - Y[i1] * (Arg - X[i])) / DX;
+                    return Fun;
                 }
             }
-            return V;
+            i1 = Num - 2;
+            DX = X[Num - 1] - X[i1];
+            Fun = (Y[Num - 1] * (Arg - X[i1]) - Y[i1] * (Arg - X[Num - 1])) / DX;
+            return Fun;
         }
 
         private double[] Rank(int _MF, double[] _A)
