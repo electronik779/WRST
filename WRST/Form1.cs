@@ -943,6 +943,11 @@ namespace WRST
                 //Debug.WriteLine("{0}, {1}, {2}, {3}, {4}", dr[0], dr[1], dr[2], dr[3], dr[4]);
             }
 
+            Array.Reverse(B_Q, 0, MF);
+            Array.Reverse(B_QP, 0, MF);
+            Array.Reverse(B_PH, 0, MF);
+            Array.Reverse(B_PN, 0, MF);
+
             DataRow dataRow = tableSecurity.NewRow();
             dataRow[0] = Math.Round(B_S[0], 2);
             dataRow[1] = Math.Round(B_Q[0], 1);
