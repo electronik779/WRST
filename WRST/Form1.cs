@@ -394,7 +394,7 @@ namespace WRST
                     tmp = GetDouble((string)dataGridView5.Rows[0].Cells[i].Value, 0d);
                     block6.Add(Convert.ToString(tmp));
                 }
-                using (StreamWriter writer = new StreamWriter(filename))
+                using (StreamWriter writer = new StreamWriter(filename, true, System.Text.Encoding.UTF8))
                 {
                     writer.WriteLine(string.Join(";", block1));
                     writer.WriteLine(string.Join(";", block2));
