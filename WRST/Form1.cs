@@ -1,5 +1,4 @@
 ﻿using System.Data;
-using System.Diagnostics;
 using System.Globalization;
 
 namespace WRST
@@ -14,7 +13,7 @@ namespace WRST
         DataTable tableSelections = new DataTable();  // Отборы из вдхр
         DataTable tableResults = new DataTable();
         DataTable tableSecurity = new DataTable();    // Обеспеченность
-        DataTable tableSecurity_graph = new DataTable();    
+        DataTable tableSecurity_graph = new DataTable();
         DataTable tableExtRemainder = new DataTable();// Диспетчерский график
 
         public Form1()
@@ -1000,7 +999,7 @@ namespace WRST
             int Counter = 0;
             int Month = 0;
 
-            while (Counter < MF) 
+            while (Counter < MF)
             {
                 //Debug.WriteLine("Pointer= {0}, Counter= {1}, Month= {2}", Pointer, Counter, Month);
                 DataRow dr = tableExtRemainder.NewRow();

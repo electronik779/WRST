@@ -1,5 +1,4 @@
 ﻿using System.Data;
-using System.Diagnostics;
 using System.Globalization;
 using System.Text;
 using System.Windows.Forms.DataVisualization.Charting;
@@ -263,7 +262,7 @@ namespace WRST
                         MinY = Math.Floor((double)data.Rows[0][y[seriesNum]] / multiple) * multiple;
                     }
                 }
-                
+
                 if (isLimit || (Ymin == Ymax))
                 {
                     for (int i = 0; i < data.Rows.Count; i++)
@@ -319,7 +318,7 @@ namespace WRST
 
                 // Добавляем серию
                 Series series = new Series();
-                
+
                 if (new_chart)
                 {
                     series.BorderWidth = 2;
@@ -340,7 +339,7 @@ namespace WRST
 
                 // Цикл по строкам DataTable
                 if (End_row == -1)
-                { 
+                {
                     for (int i = 0; i < data.Rows.Count; i++)
                     {
                         series.ChartType = SeriesChartType.Line;
