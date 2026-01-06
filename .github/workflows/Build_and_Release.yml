@@ -43,7 +43,7 @@ jobs:
       - name: Upload Artifact to Actions
         uses: actions/upload-artifact@v4
         with:
-          name: windows-build-pr-${{ github.event.number }}
+          name: Windows-x64-WRST.zip
           path: Windows-x64-WRST.zip
           retention-days: 1
 
@@ -59,6 +59,7 @@ jobs:
         with:
           files: Windows-x64-WRST.zip
           tag_name: ${{ github.ref_name }}
-          generate_release_notes: true # Автоматически создаст описание из списка коммитов
+          #generate_release_notes: true # Автоматически создаст описание из списка коммитов
+          append_body: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
