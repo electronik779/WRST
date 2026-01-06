@@ -1,4 +1,4 @@
-name: Build and Release
+name: Build and Release Win64
 
 on:
   workflow_dispatch:
@@ -12,18 +12,10 @@ on:
 
 jobs:
   build:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - os: windows-latest
-            rid: win-x64
-            target: Windows-x64
-          - os: macos-latest
-            rid: osx-x64
-            target: macOS-x64
-
+    runs-on: windows-latest
+    permissions:
+      contents: write
+    
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -36,21 +28,18 @@ jobs:
 
       - name: Publish Application
         run: |
-          dotnet publish -c Release -r ${{ matrix.rid }} --self-contained true /p:PublishSingleFile=true /p:PublishReadyToRun=true -o ./publish
+          dotnet publish -c Release -r win-x64 --self-contained true /p:PublishSingleFile=true /p:PublishReadyToRun=true -o ./dist
 
-      - name: Zip Artifacts (Windows)
-        if: matrix.os == 'windows-latest'
-        run: Compress-Archive -Path ./publish/* -DestinationPath ${{ matrix.target }}.zip
-
-      - name: Zip Artifacts (macOS)
-        if: matrix.os == 'macos-latest'
-        run: zip -r ${{ matrix.target }}.zip ./publish/*
+      - name: Archive Release
+        shell: pwsh
+        run: |
+          Compress-Archive -Path ./dist/* -DestinationPath Windows-x64-WRST.zip
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ matrix.target }}
-          path: ${{ matrix.target }}.zip
+          files: Windows-x64-WRST.zip
+          tag_name: ${{ github.ref_name }}
           retention-days: 1
 
   release:
