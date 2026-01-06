@@ -29,6 +29,7 @@ jobs:
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
+        continue-on-error: true # Если установка упадет, но .NET уже есть в системе — идем дальше
         with:
           dotnet-version: '8.0.x' # Укажите вашу версию .NET
 
