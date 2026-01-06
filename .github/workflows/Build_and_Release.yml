@@ -13,8 +13,8 @@ on:
 jobs:
   build:
     runs-on: windows-latest
-    permissions:
-      contents: write
+    #permissions:
+    #  contents: write
     
     steps:
       - name: Checkout code
@@ -30,16 +30,15 @@ jobs:
         run: |
           dotnet publish -c Release -r win-x64 --self-contained true /p:PublishSingleFile=true /p:PublishReadyToRun=true -o ./dist
 
-      - name: Archive Release
+      - name: Zip Artifact
         shell: pwsh
-        run: |
-          Compress-Archive -Path ./dist/* -DestinationPath Windows-x64-WRST.zip
+        run: Compress-Archive -Path ./publish/* -DestinationPath Windows-x64-WRST.zip
 
-      - name: Upload Artifacts
+      - name: Upload Artifact to Actions
         uses: actions/upload-artifact@v4
         with:
-          files: Windows-x64-WRST.zip
-          tag_name: ${{ github.ref_name }}
+          name: windows-build-pr-${{ github.event.number }}
+          path: Windows-x64-WRST.zip
           retention-days: 1
 
   release:
@@ -49,18 +48,11 @@ jobs:
     permissions:
       contents: write
     steps:
-      - name: Download all artifacts
-        uses: actions/download-artifact@v4
-        with:
-          pattern: bin-*
-          merge-multiple: true
-
-      - name: Create Release
+      - name: Upload to GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          generate_release_notes: true
-          files: |
-            *.zip
-            *.tar.gz
+          files: Windows-x64-WRST.zip
+          tag_name: ${{ github.ref_name }}
+          generate_release_notes: true # Автоматически создаст описание из списка коммитов
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
