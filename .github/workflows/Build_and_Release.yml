@@ -43,7 +43,7 @@ jobs:
       - name: Upload Artifact to Actions
         uses: actions/upload-artifact@v4
         with:
-          name: Windows-x64-WRST.zip
+          name: Windows-x64-WRST
           path: Windows-x64-WRST.zip
           retention-days: 1
 
