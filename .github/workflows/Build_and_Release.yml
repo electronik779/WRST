@@ -13,8 +13,6 @@ on:
 jobs:
   build:
     runs-on: windows-latest
-    #permissions:
-    #  contents: write
     
     steps:
       - name: Checkout code
@@ -28,11 +26,19 @@ jobs:
 
       - name: Publish Application
         run: |
-          dotnet publish -c Release -r win-x64 --self-contained true /p:PublishSingleFile=true /p:PublishReadyToRun=true -o ./dist
+          mkdir -p ./publish
+          dotnet publish -c Release -r win-x64 --self-contained true /p:PublishSingleFile=true /p:PublishReadyToRun=true -o "${{ github.workspace }}/publish"
 
       - name: Zip Artifact
         shell: pwsh
-        run: Compress-Archive -Path ./publish/* -DestinationPath Windows-x64-WRST.zip
+        run: |
+          # Проверяем, есть ли файлы, прежде чем архивировать (для отладки)
+          if (Test-Path "${{ github.workspace }}/publish/*") {
+              Compress-Archive -Path "${{ github.workspace }}/publish/*" -DestinationPath "Windows-x64-WRST.zip" -Force
+          } else {
+              Write-Error "Папка publish пуста! Сборка не удалась."
+              exit 1
+          }
 
       - name: Upload Artifact to Actions
         uses: actions/upload-artifact@v4
