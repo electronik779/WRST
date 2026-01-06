@@ -23,62 +23,6 @@ jobs:
         continue-on-error: true # Если установка упадет, но .NET уже есть в системе — идем дальше
         with:
           dotnet-version: '8.0.x' # Укажите вашу версию .NET
-
-      - name: Publish Application
-        run: |
-          mkdir -p ./publish
-          dotnet publish -c Release -r win-x64 --self-contained true /p:PublishSingleFile=true /p:PublishReadyToRun=true -o "${{ github.workspace }}/publish"
-
-      - name: Zip Artifact
-        shell: pwsh
-        run: |
-          # Проверяем, есть ли файлы, прежде чем архивировать (для отладки)
-          if (Test-Path "${{ github.workspace }}/publish/*") {
-              Compress-Archive -Path "${{ github.workspace }}/publish/*" -DestinationPath "Windows-x64-WRST.zip" -Force
-          } else {
-              Write-Error "Папка publish пуста! Сборка не удалась."
-              exit 1
-          }
-
-      - name: Upload Artifact to Actions
-        uses: actions/upload-artifact@v4
-        with:
-          name: Windows-x64-WRST
-          path: Windows-x64-WRST.zip
-          retention-days: 1
-
-  release:
-    if: startsWith(github.ref, 'refs/tags/v')
-    needs: build
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    steps:
-      name: Build and Release Win64
-
-on:
-  workflow_dispatch:
-  push:
-    tags:
-      - 'v*' # Запуск релиза при создании тега (напр. v1.0.0)
-  pull_request:
-    branches:
-      - main # Проверка сборки при PR
-      - master
-
-jobs:
-  build:
-    runs-on: windows-latest
-    
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
-        continue-on-error: true # Если установка упадет, но .NET уже есть в системе — идем дальше
-        with:
-          dotnet-version: '8.0.x' # Укажите вашу версию .NET
           cache: true # Включает автоматическое кэширование зависимостей
           cache-dependency-path: '*.csproj' # Или '**/packages.lock.json'
 
