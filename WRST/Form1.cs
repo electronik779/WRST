@@ -1,4 +1,5 @@
 ﻿using System.Data;
+using System.Diagnostics;
 using System.Globalization;
 
 namespace WRST
@@ -16,6 +17,11 @@ namespace WRST
         DataTable tableSecurity_graph = new DataTable();
         DataTable tableExtRemainder = new DataTable();// Диспетчерский график
 
+        private static int tableW = 545;
+        private static int tableH = 54;
+        private float dpi;
+        private float scale;
+        
         public Form1()
         {
             InitializeComponent();
@@ -24,6 +30,9 @@ namespace WRST
             saveFileDialog1.Filter = "CSV файлы (*.csv)|*.csv";
             saveFileDialog1.DefaultExt = "csv";
             saveFileDialog1.AddExtension = true;
+
+            dpi = this.DeviceDpi;
+            scale = dpi / 96;
         }
 
         private void TableFormat(DataGridView table, bool HeaderVisible)
@@ -69,9 +78,18 @@ namespace WRST
             }
             table.Rows.Add(row);
             tableG.DataSource = table;
+
+            int tgvH = tableH;
+            int cellH = ((int)((float)tgvH * scale) / 2);
+            tableG.Height = (cellH * 2) + (int)(20f * scale);
+            tableG.RowTemplate.Height = cellH;
+            tableG.Rows[0].Height = cellH;
+            tableG.ColumnHeadersHeight = cellH;
+            //Debug.WriteLine("tgvH= {0}, cellH= {1}, tableW {2}", tgvH, cellH, tableW);
+            tableG.Width = tableW;
             for (int i = 0; i < 12; i++)
             {
-                tableG.Columns[i].Width = 100;
+                tableG.Columns[i].Width = 70;
             }
         }
 
@@ -125,6 +143,7 @@ namespace WRST
         }
 
         private void TableCreate(DataTable table, DataGridView tableG, int cols, int rows)
+            // параметры вдхр и НБ
         {
             for (int i = 0; i < cols; i++)
             {
@@ -141,9 +160,36 @@ namespace WRST
                 table.Rows.Add(row);
             }
             tableG.DataSource = table;
+
+            int tgvH = tableH;
+            int tgvW = tableW;
+            //Debug.WriteLine("cellH= {0}", tgvH / rows);
+            int cellH = ((int)((float)tgvH * scale) / rows);
+            //Debug.WriteLine("cellH= {0}", cellH);
+            int cellW = (tgvW / 10) - 1;
+            if (cols <= 10)
+            {
+                tableG.Height = (cellH * rows) + 3;
+            }
+            else
+            {
+                tableG.Height = (cellH * rows) + (int)(20f * scale);
+            }
+            if (cols <= 10)
+            {
+                tableG.Width = (cellW * cols) + 3;
+            }
+            else
+            {
+                tableG.Width = tableW;
+            }
+            for (int i = 0; i < rows; i++)
+            {
+                tableG.Rows[i].Height = cellH;
+            }
             for (int i = 0; i < cols; i++)
             {
-                tableG.Columns[i].Width = 100;
+                tableG.Columns[i].Width = cellW;
             }
         }
 
@@ -214,9 +260,18 @@ namespace WRST
             }
             tableTributary.Rows.Add(row);
             dataGridView1.DataSource = tableTributary;
+
+            int tgvH = tableH;
+            int cellH = ((int)((float)tgvH * scale) / 2);
+            dataGridView1.Height = (cellH * 2) + (int)(20f * scale);
+            dataGridView1.RowTemplate.Height = cellH;
+            dataGridView1.Rows[0].Height = cellH;
+            dataGridView1.ColumnHeadersHeight = cellH;
+            //Debug.WriteLine("tgvH= {0}, cellH= {1}, tableW {2}", tgvH, cellH, tableW);
+            dataGridView1.Width = tableW;
             for (int i = 0; i < n; i++)
             {
-                dataGridView1.Columns[i].Width = 100;
+                dataGridView1.Columns[i].Width = 70;
             }
         }
 
@@ -419,6 +474,7 @@ namespace WRST
                 }
             }
             tableG.DataSource = table;
+
             for (int i = 0; i < cols; i++)
             {
                 tableG.Columns[i].Width = 100;
