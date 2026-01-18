@@ -9,10 +9,16 @@ namespace WRST
     {
         private double QRG;
 
+        private float dpi;
+        private float scale;
+
         public Form2(DataTable tableResults, DataTable tableSecurity, DataTable tableSecurity_graph, DataTable tableExtRemainder,
             double EEP, double S, double VU, double QR)
         {
             InitializeComponent();
+
+            dpi = this.DeviceDpi;
+            scale = dpi / 96;
 
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 
@@ -173,9 +179,9 @@ namespace WRST
 
         private void Form2_Load(object sender, EventArgs e)
         {
-            TableFormat(dataGridView1, 100);
-            TableFormat(dataGridView2, 110);
-            TableFormat(dataGridView3, 100);
+            TableFormat(dataGridView1, (int)(100 * scale));
+            TableFormat(dataGridView2, (int)(110 * scale));
+            TableFormat(dataGridView3, (int)(100 * scale));
         }
 
         private void BuildChart(Chart ch, DataTable data,

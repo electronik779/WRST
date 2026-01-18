@@ -1,6 +1,7 @@
 ﻿using System.Data;
 using System.Diagnostics;
 using System.Globalization;
+using Windows.UI.Text;
 
 namespace WRST
 {
@@ -79,6 +80,11 @@ namespace WRST
             table.Rows.Add(row);
             tableG.DataSource = table;
 
+            TableScale12(tableG);
+        }
+
+        private void TableScale12(DataGridView tableG)
+        {
             int tgvH = tableH;
             int cellH = ((int)((float)tgvH * scale) / 2);
             tableG.Height = (cellH * 2) + (int)(20f * scale);
@@ -161,12 +167,15 @@ namespace WRST
             }
             tableG.DataSource = table;
 
-            int tgvH = tableH;
-            int tgvW = tableW;
+            
+        }
+
+        private void TableScale (DataGridView tableG, int cols, int rows)
+        {
             //Debug.WriteLine("cellH= {0}", tgvH / rows);
-            int cellH = ((int)((float)tgvH * scale) / rows);
+            int cellH = ((int)((float)tableH * scale) / rows);
             //Debug.WriteLine("cellH= {0}", cellH);
-            int cellW = (tgvW / 10) - 1;
+            int cellW = (tableW / 10) - 1;
             if (cols <= 10)
             {
                 tableG.Height = (cellH * rows) + 3;
@@ -475,10 +484,7 @@ namespace WRST
             }
             tableG.DataSource = table;
 
-            for (int i = 0; i < cols; i++)
-            {
-                tableG.Columns[i].Width = 100;
-            }
+            TableScale(tableG, cols, rows);
         }
 
         private void toolStripButton2_Click(object sender, EventArgs e) // Загрузка
