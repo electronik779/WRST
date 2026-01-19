@@ -167,7 +167,7 @@ namespace WRST
             }
             tableG.DataSource = table;
 
-            
+            TableScale(tableG, cols, rows);
         }
 
         private void TableScale (DataGridView tableG, int cols, int rows)
