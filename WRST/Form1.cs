@@ -57,6 +57,22 @@ namespace WRST
                 table.Rows.Add(row); //Добавляем данные в таблицу
             }
             tableG.DataSource = table; //Привязываем таблицу к tableGridView
+
+            int tableGWidth = (int)(70 * scale);
+            int tableGHeight = (int)(54 * scale);
+            tableG.Columns[0].Width = tableGWidth;
+            tableG.Width = tableGWidth + 3;
+            tableG.RowTemplate.Height = tableGHeight / 2;
+            if (rows == 1)
+            {
+                tableG.ColumnHeadersHeight = tableGHeight / 2;
+            }
+            else
+            {
+                tableG.Rows[1].Height = tableGHeight / 2;
+            }
+            tableG.Rows[0].Height = tableGHeight / 2;
+            tableG.Height = tableGHeight + 2;
         }
 
         private void TableHeader(DataTable table, DataGridView tableG)
