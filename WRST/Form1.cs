@@ -1,4 +1,5 @@
 ﻿using System.Data;
+using System.Diagnostics;
 using System.Globalization;
 
 namespace WRST
@@ -187,17 +188,23 @@ namespace WRST
         private void TableScale(DataGridView tableG, int cols, int rows)
         {
             //Debug.WriteLine("cellH= {0}", tgvH / rows);
+            //Debug.WriteLine("tableG= {0}, Rows= {1}, Cols= {2}", tableG.ToString(), rows, cols);
+            
             int cellH = ((int)((float)tableH * scale) / rows);
+            if (rows == 1) cellH = ((int)((float)tableH * scale) / 2);
             //Debug.WriteLine("cellH= {0}", cellH);
             int cellW = (int)((tableW / 10) * scale) - 1;
             if (cols <= 10)
             {
                 tableG.Height = (cellH * rows) + 3;
+                if (rows == 1) tableG.Height = (cellH * 2) + 3;
             }
             else
             {
-                tableG.Height = (cellH * rows) + (int)(20f * scale);
+                tableG.Height = (cellH * rows) + (int)(20f * scale); //Учет толщины линии прокрутки
+                if (rows == 1) tableG.Height = (cellH * 2) + (int)(20f * scale);
             }
+
             if (cols <= 10)
             {
                 tableG.Width = (cellW * cols) + 3;
@@ -206,7 +213,9 @@ namespace WRST
             {
                 tableG.Width = tableW;
             }
-            for (int i = 0; i < rows; i++)
+
+            if (rows == 1) tableG.ColumnHeadersHeight = cellH;
+                for (int i = 0; i < rows; i++)
             {
                 tableG.Rows[i].Height = cellH;
             }
