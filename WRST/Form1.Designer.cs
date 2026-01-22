@@ -86,6 +86,7 @@
             executeButton3 = new ToolStripButton();
             openFileDialog1 = new OpenFileDialog();
             saveFileDialog1 = new SaveFileDialog();
+            label6 = new Label();
             tabControl1.SuspendLayout();
             tabPage1.SuspendLayout();
             tabPage2.SuspendLayout();
@@ -145,7 +146,7 @@
             // 
             // textBox7
             // 
-            textBox7.Location = new Point(372, 271);
+            textBox7.Location = new Point(392, 271);
             textBox7.Name = "textBox7";
             textBox7.Size = new Size(100, 23);
             textBox7.TabIndex = 31;
@@ -162,7 +163,7 @@
             // 
             // textBox6
             // 
-            textBox6.Location = new Point(372, 242);
+            textBox6.Location = new Point(392, 242);
             textBox6.Name = "textBox6";
             textBox6.Size = new Size(100, 23);
             textBox6.TabIndex = 28;
@@ -170,7 +171,7 @@
             // 
             // textBox5
             // 
-            textBox5.Location = new Point(372, 213);
+            textBox5.Location = new Point(392, 213);
             textBox5.Name = "textBox5";
             textBox5.Size = new Size(100, 23);
             textBox5.TabIndex = 27;
@@ -178,7 +179,7 @@
             // 
             // textBox4
             // 
-            textBox4.Location = new Point(372, 184);
+            textBox4.Location = new Point(392, 184);
             textBox4.Name = "textBox4";
             textBox4.Size = new Size(100, 23);
             textBox4.TabIndex = 26;
@@ -186,7 +187,7 @@
             // 
             // textBox3
             // 
-            textBox3.Location = new Point(372, 155);
+            textBox3.Location = new Point(392, 155);
             textBox3.Name = "textBox3";
             textBox3.Size = new Size(100, 23);
             textBox3.TabIndex = 25;
@@ -194,7 +195,7 @@
             // 
             // textBox2
             // 
-            textBox2.Location = new Point(372, 126);
+            textBox2.Location = new Point(392, 126);
             textBox2.Name = "textBox2";
             textBox2.Size = new Size(100, 23);
             textBox2.TabIndex = 24;
@@ -229,7 +230,7 @@
             // 
             // textBox1
             // 
-            textBox1.Location = new Point(375, 34);
+            textBox1.Location = new Point(392, 34);
             textBox1.Name = "textBox1";
             textBox1.Size = new Size(100, 23);
             textBox1.TabIndex = 9;
@@ -238,7 +239,7 @@
             // radioButton2
             // 
             radioButton2.AutoSize = true;
-            radioButton2.Location = new Point(375, 94);
+            radioButton2.Location = new Point(392, 98);
             radioButton2.Name = "radioButton2";
             radioButton2.Size = new Size(83, 19);
             radioButton2.TabIndex = 7;
@@ -250,7 +251,7 @@
             // 
             radioButton1.AutoSize = true;
             radioButton1.Checked = true;
-            radioButton1.Location = new Point(375, 69);
+            radioButton1.Location = new Point(392, 73);
             radioButton1.Name = "radioButton1";
             radioButton1.Size = new Size(117, 19);
             radioButton1.TabIndex = 6;
@@ -331,7 +332,7 @@
             // 
             // button1
             // 
-            button1.Location = new Point(499, 38);
+            button1.Location = new Point(519, 38);
             button1.Name = "button1";
             button1.Size = new Size(131, 23);
             button1.TabIndex = 8;
@@ -346,12 +347,12 @@
             dataGridView1.Location = new Point(105, 76);
             dataGridView1.Name = "dataGridView1";
             dataGridView1.RowHeadersWidth = 51;
-            dataGridView1.Size = new Size(545, 80);
+            dataGridView1.Size = new Size(103, 54);
             dataGridView1.TabIndex = 0;
             // 
             // textBox8
             // 
-            textBox8.Location = new Point(372, 39);
+            textBox8.Location = new Point(413, 38);
             textBox8.Name = "textBox8";
             textBox8.Size = new Size(100, 23);
             textBox8.TabIndex = 7;
@@ -408,12 +409,12 @@
             dataGridView2.Location = new Point(105, 76);
             dataGridView2.Name = "dataGridView2";
             dataGridView2.RowHeadersWidth = 51;
-            dataGridView2.Size = new Size(545, 80);
+            dataGridView2.Size = new Size(103, 54);
             dataGridView2.TabIndex = 12;
             // 
             // button2
             // 
-            button2.Location = new Point(499, 38);
+            button2.Location = new Point(519, 38);
             button2.Name = "button2";
             button2.Size = new Size(131, 23);
             button2.TabIndex = 9;
@@ -423,7 +424,7 @@
             // 
             // textBox9
             // 
-            textBox9.Location = new Point(372, 39);
+            textBox9.Location = new Point(413, 38);
             textBox9.Name = "textBox9";
             textBox9.Size = new Size(100, 23);
             textBox9.TabIndex = 5;
@@ -480,12 +481,12 @@
             dataGridView3.Location = new Point(105, 76);
             dataGridView3.Name = "dataGridView3";
             dataGridView3.RowHeadersWidth = 51;
-            dataGridView3.Size = new Size(545, 80);
+            dataGridView3.Size = new Size(103, 54);
             dataGridView3.TabIndex = 16;
             // 
             // button3
             // 
-            button3.Location = new Point(499, 38);
+            button3.Location = new Point(519, 38);
             button3.Name = "button3";
             button3.Size = new Size(131, 23);
             button3.TabIndex = 9;
@@ -495,7 +496,7 @@
             // 
             // textBox10
             // 
-            textBox10.Location = new Point(372, 39);
+            textBox10.Location = new Point(413, 38);
             textBox10.Name = "textBox10";
             textBox10.Size = new Size(100, 23);
             textBox10.TabIndex = 7;
@@ -559,11 +560,12 @@
             dataGridView4.Location = new Point(105, 76);
             dataGridView4.Name = "dataGridView4";
             dataGridView4.RowHeadersWidth = 51;
-            dataGridView4.Size = new Size(545, 80);
+            dataGridView4.Size = new Size(545, 74);
             dataGridView4.TabIndex = 20;
             // 
             // tabPage6
             // 
+            tabPage6.Controls.Add(label6);
             tabPage6.Controls.Add(label37);
             tabPage6.Controls.Add(label38);
             tabPage6.Controls.Add(dataGridView5);
@@ -600,7 +602,7 @@
             dataGridView5.Location = new Point(105, 76);
             dataGridView5.Name = "dataGridView5";
             dataGridView5.RowHeadersWidth = 51;
-            dataGridView5.Size = new Size(545, 80);
+            dataGridView5.Size = new Size(545, 74);
             dataGridView5.TabIndex = 24;
             // 
             // Column1
@@ -662,6 +664,15 @@
             // openFileDialog1
             // 
             openFileDialog1.FileName = "openFileDialog1";
+            // 
+            // label6
+            // 
+            label6.AutoSize = true;
+            label6.Location = new Point(105, 46);
+            label6.Name = "label6";
+            label6.Size = new Size(162, 15);
+            label6.TabIndex = 27;
+            label6.Text = "Отборы из водохранилища:";
             // 
             // Form1
             // 
@@ -758,5 +769,6 @@
         private OpenFileDialog openFileDialog1;
         private SaveFileDialog saveFileDialog1;
         private Label label1;
+        private Label label6;
     }
 }
