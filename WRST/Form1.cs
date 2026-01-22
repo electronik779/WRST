@@ -72,7 +72,7 @@ namespace WRST
                 tableG.Rows[1].Height = tableGHeight / 2;
             }
             tableG.Rows[0].Height = tableGHeight / 2;
-            tableG.Height = tableGHeight + 2;
+            tableG.Height = tableGHeight + 3;
         }
 
         private void TableHeader(DataTable table, DataGridView tableG)
