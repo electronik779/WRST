@@ -1,7 +1,5 @@
 ﻿using System.Data;
-using System.Diagnostics;
 using System.Globalization;
-using Windows.UI.Text;
 
 namespace WRST
 {
@@ -22,7 +20,7 @@ namespace WRST
         private static int tableH = 54;
         private float dpi;
         private float scale;
-        
+
         public Form1()
         {
             InitializeComponent();
@@ -165,7 +163,7 @@ namespace WRST
         }
 
         private void TableCreate(DataTable table, DataGridView tableG, int cols, int rows)
-            // параметры вдхр и НБ
+        // параметры вдхр и НБ
         {
             for (int i = 0; i < cols; i++)
             {
@@ -186,7 +184,7 @@ namespace WRST
             TableScale(tableG, cols, rows);
         }
 
-        private void TableScale (DataGridView tableG, int cols, int rows)
+        private void TableScale(DataGridView tableG, int cols, int rows)
         {
             //Debug.WriteLine("cellH= {0}", tgvH / rows);
             int cellH = ((int)((float)tableH * scale) / rows);
