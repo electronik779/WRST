@@ -191,7 +191,7 @@ namespace WRST
             //Debug.WriteLine("cellH= {0}", tgvH / rows);
             int cellH = ((int)((float)tableH * scale) / rows);
             //Debug.WriteLine("cellH= {0}", cellH);
-            int cellW = (tableW / 10) - 1;
+            int cellW = (int)((tableW / 10) * scale) - 1;
             if (cols <= 10)
             {
                 tableG.Height = (cellH * rows) + 3;
