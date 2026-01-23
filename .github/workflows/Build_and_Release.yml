@@ -1,14 +1,14 @@
 name: Build and Release Win64
 
 on:
-  workflow_dispatch:
+  #workflow_dispatch:
   push:
     tags:
       - 'v*' # Запуск релиза при создании тега (напр. v1.0.0)
-  pull_request:
-    branches:
-      - main # Проверка сборки при PR
-      - master
+  #pull_request:
+    #branches:
+      #- main # Проверка сборки при PR
+      #- master
 
 jobs:
   build:
