@@ -75,6 +75,7 @@
             label35 = new Label();
             dataGridView4 = new DataGridView();
             tabPage6 = new TabPage();
+            label6 = new Label();
             label37 = new Label();
             label38 = new Label();
             dataGridView5 = new DataGridView();
@@ -86,7 +87,6 @@
             executeButton3 = new ToolStripButton();
             openFileDialog1 = new OpenFileDialog();
             saveFileDialog1 = new SaveFileDialog();
-            label6 = new Label();
             tabControl1.SuspendLayout();
             tabPage1.SuspendLayout();
             tabPage2.SuspendLayout();
@@ -577,6 +577,15 @@
             tabPage6.Text = "Отбор из вдхр.";
             tabPage6.UseVisualStyleBackColor = true;
             // 
+            // label6
+            // 
+            label6.AutoSize = true;
+            label6.Location = new Point(105, 46);
+            label6.Name = "label6";
+            label6.Size = new Size(162, 15);
+            label6.TabIndex = 27;
+            label6.Text = "Отборы из водохранилища:";
+            // 
             // label37
             // 
             label37.AutoSize = true;
@@ -664,15 +673,6 @@
             // openFileDialog1
             // 
             openFileDialog1.FileName = "openFileDialog1";
-            // 
-            // label6
-            // 
-            label6.AutoSize = true;
-            label6.Location = new Point(105, 46);
-            label6.Name = "label6";
-            label6.Size = new Size(162, 15);
-            label6.TabIndex = 27;
-            label6.Text = "Отборы из водохранилища:";
             // 
             // Form1
             // 
