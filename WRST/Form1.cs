@@ -1,6 +1,6 @@
 ﻿using System.Data;
-using System.Diagnostics;
 using System.Globalization;
+using WRST.Properties;
 
 namespace WRST
 {
@@ -22,6 +22,10 @@ namespace WRST
         private float dpi;
         private float scale;
 
+        // Контекстное меню "размножить вправо"
+        ContextMenuStrip contextMenu = new ContextMenuStrip();
+        ToolStripMenuItem copyItem = new ToolStripMenuItem("Размножить вправо →");
+
         public Form1()
         {
             InitializeComponent();
@@ -33,6 +37,15 @@ namespace WRST
 
             dpi = this.DeviceDpi;
             scale = dpi / 96;
+
+            // Создаем контекстное меню
+            copyItem.Image = Resources.Right;
+            copyItem.Click += CopyItem_Click!; // Добавляем обработчик события
+            contextMenu.Items.Add(copyItem);
+
+            // Добавляем обработчик события для таблиц
+            dataGridView4.CellMouseClick += dataGridView_CellMouseDown!;
+            dataGridView5.CellMouseClick += dataGridView_CellMouseDown!;
         }
 
         private void TableFormat(DataGridView table, bool HeaderVisible)
@@ -189,7 +202,7 @@ namespace WRST
         {
             //Debug.WriteLine("cellH= {0}", tgvH / rows);
             //Debug.WriteLine("tableG= {0}, Rows= {1}, Cols= {2}", tableG.ToString(), rows, cols);
-            
+
             int cellH = ((int)((float)tableH * scale) / rows);
             if (rows == 1) cellH = ((int)((float)tableH * scale) / 2);
             //Debug.WriteLine("cellH= {0}", cellH);
@@ -215,7 +228,7 @@ namespace WRST
             }
 
             if (rows == 1) tableG.ColumnHeadersHeight = cellH;
-                for (int i = 0; i < rows; i++)
+            for (int i = 0; i < rows; i++)
             {
                 tableG.Rows[i].Height = cellH;
             }
@@ -522,18 +535,18 @@ namespace WRST
                 using (StreamReader reader = new StreamReader(filename))
                 {
                     string line;
-                    while ((line = reader.ReadLine()) != null)
+                    while ((line = reader.ReadLine()!) != null)
                     {
                         List<string> row = line.Split(';').ToList();
                         blocks.Add(row);
                     }
                 }
-                List<string> block1 = blocks.ElementAtOrDefault(0);
-                List<string> block2 = blocks.ElementAtOrDefault(1);
-                List<string> block3 = blocks.ElementAtOrDefault(2);
-                List<string> block4 = blocks.ElementAtOrDefault(3);
-                List<string> block5 = blocks.ElementAtOrDefault(4);
-                List<string> block6 = blocks.ElementAtOrDefault(5);
+                List<string> block1 = blocks.ElementAtOrDefault(0)!;
+                List<string> block2 = blocks.ElementAtOrDefault(1)!;
+                List<string> block3 = blocks.ElementAtOrDefault(2)!;
+                List<string> block4 = blocks.ElementAtOrDefault(3)!;
+                List<string> block5 = blocks.ElementAtOrDefault(4)!;
+                List<string> block6 = blocks.ElementAtOrDefault(5)!;
 
                 try
                 {
@@ -579,7 +592,7 @@ namespace WRST
 
                     //Debug.WriteLine("2 {0}", dataGridView1.RowCount);
 
-                    TableFill(tableTributary, dataGridView1, block2, n, 1, 1);
+                    TableFill(tableTributary, dataGridView1, block2!, n, 1, 1);
 
                     textBox9.Text = block3?.ElementAtOrDefault(0) ?? string.Empty;
                     n = Convert.ToInt32(textBox9.Text);
@@ -589,7 +602,7 @@ namespace WRST
 
                         TableCreate(tableUpstream, dataGridView2, n, 2);
                     }
-                    TableFill(tableUpstream, dataGridView2, block3, n, 2, 1);
+                    TableFill(tableUpstream, dataGridView2, block3!, n, 2, 1);
 
 
                     textBox10.Text = block4?.ElementAtOrDefault(0) ?? string.Empty;
@@ -600,11 +613,11 @@ namespace WRST
 
                         TableCreate(tableDownstream, dataGridView3, n, 2);
                     }
-                    TableFill(tableDownstream, dataGridView3, block4, n, 2, 1);
+                    TableFill(tableDownstream, dataGridView3, block4!, n, 2, 1);
 
-                    TableFill(tableRemainder, dataGridView4, block5, 12, 1, 0);
+                    TableFill(tableRemainder, dataGridView4, block5!, 12, 1, 0);
 
-                    TableFill(tableSelections, dataGridView5, block6, 12, 1, 0);
+                    TableFill(tableSelections, dataGridView5, block6!, 12, 1, 0);
                 }
                 catch (Exception ex)
                 {
@@ -632,7 +645,7 @@ namespace WRST
             if (Application.OpenForms["Form2"] != null)
             {
                 // Если Form2 открыта, закрываем ее
-                ((Form)Application.OpenForms["Form2"]).Close();
+                ((Form)Application.OpenForms["Form2"]!).Close();
             }
 
             int MF = 0; // Кол-во расчетных месяцев
@@ -1296,6 +1309,48 @@ namespace WRST
             {
                 button3_Click(sender, e);
                 e.Handled = true;
+            }
+        }
+
+        private void CopyItem_Click(object sender, EventArgs e)
+        {
+            var menu = (sender as ToolStripMenuItem)?.Owner as ContextMenuStrip;
+            var dgv = menu?.SourceControl as DataGridView;
+            if (dgv != null)
+            {
+                var currentCell = dgv.CurrentCell;
+
+                if (currentCell != null && currentCell.ColumnIndex < dgv.ColumnCount - 1)
+                {
+                    int counter = currentCell.ColumnIndex;
+
+                    // Получаем значение текущей ячейки
+                    object? value = currentCell.Value;
+
+                    while (counter < dgv.ColumnCount - 1)
+                    {
+                        // Записываем в соседнюю справа (ColumnIndex + 1)
+                        dgv.Rows[currentCell.RowIndex].Cells[counter + 1].Value = value;
+                        counter++;
+                    }
+                }
+            }
+        }
+        private void dataGridView_CellMouseDown(object sender, DataGridViewCellMouseEventArgs e)
+        {
+            if (sender is DataGridView dgv)
+            {
+                // Проверяем, что нажата правая кнопка и мы находимся внутри таблицы (не на заголовках)
+                if (e.Button == MouseButtons.Right && e.RowIndex >= 0 && e.ColumnIndex >= 0)
+                {
+                    dgv.ClearSelection();
+                    dgv.Rows[e.RowIndex].Cells[e.ColumnIndex].Selected = true;
+
+                    // Устанавливаем текущую ячейку (фокус)
+                    dgv.CurrentCell = dgv.Rows[e.RowIndex].Cells[e.ColumnIndex];
+
+                    contextMenu.Show(dgv, dgv.PointToClient(Cursor.Position));
+                }
             }
         }
     }
