@@ -11,7 +11,15 @@ namespace WRST.maui
 
         protected override Window CreateWindow(IActivationState? activationState)
         {
-            return new Window(new AppShell());
+            var window = new Window(new AppShell());
+
+            // Установка размеров
+            window.Width = 800;
+            window.Height = 800;
+
+            return window;
+
+            //return new Window(new AppShell());
         }
     }
 }
