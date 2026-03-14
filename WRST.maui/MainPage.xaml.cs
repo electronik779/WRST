@@ -1,5 +1,6 @@
-﻿using System.Text;
-using CommunityToolkit.Maui.Storage;
+﻿using CommunityToolkit.Maui.Storage;
+using System.Data;
+using System.Text;
 
 namespace WRST.maui
 {
@@ -111,12 +112,28 @@ namespace WRST.maui
                 !int.TryParse(InflowCountInput.Text, System.Globalization.NumberStyles.Any,
                 System.Globalization.CultureInfo.InvariantCulture, out InflowCount)) return;
 
-            if (BeginningMonth <= 0) BeginningMonth = 1;
-            if (BeginningMonth > 12) BeginningMonth = 12;
+            if (BeginningMonth <= 0) { BeginningMonth = 1; 
+                DisplayAlertAsync("Информация.", 
+                    "Допустимый диапазон значений для\n" +
+                    "«Номер календарного месяца начала расчета» -\n1-12.", "OK"); }
+            if (BeginningMonth > 12) { BeginningMonth = 12;
+                DisplayAlertAsync("Информация.",
+                    "Допустимый диапазон значений для\n" +
+                    "«Номер календарного месяца начала расчета» -\n1-12.", "OK");
+            }
             BeginningMonthInput.Text = BeginningMonth.ToString();
 
-            if (InflowCount <= 0) InflowCount = 1;
-            if (InflowCount > 600) InflowCount = 600;
+            if (InflowCount <= 0) { InflowCount = 1;
+                DisplayAlertAsync("Информация.",
+                    "Допустимый диапазон значений для\n" +
+                    "«Количество значений притока» -\n1-600. Автоматическое округление,\n" +
+                    "кратно 12, в большую сторону.", "OK"); }
+            if (InflowCount > 600) { InflowCount = 600;
+                DisplayAlertAsync("Информация.",
+                    "Допустимый диапазон значений для\n" +
+                    "«Количество значений притока» -\n1-600. Автоматическое округление,\n" +
+                    "кратно 12, в большую сторону.", "OK");
+            }
             InflowCountInput.Text = InflowCount.ToString();
 
             if (InflowCount % 12 != 0)
@@ -135,8 +152,13 @@ namespace WRST.maui
             if (!int.TryParse(BathygraphicCountInput.Text, System.Globalization.NumberStyles.Any,
                 System.Globalization.CultureInfo.InvariantCulture, out BathygraphicCount)) return;
 
-            if (BathygraphicCount < 2) BathygraphicCount = 2;
-            if (BathygraphicCount > 20) BathygraphicCount = 20;
+            if (BathygraphicCount < 2) { BathygraphicCount = 2;
+                DisplayAlertAsync("Информация.", "Допустимый диапазон значений для\n" +
+                    "«Количество точек батиграфической характеристики» -\n2-20.", "OK"); }
+            if (BathygraphicCount > 20) { BathygraphicCount = 20;
+                DisplayAlertAsync("Информация.", "Допустимый диапазон значений для\n" +
+                    "«Количество точек батиграфической характеристики» -\n2-20.", "OK");
+            }
             BathygraphicCountInput.Text = BathygraphicCount.ToString();
 
             List<string> RowNames = new List<string>() { "Объем, млн.м³", "Отметка ВБ, м" };
@@ -151,8 +173,12 @@ namespace WRST.maui
                 System.Globalization.CultureInfo.InvariantCulture,
                 out CharacteristicOfDownstreamCount)) return;
 
-            if (CharacteristicOfDownstreamCount < 2) CharacteristicOfDownstreamCount = 2;
-            if (CharacteristicOfDownstreamCount > 20) CharacteristicOfDownstreamCount = 20;
+            if (CharacteristicOfDownstreamCount < 2) { CharacteristicOfDownstreamCount = 2;
+                DisplayAlertAsync("Информация.", "Допустимый диапазон значений для\n" +
+                    "«Количество точек характеристики нижнего бьефа» -\n2-20.", "OK"); }
+            if (CharacteristicOfDownstreamCount > 20) { CharacteristicOfDownstreamCount = 20;
+                DisplayAlertAsync("Информация.", "Допустимый диапазон значений для\n" +
+                    "«Количество точек характеристики нижнего бьефа» -\n2-20.", "OK"); }
             CharacteristicOfDownstreamCountInput.Text = CharacteristicOfDownstreamCount.ToString();
 
             List<string> RowNames = new List<string>() { "Расход, м³/с", "Отметка НБ, м" };
@@ -303,10 +329,233 @@ namespace WRST.maui
             };
         }
 
-        private void Open_Click(object sender, EventArgs e)
+        private async void Open_Click(object sender, EventArgs e)
         {
+            List<List<string>> blocks = new List<List<string>>();
+            List<List<string>> Bathygraphic = new List<List<string>>();
+            List<List<string>> Downstream = new List<List<string>>();
+            List<List<string>> Inflow = new List<List<string>>();
+            List<string> Inflow1 = new List<string>();
+            List<string> Bathygraphic1 = new List<string>();
+            List<string> Bathygraphic2 = new List<string>();
+            List<List<string>> Remainder = new List<List<string>>();
+            List<string> Remainder1 = new List<string>();
+            List<List<string>> Intake = new List<List<string>>();
+            List<string> Intake1 = new List<string>();
+            List<string> Downstream1 = new List<string>();
+            List<string> Downstream2 = new List<string>();
+
+            try
+            {
+                // 1. Настройка фильтра для CSV
+                var options = new PickOptions
+                {
+                    PickerTitle = "Выберите CSV файл",
+                    FileTypes = new FilePickerFileType(new Dictionary<DevicePlatform, IEnumerable<string>>
+                    {
+                        { DevicePlatform.WinUI, new[] { ".csv" } },
+                        { DevicePlatform.MacCatalyst, new[] { "csv" } }
+                    })
+                };
+
+                // 2. Открытие диалога выбора
+                var result = await FilePicker.Default.PickAsync(options);
+
+                if (result != null)
+                {
+                    using var stream = await result.OpenReadAsync();
+                    using var reader = new StreamReader(stream);
+
+                    
+                    string line;
+
+                    // Читаем строку и сразу проверяем, не пустая ли она (конец файла)
+                    while ((line = await reader.ReadLineAsync()) != null)
+                    {
+                        // Пропускаем пустые строки, если они есть в файле
+                        if (string.IsNullOrWhiteSpace(line)) continue;
+
+                        List<string> row = line.Split(';').ToList();
+                        blocks.Add(row);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                // Обработка ошибок (например, пользователь отменил выбор или нет прав)
+                await DisplayAlertAsync("Ошибка", ex.Message, "OK");
+            }
+
+            List<string> block1 = blocks.ElementAtOrDefault(0)!;
+            List<string> block2 = blocks.ElementAtOrDefault(1)!;
+            List<string> block3 = blocks.ElementAtOrDefault(2)!;
+            List<string> block4 = blocks.ElementAtOrDefault(3)!;
+            List<string> block5 = blocks.ElementAtOrDefault(4)!;
+            List<string> block6 = blocks.ElementAtOrDefault(5)!;
+
+            try
+            {
+                BeginningMonthInput.Text = block1?.ElementAtOrDefault(0) ?? string.Empty;
+                string tmp;
+                tmp = block1?.ElementAtOrDefault(1) ?? string.Empty;
+                var selectedValue = RadioButtonGroup.GetSelectedValue(RadioGroup)?.ToString();
+                if (tmp == "0")
+                {
+                    selectedValue = "o";
+                }
+                else
+                {
+                    selectedValue = "g";
+                }
+                UsefullVolumeInput.Text = block1?.ElementAtOrDefault(2) ?? string.Empty;
+                UselessVolumeInput.Text = block1?.ElementAtOrDefault(3) ?? string.Empty;
+                GuaranteedDischargeInput.Text = block1?.ElementAtOrDefault(4) ?? string.Empty;
+                FullDischargeInput.Text = block1?.ElementAtOrDefault(5) ?? string.Empty;
+                HeadLossInput.Text = block1?.ElementAtOrDefault(6) ?? string.Empty;
+                EfficiencyInput.Text = block1?.ElementAtOrDefault(7) ?? string.Empty;
+
+                InflowCountInput.Text = block2?.ElementAtOrDefault(0) ?? string.Empty;
+                if (int.TryParse(InflowCountInput.Text, System.Globalization.NumberStyles.Any,
+                System.Globalization.CultureInfo.InvariantCulture, out var count1))
+                {
+                    for (int i = 1;  i < count1; i++)
+                    {
+                        string row = block2?.ElementAtOrDefault(i) ?? string.Empty;
+                        Inflow1.Add(row);
+                    }
+                    Inflow.Add(Inflow1);
+                }
+
+                BathygraphicCountInput.Text = block3?.ElementAtOrDefault(0) ?? string.Empty;
+                if (int.TryParse(BathygraphicCountInput.Text, System.Globalization.NumberStyles.Any,
+                System.Globalization.CultureInfo.InvariantCulture, out var count2))
+                {
+                    for (int i = 1; i <= count2; i++)
+                    {
+                        string row = block3?.ElementAtOrDefault(i) ?? string.Empty;
+                        Bathygraphic1.Add(row);
+                    }
+                    int count = count2 * 2;
+                    for (int i = count2 + 1; i <= count; i++)
+                    {
+                        string row = block3?.ElementAtOrDefault(i) ?? string.Empty;
+                        Bathygraphic2.Add(row);
+                    }
+                    Bathygraphic.Add(Bathygraphic1);
+                    Bathygraphic.Add(Bathygraphic2);
+                }
+
+                CharacteristicOfDownstreamCountInput.Text = block4?.ElementAtOrDefault(0) ?? string.Empty;
+                if (int.TryParse(CharacteristicOfDownstreamCountInput.Text, System.Globalization.NumberStyles.Any,
+                System.Globalization.CultureInfo.InvariantCulture, out var count3))
+                {
+                    for (int i = 1; i <= count3; i++)
+                    {
+                        string row = block4?.ElementAtOrDefault(i) ?? string.Empty;
+                        Downstream1.Add(row);
+                    }
+                    int count = count3 * 2;
+                    for (int i = count3 + 1; i <= count; i++)
+                    {
+                        string row = block4?.ElementAtOrDefault(i) ?? string.Empty;
+                        Downstream2.Add(row);
+                    }
+                    Downstream.Add(Downstream1);
+                    Downstream.Add(Downstream2);
+                }
+
+                {
+                    for (int i = 0; i < 12; i++)
+                    {
+                        string row = block5?.ElementAtOrDefault(i) ?? string.Empty;
+                        Remainder1.Add(row);
+                    }
+                    Remainder.Add(Remainder1);
+                }
+
+                {
+                    for (int i = 0; i < 12; i++)
+                    {
+                        string row = block6?.ElementAtOrDefault(i) ?? string.Empty;
+                        Intake1.Add(row);
+                    }
+                    Intake.Add(Intake1);
+                }
+
+                {
+                    List<string> RowNames = new List<string>() { "Приток, м³/с" };
+                    BuildGrid(InflowFixedColumn, InflowScrollableGrid, InflowCount, 1, "T1",
+                                BeginningMonth, "Месяц, #", RowNames);
+                    FillTableFromData(InflowScrollableGrid, Inflow);
+                }
+
+                {
+                    List<string> RowNames = new List<string>() { "Объем, млн.м³", "Отметка ВБ, м" };
+                    BuildGrid(BathygraphicFixedColumn, BathygraphicScrollableGrid, BathygraphicCount, 2, "T2",
+                        1, "#", RowNames);
+                    FillTableFromData(BathygraphicScrollableGrid, Bathygraphic);
+                }
+
+                {
+                    FillTableFromData(RemainderAccordingDispatchScheduleScrollableGrid, Remainder);
+                }
+
+                {
+                    FillTableFromData(IntakeFromRreservoirScrollableGrid, Intake);
+                }
+
+                {
+                    List<string> RowNames = new List<string>() { "Расход, м³/с", "Отметка НБ, м" };
+                    BuildGrid(CharacteristicOfDownstreamFixedColumn, CharacteristicOfDownstreamScrollableGrid,
+                        CharacteristicOfDownstreamCount, 2, "T5", 1, "#", RowNames);
+                    FillTableFromData(CharacteristicOfDownstreamScrollableGrid, Downstream);
+                }
+            }
+            catch (Exception ex)
+            {
+                BeginningMonthInput.Text = "0";
+                InflowCountInput.Text = "0";
+                UsefullVolumeInput.Text = "0";
+                UselessVolumeInput.Text = "0";
+                BathygraphicCountInput.Text = "0";
+                CharacteristicOfDownstreamCountInput.Text = "0";
+                GuaranteedDischargeInput.Text = "0";
+                FullDischargeInput.Text = "0";
+                HeadLossInput.Text = "0";
+                EfficiencyInput.Text = "0";
+
+                await DisplayAlertAsync("Ошибка!", "Неверный формат файла исходных данных " +
+                    "/ файл исходных данных повреждён. \n\n" + ex, "OK");
+            }
 
         }
+
+        private void FillTableFromData(Grid scrollGrid, List<List<string>> csvData)
+        {
+            // Проходим по всем элементам в прокручиваемой сетке
+            foreach (var child in scrollGrid.Children)
+            {
+                // Нас интересуют только Border, внутри которых лежат Entry
+                if (child is Border border && border.Content is Entry entry)
+                {
+                    // Получаем координаты ячейки в Grid
+                    int row = Grid.GetRow(border) - 1; // -1, так как 0-я строка — это заголовок
+                    int col = Grid.GetColumn(border);
+
+                    // Проверяем, есть ли данные для этой ячейки в нашем списке
+                    if (row >= 0 && row < csvData.Count)
+                    {
+                        var csvRow = csvData[row];
+                        if (col >= 0 && col < csvRow.Count)
+                        {
+                            // Устанавливаем текст из CSV
+                            entry.Text = csvRow[col];
+                        }
+                    }
+                }
+            }
+        }
+
         private async void Save_Click(object sender, EventArgs e)
         {
             bool err = false;
@@ -323,7 +572,7 @@ namespace WRST.maui
             {
                 block1.Add("0");
             }
-            else if (selectedValue == "g")
+            else
             {
                 block1.Add("1");
             }
@@ -389,13 +638,13 @@ namespace WRST.maui
             try
             {
                 using var stream = new MemoryStream(Encoding.UTF8.GetBytes(content));
-                string defaultName = "Result.csv";
+                string defaultName = "Input.csv";
 
                 var result = await FileSaver.Default.SaveAsync(defaultName, stream, CancellationToken.None);
 
                 if (result.IsSuccessful)
                 {
-                    await DisplayAlertAsync("Успех", "Файл сохранен", "OK");
+                    await DisplayAlertAsync("Успех!", "Файл сохранен.", "OK");
                 }
             }
             catch (Exception ex)
