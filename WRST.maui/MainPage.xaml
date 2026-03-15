@@ -47,17 +47,17 @@
                 </VerticalStackLayout>
 
                 <Label Grid.Row="3" Grid.Column="0" Text="Полезный объем водохранилища, млн.м³" VerticalOptions="Center"/>
-                <Entry Grid.Row="3" Grid.Column="1" x:Name="UsefullVolumeInput" TextChanged="OnDoubleEntryTextChanged" Keyboard="Numeric"/>
+                <Entry Grid.Row="3" Grid.Column="1" x:Name="UsefulVolumeInput" TextChanged="OnDoubleEntryTextChanged" Keyboard="Numeric"/>
 
                 <Label Grid.Row="4" Grid.Column="0" Text="Мёртвый объем водохранилища, млн.м³" VerticalOptions="Center"/>
                 <Entry Grid.Row="4" Grid.Column="1" x:Name="UselessVolumeInput" TextChanged="OnDoubleEntryTextChanged" Keyboard="Numeric"/>
 
                 <Label Grid.Row="5" Grid.Column="0" Text="Количество точек батиграфической характеристики" VerticalOptions="Center"/>
-                <Entry Grid.Row="5" Grid.Column="1" x:Name="BathygraphicCountInput" TextChanged="OnIntEntryTextChanged" Keyboard="Numeric"/>
-                <Button Grid.Row="5" Grid.Column="2" Text="Создать" Margin="10,0,0,0" Clicked="BathygraphicButton_Clicked" />
+                <Entry Grid.Row="5" Grid.Column="1" x:Name="BathygraphyCountInput" TextChanged="OnIntEntryTextChanged" Keyboard="Numeric"/>
+                <Button Grid.Row="5" Grid.Column="2" Text="Создать" Margin="10,0,0,0" Clicked="BathygraphyButton_Clicked" />
                 <VerticalStackLayout Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="3" Padding="10" Spacing="20">
                     <Grid ColumnDefinitions="100, *" VerticalOptions="Start">
-                        <Grid x:Name="BathygraphicFixedColumn" 
+                        <Grid x:Name="BathygraphyFixedColumn" 
                             Grid.Column = "0"
                             BackgroundColor="LightGray"
                             VerticalOptions="Start"/>
@@ -66,7 +66,7 @@
                             Orientation="Horizontal" 
                             VerticalOptions="Start"
                             HorizontalScrollBarVisibility="Always">
-                            <Grid x:Name="BathygraphicScrollableGrid" 
+                            <Grid x:Name="BathygraphyScrollableGrid" 
                                 HorizontalOptions="Start" />
                         </ScrollView>
                     </Grid>
@@ -93,7 +93,7 @@
                 <Label Grid.Row="9" Grid.Column="0" Text="Отбор из водохранилища" VerticalOptions="Center"/>
                 <VerticalStackLayout Grid.Row="10" Grid.Column="0" Grid.ColumnSpan="3" Padding="10" Spacing="20">
                     <Grid ColumnDefinitions="100, *" VerticalOptions="Start">
-                        <Grid x:Name="IntakeFromRreservoirFixedColumn" 
+                        <Grid x:Name="IntakeFromReservoirFixedColumn" 
                             Grid.Column = "0"
                             BackgroundColor="LightGray"
                             VerticalOptions="Start"/>
@@ -130,8 +130,8 @@
 
                 <Label Grid.Row="13" Grid.Column="0" Text="Схема питания ГЭС" VerticalOptions="Center"/>
                 <VerticalStackLayout Grid.Row="13" Grid.Column="1" x:Name="RadioGroup">
-                    <RadioButton Content="индивидуальная" Value="o" CheckedChanged="OnRadioChanged" IsChecked="True" />
-                    <RadioButton Content="групповая"      Value="g" CheckedChanged="OnRadioChanged"/>
+                    <RadioButton Content="индивидуальная" Value="0" CheckedChanged="OnRadioChanged" IsChecked="True" />
+                    <RadioButton Content="групповая"      Value="1" CheckedChanged="OnRadioChanged"/>
                 </VerticalStackLayout>
 
                 <Label Grid.Row="14" Grid.Column="0" Text="Гарантированный расход ГЭС, м³/с" VerticalOptions="Center"/>
