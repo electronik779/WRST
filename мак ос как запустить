@@ -1,0 +1,37 @@
+Да, вы можете скопировать скомпилированный файл на свой Mac и запустить его, но macOS потребует от вас нескольких дополнительных действий из-за настроек безопасности. [1, 2] 
+По умолчанию система блокирует файлы, скачанные из интернета или созданные на других машинах (например, в GitHub Actions), считая их потенциально опасными. [2, 3] 
+## Как запустить файл (пошагово):
+
+   1. Выдайте права на выполнение
+   После копирования файл, скорее всего, будет восприниматься системой как обычный текст. Чтобы сделать его исполняемым, откройте Терминал и введите:
+   
+   chmod +x /путь/к/вашему/файлу
+   
+   (Можно просто написать chmod +x и перетащить файл мышкой в окно Терминала).
+   2. Обойдите блокировку Gatekeeper
+   При первой попытке запуска macOS выдаст ошибку: «Приложение не может быть открыто, так как автор является неустановленным разработчиком».
+   * Способ А (быстрый): Нажмите на файл правой кнопкой мыши и выберите «Открыть». В появившемся окне подтвердите запуск кнопкой «Открыть».
+      * Способ Б (через настройки): Зайдите в Системные настройки → Конфиденциальность и безопасность. В нижней части окна появится сообщение о заблокированном файле — нажмите «Подтвердить вход» (Open Anyway).
+      * Способ В (полное снятие карантина через Терминал):
+      
+      xattr -d com.apple.quarantine /путь/к/файлу
+      
+      Это удалит метку «скачано из интернета», и файл будет запускаться как родной. [3, 4, 5, 6, 7, 8] 
+   
+## Что может пойти не так?
+
+* Разная архитектура (Intel vs M1/M2/M3): Если GitHub Action скомпилировал файл под Intel (x86_64), а у вас Mac на чипе Apple Silicon (ARM), файл запустится только через эмулятор Rosetta 2. Если же файл скомпилирован под ARM, он не заработает на старых Intel-маках.
+* Версия macOS: Если вы скомпилировали код под более новую версию macOS, чем та, что установлена на вашем компьютере, он может не запуститься из-за отсутствия нужных системных библиотек. [9, 10] 
+
+Ваш Mac на чипе Intel или Apple Silicon (M1/M2/M3)? Это поможет уточнить параметры сборки.
+
+[1] [https://medium.com](https://medium.com/@sakafle/how-i-compiled-a-mac-command-line-tool-in-the-cloud-using-github-actions-404959830482)
+[2] [https://unit42.paloaltonetworks.com](https://unit42.paloaltonetworks.com/gatekeeper-bypass-macos/)
+[3] [https://support.apple.com](https://support.apple.com/guide/mac-help/open-a-mac-app-from-an-unknown-developer-mh40616/mac)
+[4] [https://www.warp.dev](https://www.warp.dev/terminus/chmod-x)
+[5] [https://support.apple.com](https://support.apple.com/guide/terminal/make-a-file-executable-apdd100908f-06b3-4e63-8a87-32e71241bab4/mac)
+[6] [https://support.apple.com](https://support.apple.com/en-in/102445)
+[7] [https://github.com](https://github.com/owasp-amass/amass/issues/517)
+[8] [https://apple.stackexchange.com](https://apple.stackexchange.com/questions/436674/how-to-unblock-binary-from-use-because-mac-says-it-is-not-from-identified-develo)
+[9] [https://github.com](https://github.com/cli/cli/issues/10998)
+[10] [https://github.com](https://github.com/asg017/sqlite-vss/issues/13)

@@ -7,38 +7,42 @@ namespace WRST.maui
 {
     public partial class MainPage : ContentPage
     {
-        int BeginningMonth = 0;
-        int InflowCount = 0;
-        int BathygraphyCount = 0;
-        int CharacteristicOfDownstreamCount = 0;
-        double UsefulVolume = 0;
-        double UselessVolume = 0;
-        double GuaranteedDischarge = 0;
-        double FullDischarge = 0;
-        double HeadLoss = 0;
-        double Efficiency = 0;
+        // Исходные данные
+        int BeginningMonth = 0; // Месяц начала расчета
+        int InflowCount = 0; // Количество значений притока
+        int BathygraphyCount = 0; // Количество точек характеристики верхнего бьефа
+        int CharacteristicOfDownstreamCount = 0; // Количество точек характеристики нижнего бьефа
+        double UsefulVolume = 0; // Полезный объем
+        double UselessVolume = 0; // Мертвый объем
+        double GuaranteedDischarge = 0; // Гарантированный расход ГЭС
+        double FullDischarge = 0; // Максимальный расход ГЭС
+        double HeadLoss = 0; // Потери напора / коэффициент при Q^2
+        double Efficiency = 0; // Кпд агрегата
 
-        // Массивы для данных (строки x столбцы)
-        double[,] InflowTableData = new double[0, 0];
-        double[,] BathygraphyTableData = new double[0, 0];
-        double[,] RemainderAccordingDispatchScheduleTableData = new double[0, 0];
-        double[,] IntakeFromReservoirTableData = new double[0, 0];
-        double[,] CharacteristicOfDownstreamTableData = new double[0, 0];
+        // Исходные данные. Массивы (строки x столбцы)
+        double[,] InflowTableData = new double[0, 0]; // Приток. Т1
+        double[,] BathygraphyTableData = new double[0, 0]; // характеристика верхнего бьефа. Т2
+        double[,] RemainderAccordingDispatchScheduleTableData = new double[0, 0]; // Диспетчерские остатки. Т3
+        double[,] IntakeFromReservoirTableData = new double[0, 0]; // Отбор из водохранилища. Т4
+        double[,] CharacteristicOfDownstreamTableData = new double[0, 0]; // Характеристика нижнего бьефа. Любой другой префикс 
 
         public MainPage()
         {
             InitializeComponent();
 
+            // Рисуем таблицу диспетчерских остатков
             List<string> RowNames = new List<string>() { "Остатки, млн.м³" };
             BuildGrid(RemainderAccordingDispatchScheduleFixedColumn,
                 RemainderAccordingDispatchScheduleScrollableGrid, 12, 1, "T3", 1, "Месяц", RowNames);
 
+            // Рисуем таблицу отборов из водохранилища
             RowNames.Clear();
             RowNames.Add("Отбор, м³/с");
             BuildGrid(IntakeFromReservoirFixedColumn, IntakeFromRreservoirScrollableGrid, 12, 1, "T4",
                 1, "Месяц", RowNames);
         }
 
+        // Выбор схемы питания. Индивидуальная - задаем потери напора, групповая - задаем к при Q^2
         private void OnRadioChanged(object? sender, CheckedChangedEventArgs e)
         {
             // Нас интересует только момент, когда кнопку выбрали (Value = true)
@@ -58,15 +62,14 @@ namespace WRST.maui
             }
         }
 
+        // Проверка корректности ввода целых чисел в текстовое поле
         private void OnIntEntryTextChanged(object? sender, TextChangedEventArgs e)
         {
             if (sender is Entry entry)
             {
-                // 2. Сама логика проверки одного поля
-
                 string text = entry.Text?.Replace(',', '.') ?? "";
 
-                // Если пусто — считаем ошибкой (или нет, зависит от вашей логики)
+                // Если пусто — считаем ошибкой
                 if (string.IsNullOrWhiteSpace(text))
                 {
                     entry.TextColor = Colors.Red; // Или Black, если поле необязательное
@@ -74,23 +77,22 @@ namespace WRST.maui
 
                 // Проверка на число
                 bool isValid = int.TryParse(text,
-                    System.Globalization.NumberStyles.Any,
-                    System.Globalization.CultureInfo.InvariantCulture,
+                    NumberStyles.Any,
+                    CultureInfo.InvariantCulture,
                     out _);
 
                 entry.TextColor = isValid ? Colors.Black : Colors.Red;
             }
         }
 
+        // Проверка корректности ввода дробных чисел в текстовое поле
         private void OnDoubleEntryTextChanged(object? sender, TextChangedEventArgs e)
         {
             if (sender is Entry entry)
             {
-                // 2. Сама логика проверки одного поля
-
                 string text = entry.Text?.Replace(',', '.') ?? "";
 
-                // Если пусто — считаем ошибкой (или нет, зависит от вашей логики)
+                // Если пусто — считаем ошибкой
                 if (string.IsNullOrWhiteSpace(text))
                 {
                     entry.TextColor = Colors.Red; // Или Black, если поле необязательное
@@ -98,149 +100,174 @@ namespace WRST.maui
 
                 // Проверка на число
                 bool isValid = double.TryParse(text,
-                    System.Globalization.NumberStyles.Any,
-                    System.Globalization.CultureInfo.InvariantCulture,
+                    NumberStyles.Any,
+                    CultureInfo.InvariantCulture,
                     out _);
 
                 entry.TextColor = isValid ? Colors.Black : Colors.Red;
             }
         }
 
+        // По нажатию кнопки "Создать" напротив поля ввода Количество значений притока
+        // рисуем таблицу притока
         private void InflowButton_Clicked(object sender, EventArgs e)
         {
-            if (!int.TryParse(BeginningMonthInput.Text, System.Globalization.NumberStyles.Any,
-                System.Globalization.CultureInfo.InvariantCulture, out BeginningMonth) ||
-                !int.TryParse(InflowCountInput.Text, System.Globalization.NumberStyles.Any,
-                System.Globalization.CultureInfo.InvariantCulture, out InflowCount)) return;
-
-            if (BeginningMonth <= 0)
+            // Получение значения начального месяца. Проверка корректности
+            if (!int.TryParse(BeginningMonthInput.Text, NumberStyles.Any,
+                CultureInfo.InvariantCulture, out BeginningMonth))
             {
-                BeginningMonth = 1;
+                DisplayAlertAsync("Внимание.",
+                    "Необходимо задать\n" +
+                    "«Номер календарного месяца начала расчета»", "OK");
+                return;
+            }
+            // Получение значения количества точек притока. Проверка корректности
+            if (!int.TryParse(InflowCountInput.Text, NumberStyles.Any,
+                CultureInfo.InvariantCulture, out InflowCount))
+            {
+                DisplayAlertAsync("Внимание.",
+                    "Необходимо задать\n" +
+                    "«Количество значений притока»", "OK");
+                return;
+            }
+
+            // Проверка: какое введено значение начального месяца. Если не 1-12 - выход
+            if (BeginningMonth <= 0 || BeginningMonth > 12)
+            {
+                BeginningMonthInput.Text = "0";
                 DisplayAlertAsync("Информация.",
                     "Допустимый диапазон значений для\n" +
                     "«Номер календарного месяца начала расчета» -\n1-12.", "OK");
+                return;
             }
-            if (BeginningMonth > 12)
-            {
-                BeginningMonth = 12;
-                DisplayAlertAsync("Информация.",
-                    "Допустимый диапазон значений для\n" +
-                    "«Номер календарного месяца начала расчета» -\n1-12.", "OK");
-            }
-            BeginningMonthInput.Text = BeginningMonth.ToString();
 
-            if (InflowCount <= 0)
+            // Проверка: какое введено количество значений притока. Если не 1-600 - выход
+            if (InflowCount <= 0 || InflowCount > 600)
             {
-                InflowCount = 1;
+                InflowCountInput.Text = "0";
                 DisplayAlertAsync("Информация.",
                     "Допустимый диапазон значений для\n" +
                     "«Количество значений притока» -\n1-600. Автоматическое округление,\n" +
                     "кратно 12, в большую сторону.", "OK");
+                return;
             }
-            if (InflowCount > 600)
-            {
-                InflowCount = 600;
-                DisplayAlertAsync("Информация.",
-                    "Допустимый диапазон значений для\n" +
-                    "«Количество значений притока» -\n1-600. Автоматическое округление,\n" +
-                    "кратно 12, в большую сторону.", "OK");
-            }
-            InflowCountInput.Text = InflowCount.ToString();
 
+            // Проверяем, что количество значений кратно 12 месяцам. Если нет - корректируем
             if (InflowCount % 12 != 0)
             {
                 while (InflowCount % 12 != 0) { InflowCount++; }
                 InflowCountInput.Text = InflowCount.ToString();
+                DisplayAlertAsync("Информация.",
+                    "«Количество значений притока»\n" +
+                    "было скорректировано.", "OK");
             }
 
+            // Рисуем таблицу притока
             List<string> RowNames = new List<string>() { "Приток, м³/с" };
             BuildGrid(InflowFixedColumn, InflowScrollableGrid, InflowCount, 1, "T1",
                         BeginningMonth, "Месяц, #", RowNames);
         }
 
+        // По нажатию кнопки "Создать" напротив поля ввода Количество точек характеристики верхнего бьефа
+        // рисуем таблицу верхнего бьефа
         private void BathygraphyButton_Clicked(object sender, EventArgs e)
         {
-            if (!int.TryParse(BathygraphyCountInput.Text, System.Globalization.NumberStyles.Any,
-                System.Globalization.CultureInfo.InvariantCulture, out BathygraphyCount)) return;
-
-            if (BathygraphyCount < 2)
+            // Получение значения количества точек характеристики верхнего бьефа. Проверка корректности
+            if (!int.TryParse(BathygraphyCountInput.Text, NumberStyles.Any,
+                CultureInfo.InvariantCulture, out BathygraphyCount))
             {
-                BathygraphyCount = 2;
-                DisplayAlertAsync("Информация.", "Допустимый диапазон значений для\n" +
-                    "«Количество точек батиграфической характеристики» -\n2-20.", "OK");
+                DisplayAlertAsync("Внимание.",
+                    "Необходимо задать\n" +
+                    "«Количество точек характеристики верхнего бьефа»", "OK");
+                return;
             }
-            if (BathygraphyCount > 20)
-            {
-                BathygraphyCount = 20;
-                DisplayAlertAsync("Информация.", "Допустимый диапазон значений для\n" +
-                    "«Количество точек батиграфической характеристики» -\n2-20.", "OK");
-            }
-            BathygraphyCountInput.Text = BathygraphyCount.ToString();
 
+            // Проверка: какое введено количество точек характеристики верхнего бьефа. Если не 2-20 - выход
+            if (BathygraphyCount < 2 || BathygraphyCount > 20)
+            {
+                BathygraphyCountInput.Text = "0";
+                DisplayAlertAsync("Информация.", "Допустимый диапазон значений для\n" +
+                    "«Количество точек характеристики верхнего бьефа» -\n2-20.", "OK");
+                return;
+            }
+
+            // Рисуем таблицу верхнего бьефа
             List<string> RowNames = new List<string>() { "Объем, млн.м³", "Отметка ВБ, м" };
             BuildGrid(BathygraphyFixedColumn, BathygraphyScrollableGrid, BathygraphyCount, 2, "T2",
                 1, "#", RowNames);
         }
 
+        // По нажатию кнопки "Создать" напротив поля ввода Количество точек характеристики нижнего бьефа
+        // рисуем таблицу нижнего бьефа
         private void CharacteristicOfDownstreamButton_Clicked(object sender, EventArgs e)
         {
+            // Получение значения количества точек характеристики нижнего бьефа. Проверка корректности
             if (!int.TryParse(CharacteristicOfDownstreamCountInput.Text,
-                System.Globalization.NumberStyles.Any,
-                System.Globalization.CultureInfo.InvariantCulture,
-                out CharacteristicOfDownstreamCount)) return;
-
-            if (CharacteristicOfDownstreamCount < 2)
+                NumberStyles.Any, CultureInfo.InvariantCulture,
+                out CharacteristicOfDownstreamCount))
             {
-                CharacteristicOfDownstreamCount = 2;
+                DisplayAlertAsync("Внимание.",
+                    "Необходимо задать\n" +
+                    "«Количество точек характеристики нижнего бьефа»", "OK");
+                return;
+            }
+
+            // Проверка: какое введено количество точек характеристики нижнего бьефа. Если не 2-20 - выход
+            if (CharacteristicOfDownstreamCount < 2 || CharacteristicOfDownstreamCount > 20)
+            {
+                CharacteristicOfDownstreamCountInput.Text = "0";
                 DisplayAlertAsync("Информация.", "Допустимый диапазон значений для\n" +
                     "«Количество точек характеристики нижнего бьефа» -\n2-20.", "OK");
             }
-            if (CharacteristicOfDownstreamCount > 20)
-            {
-                CharacteristicOfDownstreamCount = 20;
-                DisplayAlertAsync("Информация.", "Допустимый диапазон значений для\n" +
-                    "«Количество точек характеристики нижнего бьефа» -\n2-20.", "OK");
-            }
-            CharacteristicOfDownstreamCountInput.Text = CharacteristicOfDownstreamCount.ToString();
 
+            // Рисуем таблицу нижнего бьефа
             List<string> RowNames = new List<string>() { "Расход, м³/с", "Отметка НБ, м" };
             BuildGrid(CharacteristicOfDownstreamFixedColumn, CharacteristicOfDownstreamScrollableGrid,
                 CharacteristicOfDownstreamCount, 2, "T5", 1, "#", RowNames);
         }
 
-        private void BuildGrid(Grid fixedGrid, Grid scrollGrid, int colCount, int dataRowCount,
+        // Рисование таблиц
+        // 1 - название таблицы заголовков строк (см. xaml)
+        // 2 - название таблицы (см. xaml)
+        // 3 - количество столбцов таблицы
+        // 4 - количество строк таблицы
+        // 5 - префикс - соответствие массиву данных
+        // 6 - начало нумерации столбцов
+        // 7 - название строки названий столбцов
+        // 8 - список названий строк
+        private void BuildGrid(Grid fixedGrid, Grid scrollGrid, int colCount, int rowCount,
             string prefix, int begin, string headerName, List<string> rowNames)
         {
             // Инициализируем массив данных нужного размера
-            if (prefix == "T1") InflowTableData = new double[dataRowCount, colCount];
-            else if (prefix == "T2") BathygraphyTableData = new double[dataRowCount, colCount];
-            else if (prefix == "T3") RemainderAccordingDispatchScheduleTableData = new double[dataRowCount, colCount];
-            else if (prefix == "T4") IntakeFromReservoirTableData = new double[dataRowCount, colCount];
-            else CharacteristicOfDownstreamTableData = new double[dataRowCount, colCount];
+            if (prefix == "T1") InflowTableData = new double[rowCount, colCount];
+            else if (prefix == "T2") BathygraphyTableData = new double[rowCount, colCount];
+            else if (prefix == "T3") RemainderAccordingDispatchScheduleTableData = new double[rowCount, colCount];
+            else if (prefix == "T4") IntakeFromReservoirTableData = new double[rowCount, colCount];
+            else CharacteristicOfDownstreamTableData = new double[rowCount, colCount];
 
             // Очистка обеих частей
             fixedGrid.Children.Clear(); fixedGrid.RowDefinitions.Clear(); fixedGrid.ColumnDefinitions.Clear();
             scrollGrid.Children.Clear(); scrollGrid.RowDefinitions.Clear(); scrollGrid.ColumnDefinitions.Clear();
 
-            // 1. Настройка строк (одинаковая для обеих частей)
-            for (int r = 0; r <= dataRowCount; r++) // +1 для заголовка
+            // Настройка строк (одинаковая для обеих частей)
+            for (int r = 0; r <= rowCount; r++) // +1 для заголовка
             {
                 var height = r == 0 ? 35 : 40;
                 fixedGrid.RowDefinitions.Add(new RowDefinition { Height = height });
                 scrollGrid.RowDefinitions.Add(new RowDefinition { Height = height });
             }
 
-            // 2. Настройка столбцов
+            // Настройка столбцов
             fixedGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = 100 });
             for (int c = 0; c < colCount; c++)
                 scrollGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = 80 });
 
-            // 3. Угловая ячейка (в фиксированной части)
+            // Угловая ячейка (в фиксированной части) (название строки названий столбцов)
             var corner = CreateHeaderBorder(headerName, Colors.LightSlateGray); // Верхняя левая ячейка - надпись
             Grid.SetRow(corner, 0);
             fixedGrid.Children.Add(corner);
 
-            // 4. Заголовки столбцов (в прокручиваемой части)
+            // Заголовки столбцов (в прокручиваемой части)
             for (int c = 0; c < colCount; c++)
             {
                 int head = c + begin;
@@ -251,8 +278,8 @@ namespace WRST.maui
                 scrollGrid.Children.Add(colHeader);
             }
 
-            // 5. Заполнение строк
-            for (int r = 0; r < dataRowCount; r++)
+            // Заполнение строк
+            for (int r = 0; r < rowCount; r++)
             {
                 // Заголовок строки -> в ФИКСИРОВАННУЮ сетку
                 var rowHeader = CreateHeaderBorder(rowNames[r], Colors.LightGray);
@@ -289,6 +316,8 @@ namespace WRST.maui
             }
         }
 
+        // Проверка корректности ввода чисел в таблицы. Если не число - выделяется красным,
+        // в массив заносится 0
         private void OnNumericTextChanged(object? sender, TextChangedEventArgs e)
         {
             if (sender is not Entry entry) return;
@@ -299,8 +328,8 @@ namespace WRST.maui
             string cleanValue = e.NewTextValue.Replace(',', '.');
 
             // Пытаемся преобразовать в число
-            if (double.TryParse(cleanValue, System.Globalization.NumberStyles.Any,
-                System.Globalization.CultureInfo.InvariantCulture, out double result))
+            if (double.TryParse(cleanValue, NumberStyles.Any,
+                CultureInfo.InvariantCulture, out double result))
             {
                 // Если число валидное — возвращаем обычный цвет и сохраняем
                 entry.TextColor = Colors.Black;
@@ -313,6 +342,7 @@ namespace WRST.maui
             }
         }
 
+        // Сохранение в массив введенных в таблицу данных
         private void SaveToDataArray(string authId, double value, Entry entry)
         {
             var coords = authId.Split(',');
@@ -333,6 +363,7 @@ namespace WRST.maui
             else CharacteristicOfDownstreamTableData[r, c] = value;
         }
 
+        // Оформление ячеек
         private Border CreateHeaderBorder(string text, Color bgColor)
         {
             return new Border
@@ -351,12 +382,13 @@ namespace WRST.maui
             };
         }
 
+        // Считывание исходных данных из файла
         private async void Open_Click(object sender, EventArgs e)
         {
             var culture = CultureInfo.InvariantCulture;
             try
             {
-                // 1. Выбор файла (оставлен без изменений)
+                // Выбор файла
                 var result = await FilePicker.Default.PickAsync(new PickOptions
                 {
                     PickerTitle = "Выберите CSV файл",
@@ -371,7 +403,7 @@ namespace WRST.maui
                 using (var reader = new StreamReader(await result.OpenReadAsync()))
                 {
                     string line;
-                    while ((line = await reader.ReadLineAsync()) != null)
+                    while ((line = await reader.ReadLineAsync() ?? "") != null)
                         blocks.Add(line.Split(';').Select(s => s.Trim()).ToList());
                 }
 
@@ -431,8 +463,7 @@ namespace WRST.maui
             }
         }
 
-
-        // Вспомогательная функция для парсинга списка строк в числа
+        // Вспомогательная функция для парсинга списка строк в числа при чтении файла
         private List<string> ParseBlockData(IEnumerable<string> rawData, int count)
         {
             var culture = CultureInfo.InvariantCulture;
@@ -445,7 +476,7 @@ namespace WRST.maui
             }).ToList();
         }
 
-
+        // Очистка текстовых полей при ошибке чтения
         private void ResetInputs()
         {
             string zero = "0";
@@ -469,7 +500,6 @@ namespace WRST.maui
             BuildGrid(CharacteristicOfDownstreamFixedColumn, CharacteristicOfDownstreamScrollableGrid, CharacteristicOfDownstreamCount, 2, "T5", 1, "#", new() { "Расход, м³/с", "Отметка НБ, м" });
             FillTableFromData(CharacteristicOfDownstreamScrollableGrid, down);
         }
-
 
         private void FillTableFromData(Grid scrollGrid, List<List<string>> csvData)
         {
@@ -497,10 +527,10 @@ namespace WRST.maui
             }
         }
 
-
-
+        // Сохранение данных в файл
         private async void Save_Click(object sender, EventArgs e)
         {
+            // Проверяем, что в текстовых полях есть числа
             if (CheckData()) return;
 
             try
@@ -566,30 +596,39 @@ namespace WRST.maui
             }));
         }
 
+        // Выполнение расчета
         private void Execute_Click(object sender, EventArgs e)
         {
-            bool err = false;
+            // Проверяем, что в текстовых полях есть числа
+            if (CheckData()) return;
 
-            err = CheckData();
-            if (err) return;
-
+            // Получаем значения из текстовых полей
             GetFields();
+
+            // Проверяем кпд агрегата
+            if(Efficiency >= 1)
+            {
+                DisplayAlertAsync("Ошибка", "Кпд агрегата не может быть равен\nили больше единицы", "OK");
+                return;
+            }
+
+
         }
 
         private void GetFields()
         {
-            if (!double.TryParse(UsefulVolumeInput.Text, System.Globalization.NumberStyles.Any,
-                System.Globalization.CultureInfo.InvariantCulture, out UsefulVolume)) return;
-            if (!double.TryParse(UselessVolumeInput.Text, System.Globalization.NumberStyles.Any,
-                System.Globalization.CultureInfo.InvariantCulture, out UselessVolume)) return;
-            if (!double.TryParse(GuaranteedDischargeInput.Text, System.Globalization.NumberStyles.Any,
-                System.Globalization.CultureInfo.InvariantCulture, out GuaranteedDischarge)) return;
-            if (!double.TryParse(FullDischargeInput.Text, System.Globalization.NumberStyles.Any,
-                System.Globalization.CultureInfo.InvariantCulture, out FullDischarge)) return;
-            if (!double.TryParse(HeadLossInput.Text, System.Globalization.NumberStyles.Any,
-                System.Globalization.CultureInfo.InvariantCulture, out HeadLoss)) return;
-            if (!double.TryParse(EfficiencyInput.Text, System.Globalization.NumberStyles.Any,
-                System.Globalization.CultureInfo.InvariantCulture, out Efficiency)) return;
+            if (!double.TryParse(UsefulVolumeInput.Text, NumberStyles.Any,
+                CultureInfo.InvariantCulture, out UsefulVolume)) return;
+            if (!double.TryParse(UselessVolumeInput.Text, NumberStyles.Any,
+                CultureInfo.InvariantCulture, out UselessVolume)) return;
+            if (!double.TryParse(GuaranteedDischargeInput.Text, NumberStyles.Any,
+                CultureInfo.InvariantCulture, out GuaranteedDischarge)) return;
+            if (!double.TryParse(FullDischargeInput.Text, NumberStyles.Any,
+                CultureInfo.InvariantCulture, out FullDischarge)) return;
+            if (!double.TryParse(HeadLossInput.Text, NumberStyles.Any,
+                CultureInfo.InvariantCulture, out HeadLoss)) return;
+            if (!double.TryParse(EfficiencyInput.Text, NumberStyles.Any,
+                CultureInfo.InvariantCulture, out Efficiency)) return;
         }
 
         private bool CheckData()
@@ -635,13 +674,11 @@ namespace WRST.maui
         {
             bool err = false;
 
-            if (!double.TryParse(variable, System.Globalization.NumberStyles.Any,
-                        System.Globalization.CultureInfo.InvariantCulture, out double _result))
+            if (!double.TryParse(variable, NumberStyles.Any,
+                        CultureInfo.InvariantCulture, out double _result))
                 err = true;
             if (err) DisplayAlertAsync("Ошибка!", $"«{varName}» - введены неверные данные.", "OK");
             return err;
         }
-
-
     }
 }
