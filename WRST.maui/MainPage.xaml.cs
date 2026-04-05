@@ -16,7 +16,7 @@ namespace WRST.maui
         double UselessVolume = 0; // Мертвый объем
         double GuaranteedDischarge = 0; // Гарантированный расход ГЭС
         double FullDischarge = 0; // Максимальный расход ГЭС
-        double HeadLoss = 0; // Потери напора / коэффициент при Q^2
+        double kHeadLoss = 0; // Потери напора / коэффициент при Q^2
         double Efficiency = 0; // Кпд агрегата
 
         // Исходные данные. Массивы (строки x столбцы)
@@ -549,7 +549,7 @@ namespace WRST.maui
                     UselessVolume.ToString(culture),
                     GuaranteedDischarge.ToString(culture),
                     FullDischarge.ToString(culture),
-                    HeadLoss.ToString(culture),
+                    kHeadLoss.ToString(culture),
                     Efficiency.ToString(culture)
                 });
 
@@ -612,7 +612,152 @@ namespace WRST.maui
                 return;
             }
 
+            int MonthOrdinalNumber = 0; // Порядковый номер месяца
+            int CalendarMonth = BeginningMonth - 1; // Календарный номер месяца в индексах
+                                                    // Индексы массивов 0-11, месяцы - 1-12, поэтому -1.
+            double ExcessVolume = 0; // Избыточный объем
+            double CurrentConsumption = 0; // Текущий расход ГЭС
+            double IdleDischargeFlowRate = 0; // Расход холостых сбросов
+            double IncreaseVolume = 0; // Приращение объема водохранилища
+            double ResidualVolumePreviousMonth = 
+                RemainderAccordingDispatchScheduleTableData[1, CalendarMonth - 1]; // Диспетчерский остаток 
+                                                                                   // в предыдущем месяце (т.к. начинаем с полного водохранилища, то он 
+                                                                                   // д.б. равен полезному объему)
+            double ResidualVolumeCurrentMonth = 0; // Диспетчерский остаток в текущем месяце
+            double RequiredVolumeAccordingDispatchSchedule = 0; // Требуемый объем по диспетчерскому графику
+            double[] Consumption = new double [InflowCount]; // Фактический расход ГЭС
+            double[] IdleReset = new double [InflowCount]; // Фактические холостые сбросы
+            double[] ActualResidualVolume = new double [InflowCount]; // Фактический остаточный объем
+                                                                      // над диспетчерским графиком
+            double VolumeInReservoir = 0; // Объем в водохранилище
+            double DischargeIntoDownstream = 0; // Расход в нижний бьеф
+            double[] UpstreamLevel = new double [InflowCount]; // Отметка ВБ
+            double[] DownstreamLevel = new double [InflowCount]; // Отметка НБ
+            double[] StaticHead = new double [InflowCount]; // Статический напор
+            double HeadLoss = 0; // Потери напора
+            double[] Power = new double [InflowCount];
 
+            while (MonthOrdinalNumber <= InflowCount)
+            {
+                // Параметры предыдущего месяца
+                CurrentConsumption = GuaranteedDischarge + ExcessVolume / 2.63;
+                if (CurrentConsumption > FullDischarge) CurrentConsumption = FullDischarge;
+                IdleDischargeFlowRate = 0;
+
+                // Вариант 1 - между диспетчерской линией и НПУ
+                IncreaseVolume = (InflowTableData[1, MonthOrdinalNumber] - CurrentConsumption -
+                    IdleDischargeFlowRate - IntakeFromReservoirTableData[1, CalendarMonth]) * 2.63;
+                ResidualVolumeCurrentMonth = ResidualVolumePreviousMonth + IncreaseVolume;
+                RequiredVolumeAccordingDispatchSchedule = 
+                    RemainderAccordingDispatchScheduleTableData[1, CalendarMonth];
+                
+                // Вариант 2 - вышли за НПУ
+                if (ResidualVolumeCurrentMonth > UsefulVolume)
+                {
+                    CurrentConsumption = CurrentConsumption + (ResidualVolumeCurrentMonth - UsefulVolume) / 2.63;
+                    if (CurrentConsumption > FullDischarge)
+                    // Холостые сбросы
+                    {
+                        IdleDischargeFlowRate = CurrentConsumption - FullDischarge;
+                        CurrentConsumption = FullDischarge;
+                        ResidualVolumeCurrentMonth = UsefulVolume;
+                    }
+                    else
+                    // Нет сбросов
+                    {
+                        IncreaseVolume = (InflowTableData[1, MonthOrdinalNumber] - CurrentConsumption -
+                    IdleDischargeFlowRate - IntakeFromReservoirTableData[1, CalendarMonth]) * 2.63;
+                        ResidualVolumeCurrentMonth = ResidualVolumePreviousMonth + IncreaseVolume;
+                    }
+                }
+                // Вариант 3 - ниже диспетчерской линии
+                else if (ResidualVolumeCurrentMonth < RequiredVolumeAccordingDispatchSchedule)
+                {
+                    CurrentConsumption = CurrentConsumption + 
+                        (ResidualVolumeCurrentMonth - RequiredVolumeAccordingDispatchSchedule) / 2.63;
+                    IncreaseVolume = (InflowTableData[1, MonthOrdinalNumber] - CurrentConsumption -
+                        IdleDischargeFlowRate - IntakeFromReservoirTableData[1, CalendarMonth]) * 2.63;
+                    ResidualVolumeCurrentMonth = ResidualVolumePreviousMonth + IncreaseVolume;
+                }
+
+                // Запоминаем результаты и вычисляем статический напор, мощность
+                Consumption[MonthOrdinalNumber] = CurrentConsumption;
+                IdleReset[MonthOrdinalNumber] = IdleDischargeFlowRate;
+                ActualResidualVolume[MonthOrdinalNumber] = ResidualVolumeCurrentMonth - 
+                    RequiredVolumeAccordingDispatchSchedule;
+                VolumeInReservoir = ResidualVolumeCurrentMonth + UselessVolume;
+                DischargeIntoDownstream = CurrentConsumption + IdleDischargeFlowRate;
+                UpstreamLevel[MonthOrdinalNumber] = 
+                    LinearInterpolation(VolumeInReservoir, BathygraphyTableData);
+                DownstreamLevel[MonthOrdinalNumber] =
+                    LinearInterpolation(DischargeIntoDownstream, CharacteristicOfDownstreamTableData);
+                StaticHead[MonthOrdinalNumber] = UpstreamLevel[MonthOrdinalNumber] - 
+                    DownstreamLevel[MonthOrdinalNumber];
+
+                object selectedValue = RadioButtonGroup.GetSelectedValue(RadioGroup);
+                if (selectedValue != null)
+                {
+                    string select = selectedValue!.ToString()!;
+                    if (select == "0")
+                    {
+                        HeadLoss = kHeadLoss;
+                    }
+                    else
+                    {
+                        HeadLoss = kHeadLoss * CurrentConsumption * CurrentConsumption;
+                    }
+                }
+                Power[MonthOrdinalNumber] = 9.81 * CurrentConsumption * 
+                    (StaticHead[MonthOrdinalNumber] - HeadLoss) * Efficiency;
+
+                // Переприсваивание
+                ResidualVolumePreviousMonth = ResidualVolumeCurrentMonth;
+
+                // Следующий месяц
+                MonthOrdinalNumber++;
+            }
+            // Суммарный объем холостых сбросов
+            double MonthIdleResetVolume = 0;
+            double SumIdleResetVolume = 0;
+            for (int i = 0; i < InflowCount; i++)
+            {
+                MonthIdleResetVolume = IdleReset[i] * 2.63;
+                SumIdleResetVolume =+ MonthIdleResetVolume;
+            }
+
+            // Среднегодовая выработка
+            double MonthElectricityProduction = 0;
+            double SumElectricityProduction = 0;
+            double AverageAnnualElectricityGeneration = 0;
+            for (int i = 0; i < InflowCount; i++)
+            {
+                MonthElectricityProduction = Power[i] * 720;
+                SumElectricityProduction =+ MonthElectricityProduction;
+            }
+            AverageAnnualElectricityGeneration = SumElectricityProduction * 12 / InflowCount;
+        }
+
+        private double LinearInterpolation (double argument, double[,] xy)
+        {
+            int i1 = 0;
+            double dx = 0;
+            double result = 0;
+            int quantity = xy.GetLength(0);
+            for (int i = 1; i < quantity; i++)
+            {
+                if (argument - xy[0, i] <= 0)
+                {
+                    i1 = i - 1;
+                    dx = xy[0, i] - xy[0, i1];
+                    result = (xy[1, i] * (argument - xy[0, i1]) - xy[1, i1] * (argument - xy[0, i])) / dx;
+                    return result;
+                }
+            }
+            i1 = quantity - 2;
+            dx = xy[0, quantity - 1] - xy[0, i1];
+            result = (xy[1, quantity - 1] * (argument - xy[0, i1]) - 
+                xy[1, i1] * (argument - xy[0, quantity - 1])) / dx;
+            return result;
         }
 
         private void GetFields()
@@ -626,7 +771,7 @@ namespace WRST.maui
             if (!double.TryParse(FullDischargeInput.Text, NumberStyles.Any,
                 CultureInfo.InvariantCulture, out FullDischarge)) return;
             if (!double.TryParse(HeadLossInput.Text, NumberStyles.Any,
-                CultureInfo.InvariantCulture, out HeadLoss)) return;
+                CultureInfo.InvariantCulture, out kHeadLoss)) return;
             if (!double.TryParse(EfficiencyInput.Text, NumberStyles.Any,
                 CultureInfo.InvariantCulture, out Efficiency)) return;
         }
