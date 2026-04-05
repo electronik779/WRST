@@ -52,7 +52,7 @@
                 <Label Grid.Row="4" Grid.Column="0" Text="Мёртвый объем водохранилища, млн.м³" VerticalOptions="Center"/>
                 <Entry Grid.Row="4" Grid.Column="1" x:Name="UselessVolumeInput" TextChanged="OnDoubleEntryTextChanged" Keyboard="Numeric"/>
 
-                <Label Grid.Row="5" Grid.Column="0" Text="Количество точек батиграфической характеристики" VerticalOptions="Center"/>
+                <Label Grid.Row="5" Grid.Column="0" Text="Количество точек характеристики верхнего бьефа" VerticalOptions="Center"/>
                 <Entry Grid.Row="5" Grid.Column="1" x:Name="BathygraphyCountInput" TextChanged="OnIntEntryTextChanged" Keyboard="Numeric"/>
                 <Button Grid.Row="5" Grid.Column="2" Text="Создать" Margin="10,0,0,0" Clicked="BathygraphyButton_Clicked" />
                 <VerticalStackLayout Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="3" Padding="10" Spacing="20">
