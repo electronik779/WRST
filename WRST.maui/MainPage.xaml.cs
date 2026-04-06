@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Maui.Storage;
 using System.Data;
+using System.Diagnostics;
 using System.Globalization;
 using System.Text;
 
@@ -397,17 +398,27 @@ namespace WRST.maui
                         { DevicePlatform.MacCatalyst, new[] { "csv" } }
                     })
                 });
+
                 if (result == null) return;
 
                 var blocks = new List<List<string>>();
                 using (var reader = new StreamReader(await result.OpenReadAsync()))
                 {
-                    string line;
-                    while ((line = await reader.ReadLineAsync() ?? "") != null)
-                        blocks.Add(line.Split(';').Select(s => s.Trim()).ToList());
+                    string? line;
+                    // Читаем, пока ReadLineAsync не вернет null
+                    while ((line = await reader.ReadLineAsync()) != null)
+                    {
+                        if (!string.IsNullOrWhiteSpace(line))
+                        {
+                            blocks.Add(line.Split(';').Select(s => s.Trim()).ToList());
+                        }
+                    }
                 }
-
-                if (blocks.Count < 6) return;
+                if (blocks.Count < 6) 
+                {
+                    await DisplayAlertAsync("Ошибка!", "Файл поврежден.", "ОК");
+                    return;
+                }
 
                 // Блок 1: Одиночные поля
                 var b1 = blocks[0];
@@ -571,7 +582,7 @@ namespace WRST.maui
                 string content = string.Join(Environment.NewLine, new[] { b1, b2, b3, b4, b5, b6 });
 
                 using var stream = new MemoryStream(Encoding.UTF8.GetBytes(content));
-                var result = await FileSaver.Default.SaveAsync("Input.csv", stream, CancellationToken.None);
+                var result = await FileSaver.Default.SaveAsync("Initial_data.csv", stream, CancellationToken.None);
 
                 if (result.IsSuccessful)
                     await DisplayAlertAsync("Успех!", "Файл сохранен.\n(разделитель - точка с запятой).", "OK");
@@ -620,7 +631,7 @@ namespace WRST.maui
             double IdleDischargeFlowRate = 0; // Расход холостых сбросов
             double IncreaseVolume = 0; // Приращение объема водохранилища
             double ResidualVolumePreviousMonth = 
-                RemainderAccordingDispatchScheduleTableData[1, CalendarMonth - 1]; // Диспетчерский остаток 
+                RemainderAccordingDispatchScheduleTableData[0, CalendarMonth - 1]; // Диспетчерский остаток 
                                                                                    // в предыдущем месяце (т.к. начинаем с полного водохранилища, то он 
                                                                                    // д.б. равен полезному объему)
             double ResidualVolumeCurrentMonth = 0; // Диспетчерский остаток в текущем месяце
@@ -633,11 +644,11 @@ namespace WRST.maui
             double DischargeIntoDownstream = 0; // Расход в нижний бьеф
             double[] UpstreamLevel = new double [InflowCount]; // Отметка ВБ
             double[] DownstreamLevel = new double [InflowCount]; // Отметка НБ
-            double[] StaticHead = new double [InflowCount]; // Статический напор
-            double HeadLoss = 0; // Потери напора
-            double[] Power = new double [InflowCount];
+            double[] StaticHead = new double [InflowCount]; // Статический напор ГЭС
+            double HeadLoss = 0; // Потери напора ГЭС
+            double[] Power = new double [InflowCount]; // Мощность ГЭС
 
-            while (MonthOrdinalNumber <= InflowCount)
+            while (MonthOrdinalNumber < InflowCount)
             {
                 // Параметры предыдущего месяца
                 CurrentConsumption = GuaranteedDischarge + ExcessVolume / 2.63;
@@ -645,11 +656,11 @@ namespace WRST.maui
                 IdleDischargeFlowRate = 0;
 
                 // Вариант 1 - между диспетчерской линией и НПУ
-                IncreaseVolume = (InflowTableData[1, MonthOrdinalNumber] - CurrentConsumption -
-                    IdleDischargeFlowRate - IntakeFromReservoirTableData[1, CalendarMonth]) * 2.63;
+                IncreaseVolume = (InflowTableData[0, MonthOrdinalNumber] - CurrentConsumption -
+                    IdleDischargeFlowRate - IntakeFromReservoirTableData[0, CalendarMonth]) * 2.63;
                 ResidualVolumeCurrentMonth = ResidualVolumePreviousMonth + IncreaseVolume;
                 RequiredVolumeAccordingDispatchSchedule = 
-                    RemainderAccordingDispatchScheduleTableData[1, CalendarMonth];
+                    RemainderAccordingDispatchScheduleTableData[0, CalendarMonth];
                 
                 // Вариант 2 - вышли за НПУ
                 if (ResidualVolumeCurrentMonth > UsefulVolume)
@@ -665,8 +676,8 @@ namespace WRST.maui
                     else
                     // Нет сбросов
                     {
-                        IncreaseVolume = (InflowTableData[1, MonthOrdinalNumber] - CurrentConsumption -
-                    IdleDischargeFlowRate - IntakeFromReservoirTableData[1, CalendarMonth]) * 2.63;
+                        IncreaseVolume = (InflowTableData[0, MonthOrdinalNumber] - CurrentConsumption -
+                    IdleDischargeFlowRate - IntakeFromReservoirTableData[0, CalendarMonth]) * 2.63;
                         ResidualVolumeCurrentMonth = ResidualVolumePreviousMonth + IncreaseVolume;
                     }
                 }
@@ -675,8 +686,8 @@ namespace WRST.maui
                 {
                     CurrentConsumption = CurrentConsumption + 
                         (ResidualVolumeCurrentMonth - RequiredVolumeAccordingDispatchSchedule) / 2.63;
-                    IncreaseVolume = (InflowTableData[1, MonthOrdinalNumber] - CurrentConsumption -
-                        IdleDischargeFlowRate - IntakeFromReservoirTableData[1, CalendarMonth]) * 2.63;
+                    IncreaseVolume = (InflowTableData[0, MonthOrdinalNumber] - CurrentConsumption -
+                        IdleDischargeFlowRate - IntakeFromReservoirTableData[0, CalendarMonth]) * 2.63;
                     ResidualVolumeCurrentMonth = ResidualVolumePreviousMonth + IncreaseVolume;
                 }
 
@@ -715,6 +726,8 @@ namespace WRST.maui
 
                 // Следующий месяц
                 MonthOrdinalNumber++;
+                CalendarMonth++;
+                if (CalendarMonth > 11) CalendarMonth = 0;
             }
             // Суммарный объем холостых сбросов
             double MonthIdleResetVolume = 0;
