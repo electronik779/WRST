@@ -432,18 +432,17 @@ namespace WRST
                     File.Delete(filename);
                 }
 
+                var culture = CultureInfo.InvariantCulture;
+
                 List<string> block1 = new List<string>();
                 block1.Add(textBox1.Text);
-                if (radioButton1.Checked == true)
-                { block1.Add("0"); }
-                else
-                { block1.Add("1"); }
-                block1.Add(textBox2.Text);
-                block1.Add(textBox3.Text);
-                block1.Add(textBox4.Text);
-                block1.Add(textBox5.Text);
-                block1.Add(textBox6.Text);
-                block1.Add(textBox7.Text);
+                block1.Add(radioButton1.Checked ? "0" : "1");
+                block1.Add(GetDouble(textBox2.Text, 0d).ToString(culture));
+                block1.Add(GetDouble(textBox3.Text, 0d).ToString(culture));
+                block1.Add(GetDouble(textBox4.Text, 0d).ToString(culture));
+                block1.Add(GetDouble(textBox5.Text, 0d).ToString(culture));
+                block1.Add(GetDouble(textBox6.Text, 0d).ToString(culture));
+                block1.Add(GetDouble(textBox7.Text, 0d).ToString(culture));
 
                 List<string> block2 = new List<string>();
                 block2.Add(textBox8.Text);
@@ -451,7 +450,7 @@ namespace WRST
                 for (int i = 0; i < Convert.ToInt32(textBox8.Text); i++)
                 {
                     tmp = GetDouble((string)dataGridView1.Rows[0].Cells[i].Value, 0d);
-                    block2.Add(Convert.ToString(tmp));
+                    block2.Add(tmp.ToString(culture));
                 }
 
                 List<string> block3 = new List<string>();
@@ -459,12 +458,12 @@ namespace WRST
                 for (int i = 0; i < Convert.ToInt32(textBox9.Text); i++)
                 {
                     tmp = GetDouble((string)dataGridView2.Rows[0].Cells[i].Value, 0d);
-                    block3.Add(Convert.ToString(tmp));
+                    block3.Add(tmp.ToString(culture));
                 }
                 for (int i = 0; i < Convert.ToInt32(textBox9.Text); i++)
                 {
                     tmp = GetDouble((string)dataGridView2.Rows[1].Cells[i].Value, 0d);
-                    block3.Add(Convert.ToString(tmp));
+                    block3.Add(tmp.ToString(culture));
                 }
 
                 List<string> block4 = new List<string>();
@@ -472,26 +471,26 @@ namespace WRST
                 for (int i = 0; i < Convert.ToInt32(textBox10.Text); i++)
                 {
                     tmp = GetDouble((string)dataGridView3.Rows[0].Cells[i].Value, 0d);
-                    block4.Add(Convert.ToString(tmp));
+                    block4.Add(tmp.ToString(culture));
                 }
                 for (int i = 0; i < Convert.ToInt32(textBox10.Text); i++)
                 {
                     tmp = GetDouble((string)dataGridView3.Rows[1].Cells[i].Value, 0d);
-                    block4.Add(Convert.ToString(tmp));
+                    block4.Add(tmp.ToString(culture));
                 }
 
                 List<string> block5 = new List<string>();
                 for (int i = 0; i < 12; i++)
                 {
                     tmp = GetDouble((string)dataGridView4.Rows[0].Cells[i].Value, 0d);
-                    block5.Add(Convert.ToString(tmp));
+                    block5.Add(tmp.ToString(culture));
                 }
 
                 List<string> block6 = new List<string>();
                 for (int i = 0; i < 12; i++)
                 {
                     tmp = GetDouble((string)dataGridView5.Rows[0].Cells[i].Value, 0d);
-                    block6.Add(Convert.ToString(tmp));
+                    block6.Add(tmp.ToString(culture));
                 }
                 using (StreamWriter writer = new StreamWriter(filename, true, System.Text.Encoding.UTF8))
                 {
@@ -1248,11 +1247,11 @@ namespace WRST
         {
             double result;
             //Try parsing in the current culture
-            if (!double.TryParse(str, System.Globalization.NumberStyles.Any, CultureInfo.CurrentCulture, out result) &&
+            if (!double.TryParse(str, NumberStyles.Any, CultureInfo.CurrentCulture, out result) &&
                 //Then try in US english
-                !double.TryParse(str, System.Globalization.NumberStyles.Any, CultureInfo.GetCultureInfo("en-US"), out result) &&
+                !double.TryParse(str, NumberStyles.Any, CultureInfo.GetCultureInfo("en-US"), out result) &&
                 //Then in neutral language
-                !double.TryParse(str, System.Globalization.NumberStyles.Any, CultureInfo.InvariantCulture, out result))
+                !double.TryParse(str, NumberStyles.Any, CultureInfo.InvariantCulture, out result))
             {
                 result = defaultValue;
                 throw new ArgumentException("Необходимо ввести число.");
