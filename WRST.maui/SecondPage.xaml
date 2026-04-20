@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:WRST.maui"
+             x:Class="WRST.maui.SecondPage"
+             Title="ВЭР годичного регулирования">
+
+    
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="Сохранить" Clicked="Save_Click" IconImageSource="save_icon.png" />
+    </ContentPage.ToolbarItems>
+    <ScrollView>
+        <VerticalStackLayout Padding="15" Spacing="10">
+        <Grid ColumnDefinitions="*" RowDefinitions="Auto, Auto, Auto" RowSpacing="10">
+            
+            <CollectionView Grid.Row="0" x:Name="TableControl">
+
+                <CollectionView.Header>
+                    <Grid ColumnDefinitions="40,50,70,70,70,80,80,100,80,100" BackgroundColor="LightGray">
+                        <Label Text="#"                                         Grid.Column="0" FontAttributes="Bold" HorizontalTextAlignment="Center"/>
+                        <Label Text="Месяц"                                     Grid.Column="1" FontAttributes="Bold" HorizontalTextAlignment="Center"/>
+                        <Label Text="Приток, м³/с"                              Grid.Column="2" FontAttributes="Bold" HorizontalTextAlignment="Center"/>
+                        <Label Text="Расход ГЭС, м³/с"                          Grid.Column="3" FontAttributes="Bold" HorizontalTextAlignment="Center"/>
+                        <Label Text="Сбросы, м³/с"                              Grid.Column="4" FontAttributes="Bold" HorizontalTextAlignment="Center"/>
+                        <Label Text="Отм. ВБ, м"                                Grid.Column="5" FontAttributes="Bold" HorizontalTextAlignment="Center"/>
+                        <Label Text="Отм. НБ, м"                                Grid.Column="6" FontAttributes="Bold" HorizontalTextAlignment="Center"/>
+                        <Label Text="Статический напор, м"                      Grid.Column="7" FontAttributes="Bold" HorizontalTextAlignment="Center"/>
+                        <Label Text="Мощность ГЭС, кВт"                         Grid.Column="8" FontAttributes="Bold" HorizontalTextAlignment="Center"/>
+                        <Label Text="Избыт. объем над дисп. остатком, млн.м³"   Grid.Column="9" FontAttributes="Bold" HorizontalTextAlignment="Center"/>
+                    </Grid>
+                </CollectionView.Header>
+
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="local:TableRow">
+                        <Grid ColumnDefinitions="40,50,70,70,70,80,80,100,80,100" BackgroundColor="{Binding RowBackgroundColor}">
+                            <Label Text="{Binding Col1}" Grid.Column="0" HorizontalTextAlignment="Center"/>
+                            <Label Text="{Binding Col2}" Grid.Column="1" HorizontalTextAlignment="Center"/>
+                            <Label Text="{Binding Col3}" Grid.Column="2" HorizontalTextAlignment="End"/>
+                            <Label Text="{Binding Col4}" Grid.Column="3" HorizontalTextAlignment="End"/>
+                            <Label Text="{Binding Col5}" Grid.Column="4" HorizontalTextAlignment="End"/>
+                            <Label Text="{Binding Col6}" Grid.Column="5" HorizontalTextAlignment="End"/>
+                            <Label Text="{Binding Col7}" Grid.Column="6" HorizontalTextAlignment="End"/>
+                            <Label Text="{Binding Col8}" Grid.Column="7" HorizontalTextAlignment="End"/>
+                            <Label Text="{Binding Col9}" Grid.Column="8" HorizontalTextAlignment="End"/>
+                            <Label Text="{Binding Col10}" Grid.Column="9" HorizontalTextAlignment="End"/>
+                        </Grid>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+            <!--<CollectionView Grid.Row="1" x:Name="TableSecurity">
+
+                <CollectionView.Header>
+                        <Grid ColumnDefinitions="100,100,100,100,100" BackgroundColor="LightGray">
+                        <Label Text="Обеспеченность, %"      Grid.Column="0" FontAttributes="Bold" HorizontalTextAlignment="Center"/>
+                        <Label Text="Приток, м³/с"           Grid.Column="1" FontAttributes="Bold" HorizontalTextAlignment="Center"/>
+                        <Label Text="Расход ГЭС, м³/с"       Grid.Column="2" FontAttributes="Bold" HorizontalTextAlignment="Center"/>
+                        <Label Text="Статический напор, м"   Grid.Column="3" FontAttributes="Bold" HorizontalTextAlignment="Center"/>
+                        <Label Text="Мощность ГЭС, кВт"      Grid.Column="4" FontAttributes="Bold" HorizontalTextAlignment="Center"/>
+                    </Grid>
+                </CollectionView.Header>
+
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="local:Table2Row">
+                            <Grid ColumnDefinitions="100,100,100,100,100" BackgroundColor="{Binding RowBackgroundColor}">
+                            <Label Text="{Binding Col1}" Grid.Column="0" HorizontalTextAlignment="End"/>
+                            <Label Text="{Binding Col2}" Grid.Column="1" HorizontalTextAlignment="End"/>
+                            <Label Text="{Binding Col3}" Grid.Column="2" HorizontalTextAlignment="End"/>
+                            <Label Text="{Binding Col4}" Grid.Column="3" HorizontalTextAlignment="End"/>
+                            <Label Text="{Binding Col5}" Grid.Column="4" HorizontalTextAlignment="End"/>
+                        </Grid>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>-->
+            
+        </Grid>
+    </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>
