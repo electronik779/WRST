@@ -1,4 +1,7 @@
 ﻿using CommunityToolkit.Maui.Storage;
+using Microsoft.Maui.Controls;
+using Microsoft.Maui.Graphics;
+using System.Collections.ObjectModel;
 using System.Data;
 using System.Diagnostics;
 using System.Globalization;
@@ -8,12 +11,19 @@ namespace WRST.maui
 {
     public partial class MainPage : ContentPage
     {
+        // 1. Связываем коллекции с BindingContext
+        public ObservableCollection<TableRow> InflowData { get; set; } = new();
+        public ObservableCollection<TableRow> BathygraphyData { get; set; } = new();
+        public ObservableCollection<TableRow> RemainderData { get; set; } = new();
+        public ObservableCollection<TableRow> IntakeData { get; set; } = new();
+        public ObservableCollection<TableRow> DownstreamData { get; set; } = new();
+
         // Исходные данные
         int BeginningMonth = 0; // Месяц начала расчета
         int InflowCount = 0; // Количество значений притока
         int BathygraphyCount = 0; // Количество точек характеристики верхнего бьефа
         int CharacteristicOfDownstreamCount = 0; // Количество точек характеристики нижнего бьефа
-        double UsefulVolume = 0; // Полезный объем
+        double UsefullVolume = 0; // Полезный объем
         double UselessVolume = 0; // Мертвый объем
         double GuaranteedDischarge = 0; // Гарантированный расход ГЭС
         double FullDischarge = 0; // Максимальный расход ГЭС
@@ -31,16 +41,69 @@ namespace WRST.maui
         {
             InitializeComponent();
 
-            // Рисуем таблицу диспетчерских остатков
-            List<string> RowNames = new List<string>() { "Остатки, млн.м³" };
-            BuildGrid(RemainderAccordingDispatchScheduleFixedColumn,
-                RemainderAccordingDispatchScheduleScrollableGrid, 12, 1, "T3", 1, "Месяц", RowNames);
+            BindingContext = this;
 
-            // Рисуем таблицу отборов из водохранилища
-            RowNames.Clear();
-            RowNames.Add("Отбор, м³/с");
-            BuildGrid(IntakeFromReservoirFixedColumn, IntakeFromRreservoirScrollableGrid, 12, 1, "T4",
-                1, "Месяц", RowNames);
+            // Инициализация таблиц диспетчерских остатков и отборов
+            InitializeRemainderAndIntakeTables();
+        }
+
+        private void InitializeRemainderAndIntakeTables()
+        {
+            // Создаем строки для таблицы диспетчерских остатков (12 месяцев)
+            RemainderData.Clear();
+
+            // Первая строка - заголовки
+            var headerRow = new TableRow();
+            headerRow.Index = 0;
+            headerRow.IsEditable = false;
+            headerRow.RowBackgroundColor = "LightGray";
+            headerRow.RowLabel = "Месяц"; // Метка только в заголовке
+            headerRow.InitializeCells(12, ""); // Только данные (месяцы)
+            for (int i = 0; i < 12; i++)
+            {
+                headerRow.Cells[i] = (i + 1).ToString();
+            }
+            RemainderData.Add(headerRow);
+
+            // Вторая строка - ввод данных
+            var inputRow = new TableRow();
+            inputRow.Index = 1;
+            inputRow.IsEditable = true;
+            inputRow.RowBackgroundColor = "White";
+            inputRow.RowLabel = "Объем, млн.м³";
+            inputRow.InitializeCells(12, "0");
+            RemainderData.Add(inputRow);
+
+            RemainderCollectionView.ItemsSource = null;
+            RemainderCollectionView.ItemsSource = RemainderData;
+
+            // Создаем строки для таблицы отборов (12 месяцев)
+            IntakeData.Clear();
+
+            // Первая строка - заголовки
+            var headerRowInt = new TableRow();
+            headerRowInt.Index = 0;
+            headerRowInt.IsEditable = false;
+            headerRowInt.RowBackgroundColor = "LightGray";
+            headerRowInt.RowLabel = "Месяц"; // Метка только в заголовке
+            headerRowInt.InitializeCells(12, ""); // Только данные (месяцы)
+            for (int i = 0; i < 12; i++)
+            {
+                headerRowInt.Cells[i] = (i + 1).ToString();
+            }
+            IntakeData.Add(headerRowInt);
+
+            // Вторая строка - ввод данных
+            var inputRowInt = new TableRow();
+            inputRowInt.Index = 1;
+            inputRowInt.IsEditable = true;
+            inputRowInt.RowBackgroundColor = "White";
+            inputRowInt.RowLabel = "Расход, м³/с";
+            inputRowInt.InitializeCells(12, "0");
+            IntakeData.Add(inputRowInt);
+
+            IntakeCollectionView.ItemsSource = null;
+            IntakeCollectionView.ItemsSource = IntakeData;
         }
 
         // Выбор схемы питания. Индивидуальная - задаем потери напора, групповая - задаем к при Q^2
@@ -163,10 +226,34 @@ namespace WRST.maui
                     "было скорректировано.", "OK");
             }
 
-            // Рисуем таблицу притока
-            List<string> RowNames = new List<string>() { "Приток, м³/с" };
-            BuildGrid(InflowFixedColumn, InflowScrollableGrid, InflowCount, 1, "T1",
-                        BeginningMonth, "Месяц, #", RowNames);
+            InflowData.Clear();
+
+            // Первая строка - заголовки
+            var headerRow = new TableRow();
+            headerRow.Index = 0;
+            headerRow.IsEditable = false;
+            headerRow.RowBackgroundColor = "LightGray";
+            headerRow.RowLabel = "Месяц"; // Метка только в заголовке
+            headerRow.InitializeCells(InflowCount, ""); // Только данные (месяцы)
+            for (int i = 0; i < InflowCount; i++)
+            {
+                int tmpMonth = BeginningMonth + i;
+                if (tmpMonth > InflowCount) tmpMonth -= InflowCount;
+                headerRow.Cells[i] = tmpMonth.ToString();
+            }
+            InflowData.Add(headerRow);
+
+            // Вторая строка - ввод данных
+            var inputRow = new TableRow();
+            inputRow.Index = 1;
+            inputRow.IsEditable = true;
+            inputRow.RowBackgroundColor = "White";
+            inputRow.RowLabel = "Приток, м³/с"; 
+            inputRow.InitializeCells(InflowCount, "0");
+            InflowData.Add(inputRow);
+
+            InflowCollectionView.ItemsSource = null;
+            InflowCollectionView.ItemsSource = InflowData;
         }
 
         // По нажатию кнопки "Создать" напротив поля ввода Количество точек характеристики верхнего бьефа
@@ -192,10 +279,28 @@ namespace WRST.maui
                 return;
             }
 
-            // Рисуем таблицу верхнего бьефа
-            List<string> RowNames = new List<string>() { "Объем, млн.м³", "Отметка ВБ, м" };
-            BuildGrid(BathygraphyFixedColumn, BathygraphyScrollableGrid, BathygraphyCount, 2, "T2",
-                1, "#", RowNames);
+            BathygraphyData.Clear();
+
+            // Первая строка - объем
+            var inputRowVol = new TableRow();
+            inputRowVol.Index = 0;
+            inputRowVol.IsEditable = true;
+            inputRowVol.RowBackgroundColor = "White";
+            inputRowVol.RowLabel = "Объем, млн.м³"; // Метка в заголовке
+            inputRowVol.InitializeCells(BathygraphyCount, "0"); // Только данные 
+            BathygraphyData.Add(inputRowVol);
+
+            // Вторая строка - отметка
+            var inputRowEl = new TableRow();
+            inputRowEl.Index = 1;
+            inputRowEl.IsEditable = true;
+            inputRowEl.RowBackgroundColor = "White";
+            inputRowEl.RowLabel = "Отметка, м";
+            inputRowEl.InitializeCells(BathygraphyCount, "0");
+            BathygraphyData.Add(inputRowEl);
+
+            BathygraphyCollectionView.ItemsSource = null;
+            BathygraphyCollectionView.ItemsSource = BathygraphyData;
         }
 
         // По нажатию кнопки "Создать" напротив поля ввода Количество точек характеристики нижнего бьефа
@@ -221,166 +326,28 @@ namespace WRST.maui
                     "«Количество точек характеристики нижнего бьефа» -\n2-20.", "OK");
             }
 
-            // Рисуем таблицу нижнего бьефа
-            List<string> RowNames = new List<string>() { "Расход, м³/с", "Отметка НБ, м" };
-            BuildGrid(CharacteristicOfDownstreamFixedColumn, CharacteristicOfDownstreamScrollableGrid,
-                CharacteristicOfDownstreamCount, 2, "T5", 1, "#", RowNames);
-        }
+            DownstreamData.Clear();
 
-        // Рисование таблиц
-        // 1 - название таблицы заголовков строк (см. xaml)
-        // 2 - название таблицы (см. xaml)
-        // 3 - количество столбцов таблицы
-        // 4 - количество строк таблицы
-        // 5 - префикс - соответствие массиву данных
-        // 6 - начало нумерации столбцов
-        // 7 - название строки названий столбцов
-        // 8 - список названий строк
-        private void BuildGrid(Grid fixedGrid, Grid scrollGrid, int colCount, int rowCount,
-            string prefix, int begin, string headerName, List<string> rowNames)
-        {
-            // Инициализируем массив данных нужного размера
-            if (prefix == "T1") InflowTableData = new double[rowCount, colCount];
-            else if (prefix == "T2") BathygraphyTableData = new double[rowCount, colCount];
-            else if (prefix == "T3") RemainderAccordingDispatchScheduleTableData = new double[rowCount, colCount];
-            else if (prefix == "T4") IntakeFromReservoirTableData = new double[rowCount, colCount];
-            else CharacteristicOfDownstreamTableData = new double[rowCount, colCount];
+            // Первая строка - расход
+            var inputRowFl = new TableRow();
+            inputRowFl.Index = 0;
+            inputRowFl.IsEditable = true;
+            inputRowFl.RowBackgroundColor = "White";
+            inputRowFl.RowLabel = "Расход, м³/с"; 
+            inputRowFl.InitializeCells(CharacteristicOfDownstreamCount, "0"); 
+            DownstreamData.Add(inputRowFl);
 
-            // Очистка обеих частей
-            fixedGrid.Children.Clear(); fixedGrid.RowDefinitions.Clear(); fixedGrid.ColumnDefinitions.Clear();
-            scrollGrid.Children.Clear(); scrollGrid.RowDefinitions.Clear(); scrollGrid.ColumnDefinitions.Clear();
+            // Вторая строка - отметка
+            var inputRowEl = new TableRow();
+            inputRowEl.Index = 1;
+            inputRowEl.IsEditable = true;
+            inputRowEl.RowBackgroundColor = "White";
+            inputRowEl.RowLabel = "Отметка, м";
+            inputRowEl.InitializeCells(CharacteristicOfDownstreamCount, "0");
+            DownstreamData.Add(inputRowEl);
 
-            // Настройка строк (одинаковая для обеих частей)
-            for (int r = 0; r <= rowCount; r++) // +1 для заголовка
-            {
-                var height = r == 0 ? 35 : 40;
-                fixedGrid.RowDefinitions.Add(new RowDefinition { Height = height });
-                scrollGrid.RowDefinitions.Add(new RowDefinition { Height = height });
-            }
-
-            // Настройка столбцов
-            fixedGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = 100 });
-            for (int c = 0; c < colCount; c++)
-                scrollGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = 80 });
-
-            // Угловая ячейка (в фиксированной части) (название строки названий столбцов)
-            var corner = CreateHeaderBorder(headerName, Colors.LightSlateGray); // Верхняя левая ячейка - надпись
-            Grid.SetRow(corner, 0);
-            fixedGrid.Children.Add(corner);
-
-            // Заголовки столбцов (в прокручиваемой части)
-            for (int c = 0; c < colCount; c++)
-            {
-                int head = c + begin;
-                if (head > colCount) head -= colCount;
-                var colHeader = CreateHeaderBorder((head).ToString(), Colors.DarkGray);
-                Grid.SetRow(colHeader, 0);
-                Grid.SetColumn(colHeader, c);
-                scrollGrid.Children.Add(colHeader);
-            }
-
-            // Заполнение строк
-            for (int r = 0; r < rowCount; r++)
-            {
-                // Заголовок строки -> в ФИКСИРОВАННУЮ сетку
-                var rowHeader = CreateHeaderBorder(rowNames[r], Colors.LightGray);
-                Grid.SetRow(rowHeader, r + 1);
-                fixedGrid.Children.Add(rowHeader);
-
-                // Ячейки данных -> в ПРОКРУЧИВАЕМУЮ сетку
-                for (int c = 0; c < colCount; c++)
-                {
-                    var entry = new Entry
-                    {
-                        Placeholder = "0",
-                        Keyboard = Keyboard.Numeric,
-                        HorizontalTextAlignment = TextAlignment.Center,
-                        FontSize = 12,
-                        AutomationId = $"{r},{c}", // Координаты для обработчика
-                        TextColor = Colors.Black,
-                        Text = ""
-                    };
-
-                    // Подписка на валидацию и сохранение
-                    entry.TextChanged += OnNumericTextChanged;
-
-                    var cellBorder = new Border
-                    {
-                        Stroke = Colors.Gray,
-                        StrokeThickness = 0.5,
-                        Content = entry
-                    };
-                    Grid.SetRow(cellBorder, r + 1);
-                    Grid.SetColumn(cellBorder, c);
-                    scrollGrid.Children.Add(cellBorder);
-                }
-            }
-        }
-
-        // Проверка корректности ввода чисел в таблицы. Если не число - выделяется красным,
-        // в массив заносится 0
-        private void OnNumericTextChanged(object? sender, TextChangedEventArgs e)
-        {
-            if (sender is not Entry entry) return;
-
-            if (string.IsNullOrWhiteSpace(e.NewTextValue)) return;
-
-            // Заменяем точку на запятую (или наоборот) для универсальности
-            string cleanValue = e.NewTextValue.Replace(',', '.');
-
-            // Пытаемся преобразовать в число
-            if (double.TryParse(cleanValue, NumberStyles.Any,
-                CultureInfo.InvariantCulture, out double result))
-            {
-                // Если число валидное — возвращаем обычный цвет и сохраняем
-                entry.TextColor = Colors.Black;
-                SaveToDataArray(entry.AutomationId, result, entry);
-            }
-            else
-            {
-                // Если ввели буквы — красим текст в красный
-                entry.TextColor = Colors.Red;
-            }
-        }
-
-        // Сохранение в массив введенных в таблицу данных
-        private void SaveToDataArray(string authId, double value, Entry entry)
-        {
-            var coords = authId.Split(',');
-            int r = int.Parse(coords[0]);
-            int c = int.Parse(coords[1]);
-
-            // Определяем, к какой таблице относится Entry через его родителя (Grid)
-            var parentGrid = entry.Parent?.Parent as Grid; // Border -> Grid
-
-            if (parentGrid == InflowScrollableGrid)
-                InflowTableData[r, c] = value;
-            else if (parentGrid == BathygraphyScrollableGrid)
-                BathygraphyTableData[r, c] = value;
-            else if (parentGrid == RemainderAccordingDispatchScheduleScrollableGrid)
-                RemainderAccordingDispatchScheduleTableData[r, c] = value;
-            else if (parentGrid == IntakeFromRreservoirScrollableGrid)
-                IntakeFromReservoirTableData[r, c] = value;
-            else CharacteristicOfDownstreamTableData[r, c] = value;
-        }
-
-        // Оформление ячеек
-        private Border CreateHeaderBorder(string text, Color bgColor)
-        {
-            return new Border
-            {
-                BackgroundColor = bgColor,
-                Stroke = Colors.DimGray,
-                StrokeThickness = 1,
-                Content = new Label
-                {
-                    Text = text,
-                    FontAttributes = FontAttributes.Bold,
-                    TextColor = Colors.White,
-                    HorizontalOptions = LayoutOptions.Center,
-                    VerticalOptions = LayoutOptions.Center
-                }
-            };
+            DownstreamCollectionView.ItemsSource = null;
+            DownstreamCollectionView.ItemsSource = DownstreamData;
         }
 
         // Считывание исходных данных из файла
@@ -414,7 +381,7 @@ namespace WRST.maui
                         }
                     }
                 }
-                if (blocks.Count < 6) 
+                if (blocks.Count < 6)
                 {
                     await DisplayAlertAsync("Ошибка!", "Файл поврежден.", "ОК");
                     return;
@@ -440,101 +407,92 @@ namespace WRST.maui
                 // Блок 2: Inflow
                 int.TryParse(blocks[1].FirstOrDefault(), out InflowCount);
                 InflowCountInput.Text = InflowCount.ToString();
-                var inflowData = new List<List<string>> { ParseBlockData(blocks[1].Skip(1), InflowCount) };
 
                 // Блок 3: Bathygraphy
                 int.TryParse(blocks[2].FirstOrDefault(), out BathygraphyCount);
                 BathygraphyCountInput.Text = BathygraphyCount.ToString();
-                var bathyData = new List<List<string>>
-                    {
-                        ParseBlockData(blocks[2].Skip(1), BathygraphyCount),
-                        ParseBlockData(blocks[2].Skip(BathygraphyCount + 1), BathygraphyCount)
-                    };
 
                 // Блок 4: Downstream
                 int.TryParse(blocks[3].FirstOrDefault(), out CharacteristicOfDownstreamCount);
                 CharacteristicOfDownstreamCountInput.Text = CharacteristicOfDownstreamCount.ToString();
-                var downstreamData = new List<List<string>>
-                    {
-                        ParseBlockData(blocks[3].Skip(1), CharacteristicOfDownstreamCount),
-                        ParseBlockData(blocks[3].Skip(CharacteristicOfDownstreamCount + 1), CharacteristicOfDownstreamCount)
-                    };
 
                 // Блоки 5 и 6: Remainder и Intake (по 12 мес)
-                var remainderData = new List<List<string>> { ParseBlockData(blocks[4], 12) };
-                var intakeData = new List<List<string>> { ParseBlockData(blocks[5], 12) };
+                // Для этих таблиц уже есть инициализация, просто заполняем данными
 
-                // 4. Отрисовка
-                UpdateUI(inflowData, bathyData, downstreamData, remainderData, intakeData);
+                // Обновляем UI
+                UpdateUI(blocks);
             }
             catch (Exception ex)
             {
                 await DisplayAlertAsync("Ошибка", ex.Message, "OK");
-                ResetInputs();
+                //ResetInputs();
             }
         }
 
-        // Вспомогательная функция для парсинга списка строк в числа при чтении файла
-        private List<string> ParseBlockData(IEnumerable<string> rawData, int count)
+        private void UpdateUI(List<List<string>> blocks)
         {
-            var culture = CultureInfo.InvariantCulture;
-            return rawData.Take(count).Select(s =>
+            try
             {
-                // Пытаемся распарсить с точкой, если не выходит — возвращаем "0"
-                return double.TryParse(s, NumberStyles.Any, culture, out double val)
-                    ? val.ToString(culture)
-                    : "0";
-            }).ToList();
-        }
+                InflowButton_Clicked(null, null);
+                BathygraphyButton_Clicked(null, null);
+                CharacteristicOfDownstreamButton_Clicked(null, null);
 
-        // Очистка текстовых полей при ошибке чтения
-        private void ResetInputs()
-        {
-            string zero = "0";
-            BeginningMonthInput.Text = InflowCountInput.Text = UsefulVolumeInput.Text =
-            UselessVolumeInput.Text = BathygraphyCountInput.Text = zero;
-            // ... и так далее
-        }
+                // Блок 2: Inflow
+                var inflowData = blocks[1].Skip(1).Take(InflowCount).ToList();
+                FillTableFromCSV(InflowData, inflowData);
 
-        // Вспомогательный метод для чистоты кода
-        private void UpdateUI(List<List<string>> inflow, List<List<string>> bathy, List<List<string>> down, List<List<string>> rem, List<List<string>> intake)
-        {
-            BuildGrid(InflowFixedColumn, InflowScrollableGrid, InflowCount, 1, "T1", BeginningMonth, "Месяц, #", new() { "Приток, м³/с" });
-            FillTableFromData(InflowScrollableGrid, inflow);
+                // Блок 3: Bathygraphy
+                var bathyData1 = blocks[2].Skip(1).Take(BathygraphyCount).ToList();
+                var bathyData2 = blocks[2].Skip(BathygraphyCount + 1).Take(BathygraphyCount).ToList();
+                FillTableFromCSV(BathygraphyData, bathyData1, bathyData2);
 
-            BuildGrid(BathygraphyFixedColumn, BathygraphyScrollableGrid, BathygraphyCount, 2, "T2", 1, "#", new() { "Объем, млн.м³", "Отметка ВБ, м" });
-            FillTableFromData(BathygraphyScrollableGrid, bathy);
+                // Блок 4: Downstream
+                var downstreamData1 = blocks[3].Skip(1).Take(CharacteristicOfDownstreamCount).ToList();
+                var downstreamData2 = blocks[3].Skip(CharacteristicOfDownstreamCount + 1).Take(CharacteristicOfDownstreamCount).ToList();
+                FillTableFromCSV(DownstreamData, downstreamData1, downstreamData2);
 
-            FillTableFromData(RemainderAccordingDispatchScheduleScrollableGrid, rem);
-            FillTableFromData(IntakeFromRreservoirScrollableGrid, intake);
+                // Блоки 5 и 6: Remainder и Intake (по 12 мес)
+                var remainderData = blocks[4].Take(12).ToList();
+                FillTableFromCSV(RemainderData, remainderData);
 
-            BuildGrid(CharacteristicOfDownstreamFixedColumn, CharacteristicOfDownstreamScrollableGrid, CharacteristicOfDownstreamCount, 2, "T5", 1, "#", new() { "Расход, м³/с", "Отметка НБ, м" });
-            FillTableFromData(CharacteristicOfDownstreamScrollableGrid, down);
-        }
-
-        private void FillTableFromData(Grid scrollGrid, List<List<string>> csvData)
-        {
-            // Проходим по всем элементам в прокручиваемой сетке
-            foreach (var child in scrollGrid.Children)
+                var intakeData = blocks[5].Take(12).ToList();
+                FillTableFromCSV(IntakeData, intakeData);
+            }
+            catch (Exception ex)
             {
-                // Нас интересуют только Border, внутри которых лежат Entry
-                if (child is Border border && border.Content is Entry entry)
-                {
-                    // Получаем координаты ячейки в Grid
-                    int row = Grid.GetRow(border) - 1; // -1, так как 0-я строка — это заголовок
-                    int col = Grid.GetColumn(border);
+                // Обработка ошибки
+                Console.WriteLine($"Ошибка обновления UI: {ex.Message}");
+            }
+        }
 
-                    // Проверяем, есть ли данные для этой ячейки в нашем списке
-                    if (row >= 0 && row < csvData.Count)
-                    {
-                        var csvRow = csvData[row];
-                        if (col >= 0 && col < csvRow.Count)
-                        {
-                            // Устанавливаем текст из CSV
-                            entry.Text = csvRow[col];
-                        }
-                    }
-                }
+        private void FillTableFromCSV(ObservableCollection<TableRow> table, List<string> data1)
+        {
+            // table[0] is header, table[1] is data
+            if (table.Count < 2) return;
+
+            for (int i = 0; i < data1.Count; i++)
+            {
+                string valStr = double.TryParse(data1[i], NumberStyles.Any, CultureInfo.InvariantCulture,
+                    out double val) ? val.ToString(CultureInfo.InvariantCulture) : "0";
+
+                table[1].SetCell(i, valStr);
+            }
+        }
+
+        private void FillTableFromCSV(ObservableCollection<TableRow> table, List<string> data1, List<string> data2)
+        {
+            // table[0] is row 1 data, table[1] is row 2 data
+            if (table.Count < 2) return;
+
+            for (int i = 0; i < data1.Count; i++)
+            {
+                string valStr1 = double.TryParse(data1[i], NumberStyles.Any, CultureInfo.InvariantCulture,
+                    out double val1) ? val1.ToString(CultureInfo.InvariantCulture) : "0";
+                table[0].SetCell(i, valStr1);
+
+                string valStr2 = double.TryParse(data2[i], NumberStyles.Any, CultureInfo.InvariantCulture,
+                    out double val2) ? val2.ToString(CultureInfo.InvariantCulture) : "0";
+                table[1].SetCell(i, valStr2);
             }
         }
 
@@ -556,7 +514,7 @@ namespace WRST.maui
                 string b1 = string.Join(";", new[] {
                     BeginningMonth.ToString(culture),
                     selectedValue,
-                    UsefulVolume.ToString(culture),
+                    UsefullVolume.ToString(culture),
                     UselessVolume.ToString(culture),
                     GuaranteedDischarge.ToString(culture),
                     FullDischarge.ToString(culture),
@@ -564,19 +522,19 @@ namespace WRST.maui
                     Efficiency.ToString(culture)
                 });
 
-                // 2. Блоки данных (используем обновленный GetRowData)
-                string b2 = InflowCount + ";" + GetRowData(InflowTableData, 0, InflowCount);
+                // 2. Блоки данных
+                string b2 = InflowCount + ";" + GetRowData(InflowData, 1, InflowCount);
 
                 string b3 = BathygraphyCount + ";" +
-                            GetRowData(BathygraphyTableData, 0, BathygraphyCount) + ";" +
-                            GetRowData(BathygraphyTableData, 1, BathygraphyCount);
+                            GetRowData(BathygraphyData, 0, BathygraphyCount) + ";" +
+                            GetRowData(BathygraphyData, 1, BathygraphyCount);
 
                 string b4 = CharacteristicOfDownstreamCount + ";" +
-                            GetRowData(CharacteristicOfDownstreamTableData, 0, CharacteristicOfDownstreamCount) + ";" +
-                            GetRowData(CharacteristicOfDownstreamTableData, 1, CharacteristicOfDownstreamCount);
+                            GetRowData(DownstreamData, 0, CharacteristicOfDownstreamCount) + ";" +
+                            GetRowData(DownstreamData, 1, CharacteristicOfDownstreamCount);
 
-                string b5 = GetRowData(RemainderAccordingDispatchScheduleTableData, 0, 12);
-                string b6 = GetRowData(IntakeFromReservoirTableData, 0, 12);
+                string b5 = GetRowData(RemainderData, 1, 12);
+                string b6 = GetRowData(IntakeData, 1, 12);
 
                 // 3. Сборка и сохранение
                 string content = string.Join(Environment.NewLine, new[] { b1, b2, b3, b4, b5, b6 });
@@ -594,18 +552,49 @@ namespace WRST.maui
         }
 
         // Универсальный метод с поддержкой форматов чисел
-        private string GetRowData(double[,] data, int rowIndex, int count)
+        //private string GetRowData(ObservableCollection<TableRow> table, int columnIndex, int count)
+        //{
+        //    var culture = CultureInfo.InvariantCulture;
+        //    return string.Join(";", Enumerable.Range(0, count).Select(i =>
+        //    {
+        //        if (i < table.Count && columnIndex < table[i].Cells.Count)
+        //        {
+        //            // Пытаемся распарсить значение как число
+        //            if (double.TryParse(table[i].Cells[columnIndex], NumberStyles.Any, culture, out double val))
+        //            {
+        //                return val.ToString(culture);
+        //            }
+        //        }
+        //        return "0";
+        //    }));
+        //}
+        private string GetRowData(ObservableCollection<TableRow> table, int rowIndex, int count)
         {
             var culture = CultureInfo.InvariantCulture;
-            return string.Join(";", Enumerable.Range(0, count).Select(i =>
+
+            // Проверяем, существует ли вообще строка с таким индексом в таблице
+            if (rowIndex >= table.Count)
             {
-                var val = data[rowIndex, i];
-                // Если это число (double/decimal/float), форматируем с точкой
-                return val is IFormattable formattable
-                    ? formattable.ToString(null, culture)
-                    : (val.ToString() ?? "0");
+                // Возвращаем строку из нулей, если строки нет
+                return string.Join(";", Enumerable.Repeat("0", count));
+            }
+
+            var row = table[rowIndex];
+
+            return string.Join(";", Enumerable.Range(0, count).Select(cellIndex =>
+            {
+                // Проверяем, что индекс ячейки не выходит за границы списка Cells
+                if (cellIndex < row.Cells.Count)
+                {
+                    // Пытаемся распарсить значение как число
+                    if (double.TryParse(row.Cells[cellIndex], NumberStyles.Any, culture, out double val))
+                    {
+                        return val.ToString(culture);
+                    }
+                }
+                return "0"; // Если ячейки нет или там не число
             }));
-        }
+        } 
 
         // Выполнение расчета
         private void Execute_Click(object sender, EventArgs e)
@@ -617,7 +606,7 @@ namespace WRST.maui
             GetFields();
 
             // Проверяем кпд агрегата
-            if(Efficiency >= 1)
+            if (Efficiency >= 1)
             {
                 DisplayAlertAsync("Ошибка", "Кпд агрегата не может быть равен\nили больше единицы", "OK");
                 return;
@@ -630,23 +619,23 @@ namespace WRST.maui
             double CurrentConsumption = 0; // Текущий расход ГЭС
             double IdleDischargeFlowRate = 0; // Расход холостых сбросов
             double IncreaseVolume = 0; // Приращение объема водохранилища
-            double ResidualVolumePreviousMonth = 
+            double ResidualVolumePreviousMonth =
                 RemainderAccordingDispatchScheduleTableData[0, CalendarMonth - 1]; // Диспетчерский остаток 
                                                                                    // в предыдущем месяце (т.к. начинаем с полного водохранилища, то он 
                                                                                    // д.б. равен полезному объему)
             double ResidualVolumeCurrentMonth = 0; // Диспетчерский остаток в текущем месяце
             double RequiredVolumeAccordingDispatchSchedule = 0; // Требуемый объем по диспетчерскому графику
-            double[] Consumption = new double [InflowCount]; // Фактический расход ГЭС
-            double[] IdleReset = new double [InflowCount]; // Фактические холостые сбросы
-            double[] ActualResidualVolume = new double [InflowCount]; // Фактический остаточный объем
-                                                                      // над диспетчерским графиком
+            double[] Consumption = new double[InflowCount]; // Фактический расход ГЭС
+            double[] IdleReset = new double[InflowCount]; // Фактические холостые сбросы
+            double[] ActualResidualVolume = new double[InflowCount]; // Фактический остаточный объем
+                                                                     // над диспетчерским графиком
             double VolumeInReservoir = 0; // Объем в водохранилище
             double DischargeIntoDownstream = 0; // Расход в нижний бьеф
-            double[] UpstreamLevel = new double [InflowCount]; // Отметка ВБ
-            double[] DownstreamLevel = new double [InflowCount]; // Отметка НБ
-            double[] StaticHead = new double [InflowCount]; // Статический напор ГЭС
+            double[] UpstreamLevel = new double[InflowCount]; // Отметка ВБ
+            double[] DownstreamLevel = new double[InflowCount]; // Отметка НБ
+            double[] StaticHead = new double[InflowCount]; // Статический напор ГЭС
             double HeadLoss = 0; // Потери напора ГЭС
-            double[] Power = new double [InflowCount]; // Мощность ГЭС
+            double[] Power = new double[InflowCount]; // Мощность ГЭС
 
             while (MonthOrdinalNumber < InflowCount)
             {
@@ -659,19 +648,19 @@ namespace WRST.maui
                 IncreaseVolume = (InflowTableData[0, MonthOrdinalNumber] - CurrentConsumption -
                     IdleDischargeFlowRate - IntakeFromReservoirTableData[0, CalendarMonth]) * 2.63;
                 ResidualVolumeCurrentMonth = ResidualVolumePreviousMonth + IncreaseVolume;
-                RequiredVolumeAccordingDispatchSchedule = 
+                RequiredVolumeAccordingDispatchSchedule =
                     RemainderAccordingDispatchScheduleTableData[0, CalendarMonth];
-                
+
                 // Вариант 2 - вышли за НПУ
-                if (ResidualVolumeCurrentMonth > UsefulVolume)
+                if (ResidualVolumeCurrentMonth > UsefullVolume)
                 {
-                    CurrentConsumption = CurrentConsumption + (ResidualVolumeCurrentMonth - UsefulVolume) / 2.63;
+                    CurrentConsumption = CurrentConsumption + (ResidualVolumeCurrentMonth - UsefullVolume) / 2.63;
                     if (CurrentConsumption > FullDischarge)
                     // Холостые сбросы
                     {
                         IdleDischargeFlowRate = CurrentConsumption - FullDischarge;
                         CurrentConsumption = FullDischarge;
-                        ResidualVolumeCurrentMonth = UsefulVolume;
+                        ResidualVolumeCurrentMonth = UsefullVolume;
                     }
                     else
                     // Нет сбросов
@@ -684,7 +673,7 @@ namespace WRST.maui
                 // Вариант 3 - ниже диспетчерской линии
                 else if (ResidualVolumeCurrentMonth < RequiredVolumeAccordingDispatchSchedule)
                 {
-                    CurrentConsumption = CurrentConsumption + 
+                    CurrentConsumption = CurrentConsumption +
                         (ResidualVolumeCurrentMonth - RequiredVolumeAccordingDispatchSchedule) / 2.63;
                     IncreaseVolume = (InflowTableData[0, MonthOrdinalNumber] - CurrentConsumption -
                         IdleDischargeFlowRate - IntakeFromReservoirTableData[0, CalendarMonth]) * 2.63;
@@ -694,15 +683,15 @@ namespace WRST.maui
                 // Запоминаем результаты и вычисляем статический напор, мощность
                 Consumption[MonthOrdinalNumber] = CurrentConsumption;
                 IdleReset[MonthOrdinalNumber] = IdleDischargeFlowRate;
-                ActualResidualVolume[MonthOrdinalNumber] = ResidualVolumeCurrentMonth - 
+                ActualResidualVolume[MonthOrdinalNumber] = ResidualVolumeCurrentMonth -
                     RequiredVolumeAccordingDispatchSchedule;
                 VolumeInReservoir = ResidualVolumeCurrentMonth + UselessVolume;
                 DischargeIntoDownstream = CurrentConsumption + IdleDischargeFlowRate;
-                UpstreamLevel[MonthOrdinalNumber] = 
+                UpstreamLevel[MonthOrdinalNumber] =
                     LinearInterpolation(VolumeInReservoir, BathygraphyTableData);
                 DownstreamLevel[MonthOrdinalNumber] =
                     LinearInterpolation(DischargeIntoDownstream, CharacteristicOfDownstreamTableData);
-                StaticHead[MonthOrdinalNumber] = UpstreamLevel[MonthOrdinalNumber] - 
+                StaticHead[MonthOrdinalNumber] = UpstreamLevel[MonthOrdinalNumber] -
                     DownstreamLevel[MonthOrdinalNumber];
 
                 object selectedValue = RadioButtonGroup.GetSelectedValue(RadioGroup);
@@ -718,7 +707,7 @@ namespace WRST.maui
                         HeadLoss = kHeadLoss * CurrentConsumption * CurrentConsumption;
                     }
                 }
-                Power[MonthOrdinalNumber] = 9.81 * CurrentConsumption * 
+                Power[MonthOrdinalNumber] = 9.81 * CurrentConsumption *
                     (StaticHead[MonthOrdinalNumber] - HeadLoss) * Efficiency;
 
                 // Переприсваивание
@@ -735,7 +724,7 @@ namespace WRST.maui
             for (int i = 0; i < InflowCount; i++)
             {
                 MonthIdleResetVolume = IdleReset[i] * 2.63;
-                SumIdleResetVolume =+ MonthIdleResetVolume;
+                SumIdleResetVolume += MonthIdleResetVolume;
             }
 
             // Среднегодовая выработка
@@ -745,12 +734,12 @@ namespace WRST.maui
             for (int i = 0; i < InflowCount; i++)
             {
                 MonthElectricityProduction = Power[i] * 720;
-                SumElectricityProduction =+ MonthElectricityProduction;
+                SumElectricityProduction += MonthElectricityProduction;
             }
             AverageAnnualElectricityGeneration = SumElectricityProduction * 12 / InflowCount;
         }
 
-        private double LinearInterpolation (double argument, double[,] xy)
+        private double LinearInterpolation(double argument, double[,] xy)
         {
             int i1 = 0;
             double dx = 0;
@@ -768,7 +757,7 @@ namespace WRST.maui
             }
             i1 = quantity - 2;
             dx = xy[0, quantity - 1] - xy[0, i1];
-            result = (xy[1, quantity - 1] * (argument - xy[0, i1]) - 
+            result = (xy[1, quantity - 1] * (argument - xy[0, i1]) -
                 xy[1, i1] * (argument - xy[0, quantity - 1])) / dx;
             return result;
         }
@@ -776,7 +765,7 @@ namespace WRST.maui
         private void GetFields()
         {
             if (!double.TryParse(UsefulVolumeInput.Text, NumberStyles.Any,
-                CultureInfo.InvariantCulture, out UsefulVolume)) return;
+                CultureInfo.InvariantCulture, out UsefullVolume)) return;
             if (!double.TryParse(UselessVolumeInput.Text, NumberStyles.Any,
                 CultureInfo.InvariantCulture, out UselessVolume)) return;
             if (!double.TryParse(GuaranteedDischargeInput.Text, NumberStyles.Any,

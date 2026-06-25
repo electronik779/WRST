@@ -30,23 +30,23 @@
                     </Grid>
                 </CollectionView.Header>
 
-                <CollectionView.ItemTemplate>
-                    <DataTemplate x:DataType="local:TableRow">
-                        <Grid ColumnDefinitions="40,50,70,70,70,80,80,100,80,100" BackgroundColor="{Binding RowBackgroundColor}">
-                            <Label Text="{Binding Col1}" Grid.Column="0" HorizontalTextAlignment="Center"/>
-                            <Label Text="{Binding Col2}" Grid.Column="1" HorizontalTextAlignment="Center"/>
-                            <Label Text="{Binding Col3}" Grid.Column="2" HorizontalTextAlignment="End"/>
-                            <Label Text="{Binding Col4}" Grid.Column="3" HorizontalTextAlignment="End"/>
-                            <Label Text="{Binding Col5}" Grid.Column="4" HorizontalTextAlignment="End"/>
-                            <Label Text="{Binding Col6}" Grid.Column="5" HorizontalTextAlignment="End"/>
-                            <Label Text="{Binding Col7}" Grid.Column="6" HorizontalTextAlignment="End"/>
-                            <Label Text="{Binding Col8}" Grid.Column="7" HorizontalTextAlignment="End"/>
-                            <Label Text="{Binding Col9}" Grid.Column="8" HorizontalTextAlignment="End"/>
-                            <Label Text="{Binding Col10}" Grid.Column="9" HorizontalTextAlignment="End"/>
-                        </Grid>
-                    </DataTemplate>
-                </CollectionView.ItemTemplate>
-            </CollectionView>
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="local:TableRow">
+                            <Grid ColumnDefinitions="40,50,70,70,70,80,80,100,80,100" BackgroundColor="{Binding RowBackgroundColor}">
+                                <Label Text="{Binding Cells[0]}" Grid.Column="0" HorizontalTextAlignment="Center"/>
+                                <Label Text="{Binding Cells[1]}" Grid.Column="1" HorizontalTextAlignment="Center"/>
+                                <Label Text="{Binding Cells[2]}" Grid.Column="2" HorizontalTextAlignment="End"/>
+                                <Label Text="{Binding Cells[3]}" Grid.Column="3" HorizontalTextAlignment="End"/>
+                                <Label Text="{Binding Cells[4]}" Grid.Column="4" HorizontalTextAlignment="End"/>
+                                <Label Text="{Binding Cells[5]}" Grid.Column="5" HorizontalTextAlignment="End"/>
+                                <Label Text="{Binding Cells[6]}" Grid.Column="6" HorizontalTextAlignment="End"/>
+                                <Label Text="{Binding Cells[7]}" Grid.Column="7" HorizontalTextAlignment="End"/>
+                                <Label Text="{Binding Cells[8]}" Grid.Column="8" HorizontalTextAlignment="End"/>
+                                <Label Text="{Binding Cells[9]}" Grid.Column="9" HorizontalTextAlignment="End"/>
+                            </Grid>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
 
             <!--<CollectionView Grid.Row="1" x:Name="TableSecurity">
 
