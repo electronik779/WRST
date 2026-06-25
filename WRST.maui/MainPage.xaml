@@ -42,6 +42,38 @@
                     </VisualStateGroupList>
                 </Setter>
             </Style>
+            
+            <Style x:Key="TableLabelStyle" TargetType="Label">
+                <!-- Автоматический цвет текста: черный для светлой темы, белый для темной -->
+                <Setter Property="TextColor" Value="{AppThemeBinding Light=Black, Dark=White}" />
+                <Setter Property="VerticalOptions" Value="Center" />
+            </Style>
+
+            <!-- Стиль для одиночных полей ввода параметров -->
+            <Style x:Key="ParamEntryStyle" TargetType="Entry">
+                <!-- Размеры и выравнивание -->
+                <Setter Property="WidthRequest" Value="150" />
+                <Setter Property="HorizontalOptions" Value="Start" />
+                <Setter Property="Keyboard" Value="Numeric" />
+
+                <!-- Адаптивные цвета для темной и светлой темы -->
+                <Setter Property="TextColor" Value="{AppThemeBinding Light=Black, Dark=White}" />
+                <Setter Property="BackgroundColor" Value="{AppThemeBinding Light=#F0F0F2, Dark=#2C2C2C}" />
+
+                <!-- Выделение текста при фокусе (Tab) -->
+                <Setter Property="VisualStateManager.VisualStateGroups">
+                    <VisualStateGroupList>
+                        <VisualStateGroup Name="CommonStates">
+                            <VisualState Name="Focused">
+                                <VisualState.Setters>
+                                    <Setter Property="CursorPosition" Value="0" />
+                                    <Setter Property="SelectionLength" Value="100" />
+                                </VisualState.Setters>
+                            </VisualState>
+                        </VisualStateGroup>
+                    </VisualStateGroupList>
+                </Setter>
+            </Style>
         </ResourceDictionary>
     </ContentPage.Resources>
 
@@ -53,16 +85,17 @@
                   RowSpacing="10">
 
                 <Label Grid.Row="0" Grid.Column="0" Text="Номер календарного месяца начала расчета" VerticalOptions="Center"/>
-                <Entry Grid.Row="0" Grid.Column="1" x:Name="BeginningMonthInput" TextChanged="OnIntEntryTextChanged" Keyboard="Numeric"/>
+                <Entry Grid.Row="0" Grid.Column="1" x:Name="BeginningMonthInput" Style="{StaticResource ParamEntryStyle}" TextChanged="OnIntEntryTextChanged" Keyboard="Numeric"/>
 
                 <Label Grid.Row="1" Grid.Column="0" Text="Количество значений притока" VerticalOptions="Center"/>
-                <Entry Grid.Row="1" Grid.Column="1" x:Name="InflowCountInput" TextChanged="OnIntEntryTextChanged" Keyboard="Numeric"/>
+                <Entry Grid.Row="1" Grid.Column="1" x:Name="InflowCountInput" Style="{StaticResource ParamEntryStyle}" TextChanged="OnIntEntryTextChanged" Keyboard="Numeric"/>
                 <Button Grid.Row="1" Grid.Column="2" Text="Создать" Margin="10,0,0,0" Clicked="InflowButton_Clicked" />
 
                 <!-- Таблица притока -->
                 <VerticalStackLayout Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Padding="10" Spacing="0">
                     <!-- Заголовок таблицы -->
                     <Label Text="{Binding HeaderText}" 
+                        Style="{StaticResource TableLabelStyle}"
                         FontAttributes="Bold" 
                         HorizontalOptions="Center"
                         Margin="0,0,0,0"/>
@@ -76,9 +109,10 @@
 
                             <CollectionView.ItemTemplate>
                                 <DataTemplate>
-                                    <Grid ColumnDefinitions="60,*" BackgroundColor="{Binding RowBackgroundColor}">
+                                    <Grid ColumnDefinitions="60,*" BackgroundColor="{AppThemeBinding Light=White, Dark=#1C1C1E}">
                                         <!-- Привязка к свойству RowLabel -->
                                         <Label Text="{Binding RowLabel}" 
+                                               Style="{StaticResource TableLabelStyle}"
                                             Grid.Column="0" 
                                             HorizontalTextAlignment="Center" 
                                             VerticalOptions="Center"/>
@@ -103,13 +137,13 @@
                 </VerticalStackLayout>
 
                 <Label Grid.Row="3" Grid.Column="0" Text="Полезный объем водохранилища, млн.м³" VerticalOptions="Center"/>
-                <Entry Grid.Row="3" Grid.Column="1" x:Name="UsefulVolumeInput" TextChanged="OnDoubleEntryTextChanged" Keyboard="Numeric"/>
+                <Entry Grid.Row="3" Grid.Column="1" x:Name="UsefulVolumeInput" Style="{StaticResource ParamEntryStyle}" TextChanged="OnDoubleEntryTextChanged" Keyboard="Numeric"/>
 
                 <Label Grid.Row="4" Grid.Column="0" Text="Мёртвый объем водохранилища, млн.м³" VerticalOptions="Center"/>
-                <Entry Grid.Row="4" Grid.Column="1" x:Name="UselessVolumeInput" TextChanged="OnDoubleEntryTextChanged" Keyboard="Numeric"/>
+                <Entry Grid.Row="4" Grid.Column="1" x:Name="UselessVolumeInput" Style="{StaticResource ParamEntryStyle}" TextChanged="OnDoubleEntryTextChanged" Keyboard="Numeric"/>
 
                 <Label Grid.Row="5" Grid.Column="0" Text="Количество точек характеристики верхнего бьефа" VerticalOptions="Center"/>
-                <Entry Grid.Row="5" Grid.Column="1" x:Name="BathygraphyCountInput" TextChanged="OnIntEntryTextChanged" Keyboard="Numeric"/>
+                <Entry Grid.Row="5" Grid.Column="1" x:Name="BathygraphyCountInput" Style="{StaticResource ParamEntryStyle}" TextChanged="OnIntEntryTextChanged" Keyboard="Numeric"/>
                 <Button Grid.Row="5" Grid.Column="2" Text="Создать" Margin="10,0,0,0" Clicked="BathygraphyButton_Clicked" />
 
                 <!-- Таблица верхнего бьефа -->
@@ -123,9 +157,10 @@
 
                             <CollectionView.ItemTemplate>
                                 <DataTemplate>
-                                    <Grid ColumnDefinitions="70,*" BackgroundColor="{Binding RowBackgroundColor}">
+                                    <Grid ColumnDefinitions="70,*" BackgroundColor="{AppThemeBinding Light=White, Dark=#1C1C1E}">
                                         <!-- Название строки в первом столбце -->
                                         <Label Text="{Binding RowLabel}" 
+                                               Style="{StaticResource TableLabelStyle}"
                                                Grid.Column="0" 
                                                HorizontalTextAlignment="Center" 
                                                VerticalOptions="Center"/>
@@ -155,6 +190,7 @@
                 <VerticalStackLayout Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="3" Padding="10" Spacing="0">
                     <!-- Заголовок таблицы -->
                     <Label Text="{Binding HeaderText}" 
+                           Style="{StaticResource TableLabelStyle}"
                         FontAttributes="Bold" 
                         HorizontalOptions="Center"
                         Margin="0,0,0,0"/>
@@ -168,9 +204,10 @@
 
                             <CollectionView.ItemTemplate>
                                 <DataTemplate>
-                                    <Grid ColumnDefinitions="60,*" BackgroundColor="{Binding RowBackgroundColor}">
+                                    <Grid ColumnDefinitions="60,*" BackgroundColor="{AppThemeBinding Light=White, Dark=#1C1C1E}">
                                         <!-- Привязка к свойству RowLabel -->
-                                        <Label Text="{Binding RowLabel}" 
+                                        <Label Text="{Binding RowLabel}"
+                                               Style="{StaticResource TableLabelStyle}"
                                             Grid.Column="0" 
                                             HorizontalTextAlignment="Center" 
                                             VerticalOptions="Center"/>
@@ -200,6 +237,7 @@
                 <VerticalStackLayout Grid.Row="10" Grid.Column="0" Grid.ColumnSpan="3" Padding="10" Spacing="0">
                     <!-- Заголовок таблицы -->
                     <Label Text="{Binding HeaderText}" 
+                           Style="{StaticResource TableLabelStyle}"
                         FontAttributes="Bold" 
                         HorizontalOptions="Center"
                         Margin="0,0,0,0"/>
@@ -213,9 +251,10 @@
 
                             <CollectionView.ItemTemplate>
                                 <DataTemplate>
-                                    <Grid ColumnDefinitions="60,*" BackgroundColor="{Binding RowBackgroundColor}">
+                                    <Grid ColumnDefinitions="60,*" BackgroundColor="{AppThemeBinding Light=White, Dark=#1C1C1E}">
                                         <!-- Привязка к свойству RowLabel -->
                                         <Label Text="{Binding RowLabel}" 
+                                               Style="{StaticResource TableLabelStyle}"
                                             Grid.Column="0" 
                                             HorizontalTextAlignment="Center" 
                                             VerticalOptions="Center"/>
@@ -240,7 +279,7 @@
                 </VerticalStackLayout>
 
                 <Label Grid.Row="11" Grid.Column="0" Text="Количество точек характеристики нижнего бьефа" VerticalOptions="Center"/>
-                <Entry Grid.Row="11" Grid.Column="1" x:Name="CharacteristicOfDownstreamCountInput" TextChanged="OnIntEntryTextChanged" Keyboard="Numeric"/>
+                <Entry Grid.Row="11" Grid.Column="1" x:Name="CharacteristicOfDownstreamCountInput" Style="{StaticResource ParamEntryStyle}" TextChanged="OnIntEntryTextChanged" Keyboard="Numeric"/>
                 <Button Grid.Row="11" Grid.Column="2" Text="Создать" Margin="10,0,0,0" Clicked="CharacteristicOfDownstreamButton_Clicked" />
 
                 <!-- Таблица нижнего бьефа -->
@@ -254,9 +293,10 @@
 
                             <CollectionView.ItemTemplate>
                                 <DataTemplate>
-                                    <Grid ColumnDefinitions="70,*" BackgroundColor="{Binding RowBackgroundColor}">
+                                    <Grid ColumnDefinitions="70,*" BackgroundColor="{AppThemeBinding Light=White, Dark=#1C1C1E}">
                                         <!-- Название строки в первом столбце -->
                                         <Label Text="{Binding RowLabel}" 
+                                               Style="{StaticResource TableLabelStyle}"
                                             Grid.Column="0" 
                                             HorizontalTextAlignment="Center" 
                                             VerticalOptions="Center"/>
@@ -282,21 +322,21 @@
 
                 <Label Grid.Row="13" Grid.Column="0" Text="Схема питания ГЭС" VerticalOptions="Center"/>
                 <VerticalStackLayout Grid.Row="13" Grid.Column="1" x:Name="RadioGroup">
-                    <RadioButton Content="индивидуальная" Value="0" CheckedChanged="OnRadioChanged" IsChecked="True" />
-                    <RadioButton Content="групповая"      Value="1" CheckedChanged="OnRadioChanged"/>
+                    <RadioButton Content="индивидуальная" Value="0" TextColor="{AppThemeBinding Light=Black, Dark=White}" CheckedChanged="OnRadioChanged" IsChecked="True" />
+                    <RadioButton Content="групповая"      Value="1" TextColor="{AppThemeBinding Light=Black, Dark=White}" CheckedChanged="OnRadioChanged"/>
                 </VerticalStackLayout>
 
                 <Label Grid.Row="14" Grid.Column="0" Text="Гарантированный расход ГЭС, м³/с" VerticalOptions="Center"/>
-                <Entry Grid.Row="14" Grid.Column="1" x:Name="GuaranteedDischargeInput" TextChanged="OnDoubleEntryTextChanged" Keyboard="Numeric"/>
+                <Entry Grid.Row="14" Grid.Column="1" x:Name="GuaranteedDischargeInput" Style="{StaticResource ParamEntryStyle}" TextChanged="OnDoubleEntryTextChanged" Keyboard="Numeric"/>
 
                 <Label Grid.Row="15" Grid.Column="0" Text="Полный (максимальный) расход ГЭС, м³/с" VerticalOptions="Center"/>
-                <Entry Grid.Row="15" Grid.Column="1" x:Name="FullDischargeInput" TextChanged="OnDoubleEntryTextChanged" Keyboard="Numeric"/>
+                <Entry Grid.Row="15" Grid.Column="1" x:Name="FullDischargeInput" Style="{StaticResource ParamEntryStyle}" TextChanged="OnDoubleEntryTextChanged" Keyboard="Numeric"/>
 
                 <Label Grid.Row="16" Grid.Column="0" x:Name="HeadLossLable" Text="Потери напора, м" VerticalOptions="Center"/>
-                <Entry Grid.Row="16" Grid.Column="1" x:Name="HeadLossInput" TextChanged="OnDoubleEntryTextChanged" Keyboard="Numeric"/>
+                <Entry Grid.Row="16" Grid.Column="1" x:Name="HeadLossInput" Style="{StaticResource ParamEntryStyle}" TextChanged="OnDoubleEntryTextChanged" Keyboard="Numeric"/>
 
                 <Label Grid.Row="17" Grid.Column="0" Text="Кпд гидроагрегата" VerticalOptions="Center"/>
-                <Entry Grid.Row="17" Grid.Column="1" x:Name="EfficiencyInput" TextChanged="OnDoubleEntryTextChanged" Keyboard="Numeric"/>
+                <Entry Grid.Row="17" Grid.Column="1" x:Name="EfficiencyInput" Style="{StaticResource ParamEntryStyle}" TextChanged="OnDoubleEntryTextChanged" Keyboard="Numeric"/>
             </Grid>
 
         </VerticalStackLayout>
