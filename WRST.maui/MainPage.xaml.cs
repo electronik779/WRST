@@ -1,9 +1,6 @@
 ﻿using CommunityToolkit.Maui.Storage;
-using Microsoft.Maui.Controls;
-using Microsoft.Maui.Graphics;
 using System.Collections.ObjectModel;
 using System.Data;
-using System.Diagnostics;
 using System.Globalization;
 using System.Text;
 
@@ -248,7 +245,7 @@ namespace WRST.maui
             inputRow.Index = 1;
             inputRow.IsEditable = true;
             inputRow.RowBackgroundColor = "White";
-            inputRow.RowLabel = "Приток, м³/с"; 
+            inputRow.RowLabel = "Приток, м³/с";
             inputRow.InitializeCells(InflowCount, "0");
             InflowData.Add(inputRow);
 
@@ -333,8 +330,8 @@ namespace WRST.maui
             inputRowFl.Index = 0;
             inputRowFl.IsEditable = true;
             inputRowFl.RowBackgroundColor = "White";
-            inputRowFl.RowLabel = "Расход, м³/с"; 
-            inputRowFl.InitializeCells(CharacteristicOfDownstreamCount, "0"); 
+            inputRowFl.RowLabel = "Расход, м³/с";
+            inputRowFl.InitializeCells(CharacteristicOfDownstreamCount, "0");
             DownstreamData.Add(inputRowFl);
 
             // Вторая строка - отметка
@@ -594,7 +591,7 @@ namespace WRST.maui
                 }
                 return "0"; // Если ячейки нет или там не число
             }));
-        } 
+        }
 
         // Выполнение расчета
         private void Execute_Click(object sender, EventArgs e)
