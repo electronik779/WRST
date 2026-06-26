@@ -18,24 +18,51 @@
                 <Setter Property="WidthRequest" Value="80" />
                 <Setter Property="Keyboard" Value="Numeric" />
 
-                <!-- АВТОМАТИЧЕСКИЙ ЦВЕТ ТЕКСТА: Черный для светлой темы, Белый для темной -->
+                <!-- АВТОМАТИЧЕСКИЙ ЦВЕТ ТЕКСТА: Черный для светлой темы, Белый для темной 
                 <Setter Property="TextColor" Value="{AppThemeBinding Light=Black, Dark=White}" />
 
-                <!-- АВТОМАТИЧЕСКИЙ ФОН ЯЧЕЙКИ: Белый для светлой, Темно-серый для темной -->
-                <Setter Property="BackgroundColor" Value="{AppThemeBinding Light=White, Dark=#2C2C2C}" />
+                АВТОМАТИЧЕСКИЙ ФОН ЯЧЕЙКИ: Белый для светлой, Темно-серый для темной 
+                <Setter Property="BackgroundColor" Value="{AppThemeBinding Light=White, Dark=#2C2C2C}" /> -->
 
                 <!-- Привязка IsEnabled и IsVisible к свойствам родительской строки TableRow -->
                 <Setter Property="IsEnabled" Value="{Binding Source={RelativeSource AncestorType={x:Type local:TableRow}}, Path=IsEditable}" />
-                <Setter Property="IsVisible" Value="{Binding Source={RelativeSource AncestorType={x:Type local:TableRow}}, Path=IsVisible}" />
+                <Setter Property="IsVisible" Value="{Binding Source={RelativeSource AncestorType={x:Type local:TableRow}}, Path=IsVisible}" /> 
 
                 <!-- Выделение текста при фокусе (Tab) -->
                 <Setter Property="VisualStateManager.VisualStateGroups">
                     <VisualStateGroupList>
                         <VisualStateGroup Name="CommonStates">
+                            <!-- Состояние по умолчанию -->
+                            <VisualState Name="Normal">
+                                <VisualState.Setters>
+                                    <Setter Property="TextColor" Value="{AppThemeBinding Light=Black, Dark=White}" />
+                                    <Setter Property="BackgroundColor" Value="{AppThemeBinding Light=White, Dark=#2C2C2C}" />
+                                </VisualState.Setters>
+                            </VisualState>
+
+                            <!-- Состояние при фокусе (Tab / Клик) -->
                             <VisualState Name="Focused">
                                 <VisualState.Setters>
-                                    <Setter Property="CursorPosition" Value="0" />
-                                    <Setter Property="SelectionLength" Value="100" />
+                                    <!-- <Setter Property="CursorPosition" Value="0" />
+                                    <Setter Property="SelectionLength" Value="100" /> -->
+                                    <Setter Property="TextColor" Value="{AppThemeBinding Light=Black, Dark=White}" />
+                                    <Setter Property="BackgroundColor" Value="{AppThemeBinding Light=White, Dark=#333333}" />
+                                </VisualState.Setters>
+                            </VisualState>
+
+                            <VisualState Name="Invalid">
+                                <VisualState.Setters>
+                                    <!-- Красный текст и светло-красный фон для ошибки -->
+                                    <Setter Property="TextColor" Value="Red" />
+                                    <Setter Property="BackgroundColor" Value="{AppThemeBinding Light=#FFEAEA, Dark=#4A2323}" />
+                                </VisualState.Setters>
+                            </VisualState>
+
+                            <!-- Состояние, когда поле заблокировано (IsEnabled="False") -->
+                            <VisualState Name="Disabled">
+                                <VisualState.Setters>
+                                    <Setter Property="TextColor" Value="{AppThemeBinding Light=Gray, Dark=#888888}" />
+                                    <Setter Property="BackgroundColor" Value="{AppThemeBinding Light=#E0E0E0, Dark=#1E1E1E}" />
                                 </VisualState.Setters>
                             </VisualState>
                         </VisualStateGroup>
@@ -56,18 +83,47 @@
                 <Setter Property="HorizontalOptions" Value="Start" />
                 <Setter Property="Keyboard" Value="Numeric" />
 
-                <!-- Адаптивные цвета для темной и светлой темы -->
+                <!-- Адаптивные цвета для темной и светлой темы 
                 <Setter Property="TextColor" Value="{AppThemeBinding Light=Black, Dark=White}" />
-                <Setter Property="BackgroundColor" Value="{AppThemeBinding Light=#F0F0F2, Dark=#2C2C2C}" />
+                <Setter Property="BackgroundColor" Value="{AppThemeBinding Light=#F0F0F2, Dark=#2C2C2C}" /> -->
 
                 <!-- Выделение текста при фокусе (Tab) -->
                 <Setter Property="VisualStateManager.VisualStateGroups">
                     <VisualStateGroupList>
                         <VisualStateGroup Name="CommonStates">
+                            <!-- Состояние по умолчанию -->
+                            <VisualState Name="Normal">
+                                <VisualState.Setters>
+                                    <Setter Property="TextColor" Value="{AppThemeBinding Light=Black, Dark=White}" />
+                                    <!-- Для ParamEntryStyle измените Light на #F0F0F2 -->
+                                    <Setter Property="BackgroundColor" Value="{AppThemeBinding Light=White, Dark=#2C2C2C}" />
+                                </VisualState.Setters>
+                            </VisualState>
+
+                            <!-- Состояние при фокусе (Tab / Клик) -->
                             <VisualState Name="Focused">
                                 <VisualState.Setters>
-                                    <Setter Property="CursorPosition" Value="0" />
-                                    <Setter Property="SelectionLength" Value="100" />
+                                    <!-- <Setter Property="CursorPosition" Value="0" />
+                                    <Setter Property="SelectionLength" Value="100" /> -->
+                                    <Setter Property="TextColor" Value="{AppThemeBinding Light=Black, Dark=White}" />
+                                    <!-- Для ParamEntryStyle измените Light на #F0F0F2 -->
+                                    <Setter Property="BackgroundColor" Value="{AppThemeBinding Light=White, Dark=#333333}" />
+                                </VisualState.Setters>
+                            </VisualState>
+
+                            <VisualState Name="Invalid">
+                                <VisualState.Setters>
+                                    <!-- Красный текст и светло-красный фон для ошибки -->
+                                    <Setter Property="TextColor" Value="Red" />
+                                    <Setter Property="BackgroundColor" Value="{AppThemeBinding Light=#FFEAEA, Dark=#4A2323}" />
+                                </VisualState.Setters>
+                            </VisualState>
+
+                            <!-- Состояние, когда поле заблокировано (IsEnabled="False") -->
+                            <VisualState Name="Disabled">
+                                <VisualState.Setters>
+                                    <Setter Property="TextColor" Value="{AppThemeBinding Light=Gray, Dark=#888888}" />
+                                    <Setter Property="BackgroundColor" Value="{AppThemeBinding Light=#E0E0E0, Dark=#1E1E1E}" />
                                 </VisualState.Setters>
                             </VisualState>
                         </VisualStateGroup>
@@ -88,7 +144,8 @@
                 <Entry Grid.Row="0" Grid.Column="1" x:Name="BeginningMonthInput" Style="{StaticResource ParamEntryStyle}" TextChanged="OnIntEntryTextChanged" Keyboard="Numeric"/>
 
                 <Label Grid.Row="1" Grid.Column="0" Text="Количество значений притока" VerticalOptions="Center"/>
-                <Entry Grid.Row="1" Grid.Column="1" x:Name="InflowCountInput" Style="{StaticResource ParamEntryStyle}" TextChanged="OnIntEntryTextChanged" Keyboard="Numeric"/>
+                <Entry Grid.Row="1" Grid.Column="1" x:Name="InflowCountInput" Style="{StaticResource ParamEntryStyle}" 
+                       TextChanged="OnIntEntryTextChanged" Keyboard="Numeric" Focused="OnEntryFocused"/>
                 <Button Grid.Row="1" Grid.Column="2" Text="Создать" Margin="10,0,0,0" Clicked="InflowButton_Clicked" />
 
                 <!-- Таблица притока -->
@@ -125,7 +182,8 @@
                                                     <!-- Применяем созданный стиль через StaticResource -->
                                                     <Entry Text="{Binding .}" 
                                                         Style="{StaticResource TableCellEntryStyle}"
-                                                        TextChanged="OnDoubleEntryTextChanged" />
+                                                        TextChanged="OnDoubleEntryTextChanged" 
+                                                           Focused="OnEntryFocused"/>
                                                 </DataTemplate>
                                             </BindableLayout.ItemTemplate>
                                         </StackLayout>
@@ -137,13 +195,16 @@
                 </VerticalStackLayout>
 
                 <Label Grid.Row="3" Grid.Column="0" Text="Полезный объем водохранилища, млн.м³" VerticalOptions="Center"/>
-                <Entry Grid.Row="3" Grid.Column="1" x:Name="UsefulVolumeInput" Style="{StaticResource ParamEntryStyle}" TextChanged="OnDoubleEntryTextChanged" Keyboard="Numeric"/>
+                <Entry Grid.Row="3" Grid.Column="1" x:Name="UsefulVolumeInput" Style="{StaticResource ParamEntryStyle}" 
+                       TextChanged="OnDoubleEntryTextChanged" Keyboard="Numeric" Focused="OnEntryFocused"/>
 
                 <Label Grid.Row="4" Grid.Column="0" Text="Мёртвый объем водохранилища, млн.м³" VerticalOptions="Center"/>
-                <Entry Grid.Row="4" Grid.Column="1" x:Name="UselessVolumeInput" Style="{StaticResource ParamEntryStyle}" TextChanged="OnDoubleEntryTextChanged" Keyboard="Numeric"/>
+                <Entry Grid.Row="4" Grid.Column="1" x:Name="UselessVolumeInput" Style="{StaticResource ParamEntryStyle}" 
+                       TextChanged="OnDoubleEntryTextChanged" Keyboard="Numeric" Focused="OnEntryFocused"/>
 
                 <Label Grid.Row="5" Grid.Column="0" Text="Количество точек характеристики верхнего бьефа" VerticalOptions="Center"/>
-                <Entry Grid.Row="5" Grid.Column="1" x:Name="BathygraphyCountInput" Style="{StaticResource ParamEntryStyle}" TextChanged="OnIntEntryTextChanged" Keyboard="Numeric"/>
+                <Entry Grid.Row="5" Grid.Column="1" x:Name="BathygraphyCountInput" Style="{StaticResource ParamEntryStyle}" 
+                       TextChanged="OnIntEntryTextChanged" Keyboard="Numeric" Focused="OnEntryFocused"/>
                 <Button Grid.Row="5" Grid.Column="2" Text="Создать" Margin="10,0,0,0" Clicked="BathygraphyButton_Clicked" />
 
                 <!-- Таблица верхнего бьефа -->
@@ -173,7 +234,8 @@
                                                     <!-- Применяем созданный стиль через StaticResource -->
                                                     <Entry Text="{Binding .}" 
                                                         Style="{StaticResource TableCellEntryStyle}"
-                                                        TextChanged="OnDoubleEntryTextChanged" />
+                                                        TextChanged="OnDoubleEntryTextChanged" 
+                                                           Focused="OnEntryFocused"/>
                                                 </DataTemplate>
                                             </BindableLayout.ItemTemplate>
                                         </StackLayout>
@@ -220,7 +282,8 @@
                                                     <!-- Применяем созданный стиль через StaticResource -->
                                                     <Entry Text="{Binding .}" 
                                                         Style="{StaticResource TableCellEntryStyle}"
-                                                        TextChanged="OnDoubleEntryTextChanged" />
+                                                        TextChanged="OnDoubleEntryTextChanged" 
+                                                           Focused="OnEntryFocused"/>
                                                 </DataTemplate>
                                             </BindableLayout.ItemTemplate>
                                         </StackLayout>
@@ -267,7 +330,8 @@
                                                     <!-- Применяем созданный стиль через StaticResource -->
                                                     <Entry Text="{Binding .}" 
                                                         Style="{StaticResource TableCellEntryStyle}"
-                                                        TextChanged="OnDoubleEntryTextChanged" />
+                                                        TextChanged="OnDoubleEntryTextChanged" 
+                                                           Focused="OnEntryFocused"/>
                                                 </DataTemplate>
                                             </BindableLayout.ItemTemplate>
                                         </StackLayout>
@@ -279,7 +343,8 @@
                 </VerticalStackLayout>
 
                 <Label Grid.Row="11" Grid.Column="0" Text="Количество точек характеристики нижнего бьефа" VerticalOptions="Center"/>
-                <Entry Grid.Row="11" Grid.Column="1" x:Name="CharacteristicOfDownstreamCountInput" Style="{StaticResource ParamEntryStyle}" TextChanged="OnIntEntryTextChanged" Keyboard="Numeric"/>
+                <Entry Grid.Row="11" Grid.Column="1" x:Name="CharacteristicOfDownstreamCountInput" Style="{StaticResource ParamEntryStyle}" 
+                       TextChanged="OnIntEntryTextChanged" Keyboard="Numeric" Focused="OnEntryFocused"/>
                 <Button Grid.Row="11" Grid.Column="2" Text="Создать" Margin="10,0,0,0" Clicked="CharacteristicOfDownstreamButton_Clicked" />
 
                 <!-- Таблица нижнего бьефа -->
@@ -309,7 +374,8 @@
                                                     <!-- Применяем созданный стиль через StaticResource -->
                                                     <Entry Text="{Binding .}" 
                                                         Style="{StaticResource TableCellEntryStyle}"
-                                                        TextChanged="OnDoubleEntryTextChanged" />
+                                                        TextChanged="OnDoubleEntryTextChanged" 
+                                                           Focused="OnEntryFocused"/>
                                                 </DataTemplate>
                                             </BindableLayout.ItemTemplate>
                                         </StackLayout>
@@ -322,21 +388,27 @@
 
                 <Label Grid.Row="13" Grid.Column="0" Text="Схема питания ГЭС" VerticalOptions="Center"/>
                 <VerticalStackLayout Grid.Row="13" Grid.Column="1" x:Name="RadioGroup">
-                    <RadioButton Content="индивидуальная" Value="0" TextColor="{AppThemeBinding Light=Black, Dark=White}" CheckedChanged="OnRadioChanged" IsChecked="True" />
-                    <RadioButton Content="групповая"      Value="1" TextColor="{AppThemeBinding Light=Black, Dark=White}" CheckedChanged="OnRadioChanged"/>
+                    <RadioButton Content="индивидуальная" Value="0" TextColor="{AppThemeBinding Light=Black, Dark=White}" 
+                                 CheckedChanged="OnRadioChanged" IsChecked="True" />
+                    <RadioButton Content="групповая" Value="1" TextColor="{AppThemeBinding Light=Black, Dark=White}" 
+                                 CheckedChanged="OnRadioChanged"/>
                 </VerticalStackLayout>
 
                 <Label Grid.Row="14" Grid.Column="0" Text="Гарантированный расход ГЭС, м³/с" VerticalOptions="Center"/>
-                <Entry Grid.Row="14" Grid.Column="1" x:Name="GuaranteedDischargeInput" Style="{StaticResource ParamEntryStyle}" TextChanged="OnDoubleEntryTextChanged" Keyboard="Numeric"/>
+                <Entry Grid.Row="14" Grid.Column="1" x:Name="GuaranteedDischargeInput" Style="{StaticResource ParamEntryStyle}" 
+                       TextChanged="OnDoubleEntryTextChanged" Keyboard="Numeric" Focused="OnEntryFocused"/>
 
                 <Label Grid.Row="15" Grid.Column="0" Text="Полный (максимальный) расход ГЭС, м³/с" VerticalOptions="Center"/>
-                <Entry Grid.Row="15" Grid.Column="1" x:Name="FullDischargeInput" Style="{StaticResource ParamEntryStyle}" TextChanged="OnDoubleEntryTextChanged" Keyboard="Numeric"/>
+                <Entry Grid.Row="15" Grid.Column="1" x:Name="FullDischargeInput" Style="{StaticResource ParamEntryStyle}" 
+                       TextChanged="OnDoubleEntryTextChanged" Keyboard="Numeric" Focused="OnEntryFocused"/>
 
                 <Label Grid.Row="16" Grid.Column="0" x:Name="HeadLossLable" Text="Потери напора, м" VerticalOptions="Center"/>
-                <Entry Grid.Row="16" Grid.Column="1" x:Name="HeadLossInput" Style="{StaticResource ParamEntryStyle}" TextChanged="OnDoubleEntryTextChanged" Keyboard="Numeric"/>
+                <Entry Grid.Row="16" Grid.Column="1" x:Name="HeadLossInput" Style="{StaticResource ParamEntryStyle}" 
+                       TextChanged="OnDoubleEntryTextChanged" Keyboard="Numeric" Focused="OnEntryFocused"/>
 
                 <Label Grid.Row="17" Grid.Column="0" Text="Кпд гидроагрегата" VerticalOptions="Center"/>
-                <Entry Grid.Row="17" Grid.Column="1" x:Name="EfficiencyInput" Style="{StaticResource ParamEntryStyle}" TextChanged="OnDoubleEntryTextChanged" Keyboard="Numeric"/>
+                <Entry Grid.Row="17" Grid.Column="1" x:Name="EfficiencyInput" Style="{StaticResource ParamEntryStyle}" 
+                       TextChanged="OnDoubleEntryTextChanged" Keyboard="Numeric" Focused="OnEntryFocused"/>
             </Grid>
 
         </VerticalStackLayout>

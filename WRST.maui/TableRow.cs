@@ -1,4 +1,6 @@
-﻿using System.ComponentModel;
+﻿using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Globalization;
 using System.Runtime.CompilerServices;
 
 namespace WRST.maui
@@ -6,7 +8,7 @@ namespace WRST.maui
     public class TableRow : INotifyPropertyChanged
     {
         private int _index;
-        private List<string> _cells;
+        private ObservableCollection<string> _cells;
         private string _rowBackgroundColor;
         private bool _isEditable;
         private bool _isVisible;
@@ -26,7 +28,7 @@ namespace WRST.maui
             }
         }
 
-        public List<string> Cells
+        public ObservableCollection<string> Cells
         {
             get => _cells;
             set
@@ -80,7 +82,7 @@ namespace WRST.maui
 
         public TableRow()
         {
-            Cells = new List<string>();
+            Cells = new ObservableCollection<string>();
             RowBackgroundColor = "White";
             IsEditable = true;
             IsVisible = true;
@@ -102,9 +104,9 @@ namespace WRST.maui
             {
                 Cells[index] = value;
                 //OnPropertyChanged(nameof(Cells));
-                var temp = Cells;
-                Cells = null;
-                Cells = temp;
+                //var temp = Cells;
+                //Cells = null;
+                //Cells = temp;
             }
         }
 
@@ -117,56 +119,16 @@ namespace WRST.maui
             return string.Empty;
         }
 
-        // Генерация заголовков для горизонтальной таблицы
-        public void GenerateHeaderCells(int count, int startValue = 1)
-        {
-            InitializeCells(count, "");
-            Cells[0] = "#"; // Первый столбец всегда "#"
-            for (int i = 1; i < count; i++)
-            {
-                Cells[i] = (startValue + i - 1).ToString();
-            }
-        }
-
-        // Генерация строк данных для ввода
-        public void GenerateInputCells(int count, string defaultValue = "0")
-        {
-            InitializeCells(count, defaultValue);
-            Cells[0] = "Приток"; // Название строки
-        }
-
-        // Генерация вертикальной таблицы
-        public void GenerateVerticalHeader(List<string> headers)
-        {
-            InitializeCells(headers.Count, "");
-            for (int i = 0; i < headers.Count; i++)
-            {
-                Cells[i] = headers[i];
-            }
-        }
-
-        // Генерация вертикальных значений
-        public void GenerateVerticalValues(List<string> values)
-        {
-            if (values.Count > Cells.Count)
-            {
-                while (Cells.Count < values.Count)
-                {
-                    Cells.Add("");
-                }
-            }
-
-            for (int i = 0; i < values.Count; i++)
-            {
-                Cells[i] = values[i];
-            }
-        }
-
         public event PropertyChangedEventHandler PropertyChanged;
 
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        public void RaiseCellsChanged()
+        {
+            OnPropertyChanged(nameof(Cells));
         }
     }
 
