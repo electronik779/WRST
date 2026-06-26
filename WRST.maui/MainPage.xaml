@@ -52,7 +52,7 @@
             <!-- Стиль для одиночных полей ввода параметров -->
             <Style x:Key="ParamEntryStyle" TargetType="Entry">
                 <!-- Размеры и выравнивание -->
-                <Setter Property="WidthRequest" Value="150" />
+                <Setter Property="WidthRequest" Value="240" />
                 <Setter Property="HorizontalOptions" Value="Start" />
                 <Setter Property="Keyboard" Value="Numeric" />
 

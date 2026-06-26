@@ -28,11 +28,11 @@ namespace WRST.maui
         double Efficiency = 0; // Кпд агрегата
 
         // Исходные данные. Массивы (строки x столбцы)
-        double[,] InflowTableData = new double[0, 0]; // Приток. Т1
-        double[,] BathygraphyTableData = new double[0, 0]; // характеристика верхнего бьефа. Т2
-        double[,] RemainderAccordingDispatchScheduleTableData = new double[0, 0]; // Диспетчерские остатки. Т3
-        double[,] IntakeFromReservoirTableData = new double[0, 0]; // Отбор из водохранилища. Т4
-        double[,] CharacteristicOfDownstreamTableData = new double[0, 0]; // Характеристика нижнего бьефа. Любой другой префикс 
+        double[,] InflowTableData = new double[0, 0]; // Приток.
+        double[,] BathygraphyTableData = new double[0, 0]; // характеристика верхнего бьефа.
+        double[,] RemainderAccordingDispatchScheduleTableData = new double[0, 0]; // Диспетчерские остатки.
+        double[,] IntakeFromReservoirTableData = new double[0, 0]; // Отбор из водохранилища.
+        double[,] CharacteristicOfDownstreamTableData = new double[0, 0]; // Характеристика нижнего бьефа. 
 
         public MainPage()
         {
@@ -467,12 +467,23 @@ namespace WRST.maui
             // table[0] is header, table[1] is data
             if (table.Count < 2) return;
 
+            var culture = CultureInfo.InvariantCulture;
+
             for (int i = 0; i < data1.Count; i++)
             {
-                string valStr = double.TryParse(data1[i], NumberStyles.Any, CultureInfo.InvariantCulture,
-                    out double val) ? val.ToString(CultureInfo.InvariantCulture) : "0";
+                string rawValue1 = data1[i];
 
-                table[1].SetCell(i, valStr);
+                if (!string.IsNullOrWhiteSpace(rawValue1))
+                {
+                    rawValue1 = rawValue1.Replace(',', '.');
+
+                    if(double.TryParse(rawValue1, NumberStyles.Any, culture, out double value))
+                    {
+                        table[1].SetCell(i, value.ToString(culture));
+                        continue;
+                    }
+                }
+                table[1].SetCell(i, "0");
             }
         }
 
@@ -481,15 +492,36 @@ namespace WRST.maui
             // table[0] is row 1 data, table[1] is row 2 data
             if (table.Count < 2) return;
 
+            var culture = CultureInfo.InvariantCulture;
+
             for (int i = 0; i < data1.Count; i++)
             {
-                string valStr1 = double.TryParse(data1[i], NumberStyles.Any, CultureInfo.InvariantCulture,
-                    out double val1) ? val1.ToString(CultureInfo.InvariantCulture) : "0";
-                table[0].SetCell(i, valStr1);
+                string rawValue1 = data1[i];
+                string rawValue2 = data2[i];
 
-                string valStr2 = double.TryParse(data2[i], NumberStyles.Any, CultureInfo.InvariantCulture,
-                    out double val2) ? val2.ToString(CultureInfo.InvariantCulture) : "0";
-                table[1].SetCell(i, valStr2);
+                if (!string.IsNullOrWhiteSpace(rawValue1))
+                {
+                    rawValue1 = rawValue1.Replace(',', '.');
+
+                    if (double.TryParse(rawValue1, NumberStyles.Any, culture, out double value))
+                    {
+                        table[0].SetCell(i, value.ToString(culture));
+                        continue;
+                    }
+                }
+                table[0].SetCell(i, "0");
+
+                if (!string.IsNullOrWhiteSpace(rawValue1))
+                {
+                    rawValue2 = rawValue2.Replace(',', '.');
+
+                    if (double.TryParse(rawValue2, NumberStyles.Any, culture, out double value))
+                    {
+                        table[1].SetCell(i, value.ToString(culture));
+                        continue;
+                    }
+                }
+                table[1].SetCell(i, "0");
             }
         }
 
@@ -549,22 +581,6 @@ namespace WRST.maui
         }
 
         // Универсальный метод с поддержкой форматов чисел
-        //private string GetRowData(ObservableCollection<TableRow> table, int columnIndex, int count)
-        //{
-        //    var culture = CultureInfo.InvariantCulture;
-        //    return string.Join(";", Enumerable.Range(0, count).Select(i =>
-        //    {
-        //        if (i < table.Count && columnIndex < table[i].Cells.Count)
-        //        {
-        //            // Пытаемся распарсить значение как число
-        //            if (double.TryParse(table[i].Cells[columnIndex], NumberStyles.Any, culture, out double val))
-        //            {
-        //                return val.ToString(culture);
-        //            }
-        //        }
-        //        return "0";
-        //    }));
-        //}
         private string GetRowData(ObservableCollection<TableRow> table, int rowIndex, int count)
         {
             var culture = CultureInfo.InvariantCulture;
@@ -583,10 +599,17 @@ namespace WRST.maui
                 // Проверяем, что индекс ячейки не выходит за границы списка Cells
                 if (cellIndex < row.Cells.Count)
                 {
-                    // Пытаемся распарсить значение как число
-                    if (double.TryParse(row.Cells[cellIndex], NumberStyles.Any, culture, out double val))
+                    string rawValue = row.Cells[cellIndex];
+
+                    if (!string.IsNullOrWhiteSpace(rawValue))
                     {
-                        return val.ToString(culture);
+                        // Принудительно меняем запятую на точку для InvariantCulture
+                        rawValue = rawValue.Replace(',', '.');
+
+                        if (double.TryParse(rawValue, NumberStyles.Any, culture, out double val))
+                        {
+                            return val.ToString(culture);
+                        }
                     }
                 }
                 return "0"; // Если ячейки нет или там не число
@@ -601,6 +624,9 @@ namespace WRST.maui
 
             // Получаем значения из текстовых полей
             GetFields();
+
+            // Получаем значения из таблиц
+            GetTables();
 
             // Проверяем кпд агрегата
             if (Efficiency >= 1)
@@ -761,68 +787,120 @@ namespace WRST.maui
 
         private void GetFields()
         {
-            if (!double.TryParse(UsefulVolumeInput.Text, NumberStyles.Any,
-                CultureInfo.InvariantCulture, out UsefullVolume)) return;
-            if (!double.TryParse(UselessVolumeInput.Text, NumberStyles.Any,
-                CultureInfo.InvariantCulture, out UselessVolume)) return;
-            if (!double.TryParse(GuaranteedDischargeInput.Text, NumberStyles.Any,
-                CultureInfo.InvariantCulture, out GuaranteedDischarge)) return;
-            if (!double.TryParse(FullDischargeInput.Text, NumberStyles.Any,
-                CultureInfo.InvariantCulture, out FullDischarge)) return;
-            if (!double.TryParse(HeadLossInput.Text, NumberStyles.Any,
-                CultureInfo.InvariantCulture, out kHeadLoss)) return;
-            if (!double.TryParse(EfficiencyInput.Text, NumberStyles.Any,
-                CultureInfo.InvariantCulture, out Efficiency)) return;
+            var culture = CultureInfo.InvariantCulture;
+
+            if (!double.TryParse(UsefulVolumeInput.Text?.Replace(',', '.'), NumberStyles.Any, culture, out UsefullVolume)) return;
+            if (!double.TryParse(UselessVolumeInput.Text?.Replace(',', '.'), NumberStyles.Any, culture, out UselessVolume)) return;
+            if (!double.TryParse(GuaranteedDischargeInput.Text?.Replace(',', '.'), NumberStyles.Any, culture, out GuaranteedDischarge)) return;
+            if (!double.TryParse(FullDischargeInput.Text?.Replace(',', '.'), NumberStyles.Any, culture, out FullDischarge)) return;
+            if (!double.TryParse(HeadLossInput.Text?.Replace(',', '.'), NumberStyles.Any, culture, out kHeadLoss)) return;
+            if (!double.TryParse(EfficiencyInput.Text?.Replace(',', '.'), NumberStyles.Any, culture, out Efficiency)) return;
+        }
+
+        private void GetTables()
+        {
+            InflowTableData = new double[1, InflowCount];
+            BathygraphyTableData = new double[2, BathygraphyCount];
+            RemainderAccordingDispatchScheduleTableData = new double[1, 12];
+            IntakeFromReservoirTableData = new double[1, 12];
+            CharacteristicOfDownstreamTableData = new double[2, CharacteristicOfDownstreamCount];
+
+            FillArrayFromCollection(InflowData, InflowTableData);
+            FillArrayFromCollection(BathygraphyData, BathygraphyTableData);
+            FillArrayFromCollection(RemainderData, RemainderAccordingDispatchScheduleTableData);
+            FillArrayFromCollection(IntakeData, IntakeFromReservoirTableData);
+            FillArrayFromCollection(DownstreamData, CharacteristicOfDownstreamTableData);
+        }
+        private void FillArrayFromCollection(ObservableCollection<TableRow> collection, double[,] array)
+        {
+            int rows = array.GetLength(0);
+            int cols = array.GetLength(1);
+
+            for (int i = 0; i < rows; i++)
+            {
+                // Защита от выхода за границы, если в коллекции строк меньше, чем размерность массива
+                if (i >= collection.Count) break;
+
+                var row = collection[i];
+                if (row?.Cells == null) continue;
+
+                for (int j = 0; j < cols; j++)
+                {
+                    // Защита от выхода за границы списка Cells в строке
+                    if (j >= row.Cells.Count) break;
+
+                    string cellValue = row.Cells[j];
+
+                    // Заменяем запятые на точки для универсального парсинга дробных чисел
+                    if (!string.IsNullOrEmpty(cellValue))
+                    {
+                        cellValue = cellValue.Replace(',', '.');
+                    }
+
+                    // Безопасный парсинг. Если строка пустая или не число, запишется 0.0
+                    if (double.TryParse(cellValue, NumberStyles.Any, CultureInfo.InvariantCulture, out double parsedValue))
+                    {
+                        array[i, j] = parsedValue;
+                    }
+                    else
+                    {
+                        array[i, j] = 0.0; // Значение по умолчанию при ошибке парсинга
+                    }
+                }
+            }
         }
 
         private bool CheckData()
         {
-            bool err = false;
+            // Проверяем каждое поле по очереди. 
+            // Если метод проверки возвращает true (ошибка), сразу выходим из CheckData.
 
-            err = CheckIntVariable("Номер календарного месяца начала расчета", BeginningMonthInput.Text);
+            if (CheckIntVariable("Номер календарного месяца начала расчета", BeginningMonthInput.Text)) return true;
+            if (CheckIntVariable("Количество значений притока", InflowCountInput.Text)) return true;
 
-            err = CheckIntVariable("Количество значений притока", InflowCountInput.Text);
+            if (CheckDoubleVariable("Полезный объем водохранилища", UsefulVolumeInput.Text)) return true;
+            if (CheckDoubleVariable("Мертвый объем водохранилища", UselessVolumeInput.Text)) return true;
 
-            err = CheckDoubleVariable("Полезный объем водохранилища", UsefulVolumeInput.Text);
+            if (CheckIntVariable("Количество точек батиграфической характеристики", BathygraphyCountInput.Text)) return true;
+            if (CheckIntVariable("Количество точек характеристики нижнего бьефа", CharacteristicOfDownstreamCountInput.Text)) return true;
 
-            err = CheckDoubleVariable("Мертвый объем водохранилища", UselessVolumeInput.Text);
+            if (CheckDoubleVariable("Гарантированный расход ГЭС", GuaranteedDischargeInput.Text)) return true;
+            if (CheckDoubleVariable("Полный (максимальный) расход ГЭС", FullDischargeInput.Text)) return true;
+            if (CheckDoubleVariable("Потери напора", HeadLossInput.Text)) return true;
+            if (CheckDoubleVariable("Кпд гидроагрегата", EfficiencyInput.Text)) return true;
 
-            err = CheckIntVariable("Количество точек батиграфической характеристики",
-                BathygraphyCountInput.Text);
-
-            err = CheckIntVariable("Количество точек характеристики нижнего бьефа",
-                CharacteristicOfDownstreamCountInput.Text);
-
-            err = CheckDoubleVariable("Гарантированный расход ГЭС", GuaranteedDischargeInput.Text);
-
-            err = CheckDoubleVariable("Полный (максимальный) расход ГЭС", FullDischargeInput.Text);
-
-            err = CheckDoubleVariable("Потери напора", HeadLossInput.Text);
-
-            err = CheckDoubleVariable("Кпд гидроагрегата", EfficiencyInput.Text);
-
-            return err;
+            return false; // Если дошли сюда, значит все данные валидны
         }
 
         private bool CheckIntVariable(string varName, string variable)
         {
-            bool err = false;
-
-            if (!int.TryParse(variable, out _)) err = true;
-            if (err) DisplayAlertAsync("Ошибка!", $"«{varName}» - введены неверные данные.", "OK");
-
-            return err;
+            if (!int.TryParse(variable, out _))
+            {
+                DisplayAlertAsync("Ошибка!", $"«{varName}» - введены неверные данные.", "OK");
+                return true;
+            }
+            return false;
         }
 
         private bool CheckDoubleVariable(string varName, string variable)
         {
-            bool err = false;
+            if (string.IsNullOrWhiteSpace(variable))
+            {
+                DisplayAlertAsync("Ошибка!", $"«{varName}» - поле не может быть пустым.", "OK");
+                return true; // Возвращаем true (есть ошибка)
+            }
 
-            if (!double.TryParse(variable, NumberStyles.Any,
-                        CultureInfo.InvariantCulture, out double _result))
-                err = true;
-            if (err) DisplayAlertAsync("Ошибка!", $"«{varName}» - введены неверные данные.", "OK");
-            return err;
+            // Принудительно меняем запятую на точку
+            string safeVariable = variable.Replace(',', '.');
+
+            if (!double.TryParse(safeVariable, NumberStyles.Any, CultureInfo.InvariantCulture, out _))
+            {
+                DisplayAlertAsync("Ошибка!", $"«{varName}» - введены неверные данные.", "OK");
+                return true; // Возвращаем true (есть ошибка)
+            }
+
+            return false; // Ошибок нет
         }
+
     }
 }
