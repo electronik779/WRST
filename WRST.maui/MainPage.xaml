@@ -18,12 +18,6 @@
                 <Setter Property="WidthRequest" Value="80" />
                 <Setter Property="Keyboard" Value="Numeric" />
 
-                <!-- АВТОМАТИЧЕСКИЙ ЦВЕТ ТЕКСТА: Черный для светлой темы, Белый для темной 
-                <Setter Property="TextColor" Value="{AppThemeBinding Light=Black, Dark=White}" />
-
-                АВТОМАТИЧЕСКИЙ ФОН ЯЧЕЙКИ: Белый для светлой, Темно-серый для темной 
-                <Setter Property="BackgroundColor" Value="{AppThemeBinding Light=White, Dark=#2C2C2C}" /> -->
-
                 <!-- Привязка IsEnabled и IsVisible к свойствам родительской строки TableRow -->
                 <Setter Property="IsEnabled" Value="{Binding Source={RelativeSource AncestorType={x:Type local:TableRow}}, Path=IsEditable}" />
                 <Setter Property="IsVisible" Value="{Binding Source={RelativeSource AncestorType={x:Type local:TableRow}}, Path=IsVisible}" /> 
