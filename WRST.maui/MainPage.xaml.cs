@@ -1,7 +1,6 @@
 ﻿using CommunityToolkit.Maui.Storage;
 using System.Collections.ObjectModel;
 using System.Data;
-using System.Diagnostics;
 using System.Globalization;
 using System.Text;
 
@@ -15,6 +14,8 @@ namespace WRST.maui
         public ObservableCollection<TableRow> RemainderData { get; set; } = new();
         public ObservableCollection<TableRow> IntakeData { get; set; } = new();
         public ObservableCollection<TableRow> DownstreamData { get; set; } = new();
+        public ObservableCollection<TableRow> ControlData { get; set; } = new();
+        public ObservableCollection<TableRow> SecurityData { get; set; } = new();
 
         // Исходные данные
         int BeginningMonth = 0; // Месяц начала расчета
@@ -54,7 +55,6 @@ namespace WRST.maui
             var headerRow = new TableRow();
             headerRow.Index = 0;
             headerRow.IsEditable = false;
-            headerRow.RowBackgroundColor = "LightGray";
             headerRow.RowLabel = "Месяц"; // Метка только в заголовке
             headerRow.InitializeCells(12, ""); // Только данные (месяцы)
             for (int i = 0; i < 12; i++)
@@ -67,7 +67,6 @@ namespace WRST.maui
             var inputRow = new TableRow();
             inputRow.Index = 1;
             inputRow.IsEditable = true;
-            inputRow.RowBackgroundColor = "White";
             inputRow.RowLabel = "Объем, млн.м³";
             inputRow.InitializeCells(12, "0");
             RemainderData.Add(inputRow);
@@ -82,7 +81,6 @@ namespace WRST.maui
             var headerRowInt = new TableRow();
             headerRowInt.Index = 0;
             headerRowInt.IsEditable = false;
-            headerRowInt.RowBackgroundColor = "LightGray";
             headerRowInt.RowLabel = "Месяц"; // Метка только в заголовке
             headerRowInt.InitializeCells(12, ""); // Только данные (месяцы)
             for (int i = 0; i < 12; i++)
@@ -95,7 +93,6 @@ namespace WRST.maui
             var inputRowInt = new TableRow();
             inputRowInt.Index = 1;
             inputRowInt.IsEditable = true;
-            inputRowInt.RowBackgroundColor = "White";
             inputRowInt.RowLabel = "Расход, м³/с";
             inputRowInt.InitializeCells(12, "0");
             IntakeData.Add(inputRowInt);
@@ -266,7 +263,6 @@ namespace WRST.maui
             var headerRow = new TableRow();
             headerRow.Index = 0;
             headerRow.IsEditable = false;
-            headerRow.RowBackgroundColor = "LightGray";
             headerRow.RowLabel = "Месяц"; // Метка только в заголовке
             headerRow.InitializeCells(InflowCount, ""); // Только данные (месяцы)
             for (int i = 0; i < InflowCount; i++)
@@ -281,13 +277,9 @@ namespace WRST.maui
             var inputRow = new TableRow();
             inputRow.Index = 1;
             inputRow.IsEditable = true;
-            inputRow.RowBackgroundColor = "White";
             inputRow.RowLabel = "Приток, м³/с";
             inputRow.InitializeCells(InflowCount, "0");
             InflowData.Add(inputRow);
-
-            //InflowCollectionView.ItemsSource = null;
-            //InflowCollectionView.ItemsSource = InflowData;
         }
 
         // По нажатию кнопки "Создать" напротив поля ввода Количество точек характеристики верхнего бьефа
@@ -319,7 +311,6 @@ namespace WRST.maui
             var inputRowVol = new TableRow();
             inputRowVol.Index = 0;
             inputRowVol.IsEditable = true;
-            inputRowVol.RowBackgroundColor = "White";
             inputRowVol.RowLabel = "Объем, млн.м³"; // Метка в заголовке
             inputRowVol.InitializeCells(BathygraphyCount, "0"); // Только данные 
             BathygraphyData.Add(inputRowVol);
@@ -328,7 +319,6 @@ namespace WRST.maui
             var inputRowEl = new TableRow();
             inputRowEl.Index = 1;
             inputRowEl.IsEditable = true;
-            inputRowEl.RowBackgroundColor = "White";
             inputRowEl.RowLabel = "Отметка, м";
             inputRowEl.InitializeCells(BathygraphyCount, "0");
             BathygraphyData.Add(inputRowEl);
@@ -366,7 +356,6 @@ namespace WRST.maui
             var inputRowFl = new TableRow();
             inputRowFl.Index = 0;
             inputRowFl.IsEditable = true;
-            inputRowFl.RowBackgroundColor = "White";
             inputRowFl.RowLabel = "Расход, м³/с";
             inputRowFl.InitializeCells(CharacteristicOfDownstreamCount, "0");
             DownstreamData.Add(inputRowFl);
@@ -375,7 +364,6 @@ namespace WRST.maui
             var inputRowEl = new TableRow();
             inputRowEl.Index = 1;
             inputRowEl.IsEditable = true;
-            inputRowEl.RowBackgroundColor = "White";
             inputRowEl.RowLabel = "Отметка, м";
             inputRowEl.InitializeCells(CharacteristicOfDownstreamCount, "0");
             DownstreamData.Add(inputRowEl);
@@ -524,7 +512,6 @@ namespace WRST.maui
                 }
                 table[1].SetCell(i, processedValue);
             }
-            //table[1].RaiseCellsChanged();
         }
 
         private void FillTableFromCSV(ObservableCollection<TableRow> table, List<string> data1, List<string> data2)
@@ -561,8 +548,6 @@ namespace WRST.maui
                 }
                 table[1].SetCell(i, processedValue2);
             }
-            //table[0].RaiseCellsChanged();
-            //table[1].RaiseCellsChanged();
         }
 
         // Сохранение данных в файл
@@ -657,7 +642,7 @@ namespace WRST.maui
         }
 
         // Выполнение расчета
-        private void Execute_Click(object sender, EventArgs e)
+        private async void Execute_Click(object sender, EventArgs e)
         {
             // Проверяем, что в текстовых полях есть числа
             if (CheckData()) return;
@@ -719,8 +704,8 @@ namespace WRST.maui
             double IncreaseVolume = 0; // Приращение объема водохранилища
             double ResidualVolumePreviousMonth =
                 RemainderAccordingDispatchScheduleTableData[0, PreviousMonth]; // Диспетчерский остаток 
-                                                                                   // в предыдущем месяце (т.к. начинаем с полного водохранилища, то он 
-                                                                                   // д.б. равен полезному объему)
+                                                                               // в предыдущем месяце (т.к. начинаем с полного водохранилища, то он 
+                                                                               // д.б. равен полезному объему)
             double ResidualVolumeCurrentMonth = 0; // Диспетчерский остаток в текущем месяце
             double RequiredVolumeAccordingDispatchSchedule = 0; // Требуемый объем по диспетчерскому графику
             double[] Consumption = new double[InflowCount]; // Фактический расход ГЭС
@@ -734,11 +719,6 @@ namespace WRST.maui
             double[] StaticHead = new double[InflowCount]; // Статический напор ГЭС
             double HeadLoss = 0; // Потери напора ГЭС
             double[] Power = new double[InflowCount]; // Мощность ГЭС
-
-            foreach (double i in InflowTableData)
-            {
-                Debug.WriteLine(i);
-            }
 
             while (MonthOrdinalNumber < InflowCount)
             {
@@ -840,6 +820,129 @@ namespace WRST.maui
                 SumElectricityProduction += MonthElectricityProduction;
             }
             AverageAnnualElectricityGeneration = SumElectricityProduction * 12 / InflowCount;
+
+            // Готовим таблицы для вывода результатов
+
+            // Сводная таблица
+            // Собираем
+            ControlData.Clear();
+
+            CalendarMonth = BeginningMonth;
+
+            for (int i = 0; i < InflowCount; i++)
+            {
+                var row = new TableRow
+                {
+                    Index = i,
+                    RowLabel = $"Строка {i + 1}"
+                };
+
+                // Инициализируем строку 10 ячейками
+                row.InitializeCells(10, string.Empty);
+
+                // Заполняем ячейки (индексы от 0 до 9)
+                row.SetCell(0, (i + 1).ToString());                              // 1: Порядковый номер
+                row.SetCell(1, (CalendarMonth).ToString());                      // 2: Номер месяца
+                row.SetCell(2, InflowTableData[0, i].ToString("F2"));            // 3: Приток
+                row.SetCell(3, Consumption[i].ToString("F2"));                   // 4: Расход ГЭС
+                row.GuaranteedLimit = GuaranteedDischarge; // Сохраняем лимит в саму строку
+                row.SetCell(4, IdleReset[i].ToString("F2"));                     // 5: Расжод холостых сбросов
+                row.SetCell(5, UpstreamLevel[i].ToString("F2"));                 // 6: Уровень верхнего бьефа 
+                row.SetCell(6, DownstreamLevel[i].ToString("F2"));               // 7: Уровень нижнего бьефа
+                row.SetCell(7, StaticHead[i].ToString("F2"));                    // 8: Статический напор
+                row.SetCell(8, Power[i].ToString("N0"));                         // 9: Мощность ГЭС
+                row.SetCell(9, ActualResidualVolume[i].ToString("N0"));          // 10: Остаточный объем над диспетчерсим объемом
+
+                ControlData.Add(row);
+
+                CalendarMonth++;
+                if (CalendarMonth > 12) CalendarMonth = 1;
+            }
+
+            // Таблица обеспеченностей (приток, расход ГЭС, статический напор, мощность ГЭС)
+            // Вычисляем обеспеченность
+            double[] Security = new double[21]; // Обеспеченность
+            double SecurityStep = 5.0;            // Шаг обеспеченности 5%
+            double[] SecurityOfInflow = new double[21];         // Значения обеспеченностей для - Притока
+            double[] SecurityOfConsumption = new double[21];                                  //- Расхода ГЭС
+            double[] SecurityOfStaticHead = new double[21];                                   //- Статического напора
+            double[] SecurityOfPower = new double[21];                                        //- Мощности ГЭС
+
+            double[] Inflow = new double[InflowCount];          // Промежуточный массив для интерполяции
+            for (int i = 0; i < InflowCount; i++)
+            {
+                Inflow[i] = InflowTableData[0, i];
+            }
+            double[] _security = new double[InflowCount];       // Промежуточный массив для интерполяци
+            for (int i = 0; i < InflowCount; i++)
+            {
+                _security[i] = (double)(i + 1) / (InflowCount + 1) * 100;
+            }
+
+            Security[0] = 1.0 / (InflowCount + 1) * 100;
+            for (int i = 1; i < 20; i++)
+            {
+                Security[i] = SecurityStep * i;
+            }
+            Security[20] = (double)InflowCount / (InflowCount + 1) * 100;
+
+            // Сортировка по возрастанию. Исходные массивы испорчены
+            Array.Sort(Inflow);
+            Array.Sort(Consumption);
+            Array.Sort(StaticHead);
+            Array.Sort(Power);
+
+            SecurityOfInflow[0] = Inflow[0];
+            SecurityOfConsumption[0] = Consumption[0];
+            SecurityOfStaticHead[0] = StaticHead[0];
+            SecurityOfPower[0] = Power[0];
+            for (int i = 1; i < 20; i++)
+            {
+                SecurityOfInflow[i] = LinearInterpolation(SecurityStep * i, _security, Inflow);
+                SecurityOfConsumption[i] = LinearInterpolation(SecurityStep * i, _security, Consumption);
+                SecurityOfStaticHead[i] = LinearInterpolation(SecurityStep * i, _security, StaticHead);
+                SecurityOfPower[i] = LinearInterpolation(SecurityStep * i, _security, Power);
+            }
+            SecurityOfInflow[20] = Inflow[InflowCount - 1];
+            SecurityOfConsumption[20] = Consumption[InflowCount - 1];
+            SecurityOfStaticHead[20] = StaticHead[InflowCount - 1];
+            SecurityOfPower[20] = Power[InflowCount - 1];
+
+            // Собираем
+            SecurityData.Clear();
+
+            for (int i = 0; i < 21; i++)
+            {
+                var row = new TableRow
+                {
+                    Index = i,
+                    RowLabel = $"Строка {i + 1}"
+                };
+
+                // Инициализируем строку
+                row.InitializeCells(5, string.Empty);
+
+                // Заполняем столбцы 
+                row.SetCell(0, Security[i].ToString("F2"));
+                row.SetCell(1, SecurityOfInflow[i].ToString("F2"));
+                row.SetCell(2, SecurityOfConsumption[i].ToString("F2"));
+                row.SetCell(3, SecurityOfStaticHead[i].ToString("F2"));
+                row.SetCell(4, SecurityOfPower[i].ToString("N0"));
+
+                SecurityData.Add(row);
+            }
+
+            // Передаем в SecondPage для отрисовки
+            var navigationParameters = new ShellNavigationQueryParameters
+            {
+                { "ControlData", ControlData },
+                { "SecurityData", SecurityData },
+                { "GuaranteedDischarge", GuaranteedDischarge },
+                { "RemainderData", RemainderData }
+            };
+
+            // Автоматический переход
+            await Shell.Current.GoToAsync("SecondPage", navigationParameters);
         }
 
         private double LinearInterpolation(double argument, double[,] xy)
@@ -865,6 +968,29 @@ namespace WRST.maui
             return result;
         }
 
+        private double LinearInterpolation(double argument, double[] x, double[] y)
+        {
+            int i1 = 0;
+            double dx = 0;
+            double result = 0;
+            int quantity = x.GetLength(0);
+            for (int i = 1; i < quantity; i++)
+            {
+                if (argument - x[i] <= 0)
+                {
+                    i1 = i - 1;
+                    dx = x[i] - x[i1];
+                    result = (y[i] * (argument - x[i1]) - y[i1] * (argument - x[i])) / dx;
+                    return result;
+                }
+            }
+            i1 = quantity - 2;
+            dx = x[quantity - 1] - x[i1];
+            result = (y[quantity - 1] * (argument - x[i1]) -
+                y[i1] * (argument - x[quantity - 1])) / dx;
+            return result;
+        }
+
         private void GetFields()
         {
             var culture = CultureInfo.InvariantCulture;
@@ -883,8 +1009,6 @@ namespace WRST.maui
             int matrixRows = targetMatrix.GetLength(0); // Количество строк в массиве (1 или 2)
             int matrixCols = targetMatrix.GetLength(1); // Количество колонок (InflowCount, 12 и т.д.)
 
-            Debug.WriteLine($"=== СБОР ДАННЫХ: Таблица содержит {uiTable.Count} строк. Ожидаем матрицу {matrixRows}x{matrixCols} ===");
-
             for (int r = 0; r < matrixRows; r++)
             {
                 // Вычисляем индекс строки в uiTable. 
@@ -893,16 +1017,13 @@ namespace WRST.maui
 
                 if (uiRowIndex >= uiTable.Count)
                 {
-                    Debug.WriteLine($"[ОШИБКА] Индекс строки {uiRowIndex} выходит за пределы таблицы (всего строк: {uiTable.Count})");
                     break;
                 }
 
                 var row = uiTable[uiRowIndex];
-                Debug.WriteLine($"Строка {uiRowIndex}: Название='{row.RowLabel}', Количество ячеек Cells={row.Cells?.Count}");
 
                 if (row.Cells == null || row.Cells.Count == 0)
                 {
-                    Debug.WriteLine($"[ОШИБКА] Список Cells пуст или равен null для строки {uiRowIndex}!");
                     continue;
                 }
 
@@ -910,7 +1031,6 @@ namespace WRST.maui
                 {
                     if (c >= row.Cells.Count)
                     {
-                        Debug.WriteLine($"[ПРЕДУПРЕЖДЕНИЕ] Индекс колонки {c} превышает размер Cells ({row.Cells.Count})");
                         break;
                     }
 
@@ -919,82 +1039,10 @@ namespace WRST.maui
                     if (double.TryParse(rawValue, NumberStyles.Any, culture, out double parsedValue))
                     {
                         targetMatrix[r, c] = parsedValue;
-                        if (c < 3) Debug.WriteLine($"  Ячейка [{c}] успешно записана: '{rawValue}' -> {parsedValue}");
                     }
                     else
                     {
-                        Debug.WriteLine($"[ОШИБКА] Не удалось распарсить текст в ячейке [{c}]: '{rawValue}'");
                         targetMatrix[r, c] = 0.0; // Значение по умолчанию при ошибке ввода
-                    }
-                }
-            }
-        }
-
-        private void FillArrayFromCollectionX(ObservableCollection<TableRow> collection, double[,] array)
-        {
-            //int rows = array.GetLength(0);
-            int cols = array.GetLength(1);
-
-            var row = collection[1];
-
-            for (int j = 0; j < cols; j++)
-                {
-                // Защита от выхода за границы списка Cells в строке
-                if (j >= row.Cells.Count) break;
-
-                    string cellValue = row.Cells[j];
-
-                    // Заменяем запятые на точки для универсального парсинга дробных чисел
-                    if (!string.IsNullOrEmpty(cellValue))
-                    {
-                        cellValue = cellValue.Replace(',', '.');
-                    }
-
-                    // Безопасный парсинг. Если строка пустая или не число, запишется 0.0
-                    if (double.TryParse(cellValue, NumberStyles.Any, CultureInfo.InvariantCulture, out double parsedValue))
-                    {
-                        array[0, j] = parsedValue;
-                    }
-                    else
-                    {
-                        array[0, j] = 0.0; // Значение по умолчанию при ошибке парсинга
-                    }
-                }
-        }
-        private void FillArrayFromCollectionXY(ObservableCollection<TableRow> collection, double[,] array)
-        {
-            int rows = array.GetLength(0);
-            int cols = array.GetLength(1);
-
-            for (int i = 0; i < rows; i++)
-            {
-                // Защита от выхода за границы, если в коллекции строк меньше, чем размерность массива
-                if (i >= collection.Count) break;
-
-                var row = collection[i];
-                if (row?.Cells == null) continue;
-
-                for (int j = 0; j < cols; j++)
-                {
-                    // Защита от выхода за границы списка Cells в строке
-                    if (j >= row.Cells.Count) break;
-
-                    string cellValue = row.Cells[j];
-
-                    // Заменяем запятые на точки для универсального парсинга дробных чисел
-                    if (!string.IsNullOrEmpty(cellValue))
-                    {
-                        cellValue = cellValue.Replace(',', '.');
-                    }
-
-                    // Безопасный парсинг. Если строка пустая или не число, запишется 0.0
-                    if (double.TryParse(cellValue, NumberStyles.Any, CultureInfo.InvariantCulture, out double parsedValue))
-                    {
-                        array[i, j] = parsedValue;
-                    }
-                    else
-                    {
-                        array[i, j] = 0.0; // Значение по умолчанию при ошибке парсинга
                     }
                 }
             }

@@ -1,6 +1,5 @@
 ﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Globalization;
 using System.Runtime.CompilerServices;
 
 namespace WRST.maui
@@ -14,6 +13,7 @@ namespace WRST.maui
         private bool _isVisible;
 
         public string RowLabel { get; set; } = "";
+        public double GuaranteedLimit { get; set; }
 
         public int Index
         {
@@ -103,10 +103,6 @@ namespace WRST.maui
             if (index >= 0 && index < Cells.Count)
             {
                 Cells[index] = value;
-                //OnPropertyChanged(nameof(Cells));
-                //var temp = Cells;
-                //Cells = null;
-                //Cells = temp;
             }
         }
 
