@@ -26,7 +26,7 @@
 
     <ScrollView>
         <VerticalStackLayout Padding="15" Spacing="10">
-            <Grid ColumnDefinitions="*" RowDefinitions="Auto, Auto, Auto, Auto, Auto, 420, 420, 420, 420, 420" 
+            <Grid ColumnDefinitions="*" RowDefinitions="Auto, Auto, Auto, Auto, Auto, 420, 420, 420, 420, 420, 620" 
                   RowSpacing="10">
 
                 <Label Grid.Row="0" Text="Результат расчета" VerticalOptions="Center"/>
@@ -142,7 +142,15 @@
                         YAxes="{Binding PowerYAxes}"
                         LegendPosition="Hidden">
                 </lvc:CartesianChart>
-                
+
+                <lvc:CartesianChart Grid.Row="10"
+                                    HeightRequest="600"
+                        Series="{Binding VolumeChartSeries}"
+                        XAxes="{Binding VolXAxes}"
+                        YAxes="{Binding VolYAxes}"
+                        LegendPosition="Bottom">
+                </lvc:CartesianChart>
+
             </Grid>
     </VerticalStackLayout>
     </ScrollView>
