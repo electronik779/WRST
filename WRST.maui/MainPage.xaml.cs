@@ -16,6 +16,7 @@ namespace WRST.maui
         public ObservableCollection<TableRow> DownstreamData { get; set; } = new();
         public ObservableCollection<TableRow> ControlData { get; set; } = new();
         public ObservableCollection<TableRow> SecurityData { get; set; } = new();
+        public ObservableCollection<TableRow> VolumeData { get; set; } = new();
 
         // Исходные данные
         int BeginningMonth = 0; // Месяц начала расчета
@@ -932,13 +933,46 @@ namespace WRST.maui
                 SecurityData.Add(row);
             }
 
+            // Таблица изменения объемов (диспетчерский график)
+
+            VolumeData.Clear();
+
+            int pointer = InflowCount - BeginningMonth + 1;
+            if (pointer > InflowCount - 1) pointer = 0;
+
+            int month = 0;
+
+            for (int i = 0; i < InflowCount; i++)
+            {
+                var row = new TableRow
+                {
+                    Index = i,
+                    RowLabel = $"Строка {i + 1}"
+                };
+
+                // Инициализируем строку
+                row.InitializeCells(3, string.Empty);
+
+                row.SetCell(0, (i + 1).ToString());
+                row.SetCell(1, RemainderAccordingDispatchScheduleTableData[0, month].ToString("N0"));
+                row.SetCell(2, (RemainderAccordingDispatchScheduleTableData[0, month] +
+                    ActualResidualVolume[pointer]).ToString("N0"));
+
+                VolumeData.Add(row);
+
+                pointer++;
+                month++;
+                if (pointer > InflowCount - 1) pointer = 0;
+                if (month > 11) month = 0;
+            }
+
             // Передаем в SecondPage для отрисовки
             var navigationParameters = new ShellNavigationQueryParameters
             {
                 { "ControlData", ControlData },
                 { "SecurityData", SecurityData },
                 { "GuaranteedDischarge", GuaranteedDischarge },
-                { "RemainderData", RemainderData }
+                { "VolumeData", VolumeData }
             };
 
             // Автоматический переход

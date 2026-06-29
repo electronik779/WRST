@@ -1,9 +1,9 @@
-
-
 using LiveChartsCore;
 using LiveChartsCore.SkiaSharpView;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Globalization;
+using System.Xml.Linq;
 
 namespace WRST.maui;
 
@@ -12,7 +12,7 @@ public partial class SecondPage : ContentPage, IQueryAttributable
     // Для таблиц
     private ObservableCollection<TableRow> _controlData;
     private ObservableCollection<TableRow> _securityData;
-    private ObservableCollection<TableRow> _remainderData;
+    private ObservableCollection<TableRow> _volumeData;
 
     public ObservableCollection<TableRow> ControlData
     {
@@ -28,10 +28,10 @@ public partial class SecondPage : ContentPage, IQueryAttributable
 
     public double GuaranteedDischarge { get; set; }
 
-    public ObservableCollection<TableRow> RemainderData
+    public ObservableCollection<TableRow> VolumeData
     {
-        get => _remainderData;
-        set { _remainderData = value; OnPropertyChanged(); }
+        get => _volumeData;
+        set { _volumeData = value; OnPropertyChanged(); }
     }
 
     // Для графиков
@@ -51,6 +51,10 @@ public partial class SecondPage : ContentPage, IQueryAttributable
         // Мощность
     public ISeries[] PowerChartSeries { get; set; }
     public Axis[] PowerYAxes { get; set; }
+        // Диспетчерский
+    public ISeries[] VolumeChartSeries { get; set; }
+    public Axis[] VolXAxes { get; set; }
+    public Axis[] VolYAxes { get; set; }
 
     public SecondPage()
     {
@@ -86,11 +90,11 @@ public partial class SecondPage : ContentPage, IQueryAttributable
             OnPropertyChanged(nameof(GuaranteedDischarge));
         }
 
-        // Безопасно извлекаем RemainderData
-        if (query.TryGetValue("SecurityData", out var remainderDataObj) &&
-            securityDataObj is ObservableCollection<TableRow> remainderData)
+        // Безопасно извлекаем VolumeData
+        if (query.TryGetValue("VolumeData", out var volumeDataObj) &&
+            volumeDataObj is ObservableCollection<TableRow> volumeData)
         {
-            RemainderData = remainderData;
+            VolumeData = volumeData;
         }
 
         // Строим графики
@@ -249,6 +253,85 @@ public partial class SecondPage : ContentPage, IQueryAttributable
             }
         };
 
+        // Объемы
+        var seriesList = new List<ISeries>();
+
+        // Вспомогательная функция для безопасного конвертирования string -> double?
+        double? ParseValue(TableRow row, int cellIndex)
+        {
+            if (row?.Cells == null || cellIndex >= row.Cells.Count) return null;
+
+            string rawValue = row.Cells[cellIndex];
+            if (string.IsNullOrWhiteSpace(rawValue)) return null;
+
+            // Заменяем точку на запятую (или наоборот) для универсальности парсинга
+            rawValue = rawValue.Replace(',', '.').Trim();
+
+            if (double.TryParse(rawValue, NumberStyles.Any, CultureInfo.InvariantCulture, out double result))
+            {
+                return result;
+            }
+            return null;
+        }
+
+        // 1. Формируем Объем 1 (берём только первые 12 строк, ячейка с индексом 1)
+        var volume1Values = VolumeData
+            .Take(12)
+            .Select(row => ParseValue(row, 1))
+            .ToList();
+
+        seriesList.Add(new LineSeries<double?>
+        {
+            Values = volume1Values,
+            Name = "Диспетчерский график",
+            GeometrySize = 6,
+            LineSmoothness = 0
+        });
+
+        // 2. Формируем Объем 2 (разбиваем ВСЮ коллекцию по 12 строк, ячейка с индексом 2)
+        int chunkSize = 12;
+        int cycleNumber = 1;
+
+        for (int i = 0; i < VolumeData.Count; i += chunkSize)
+        {
+            var chunk = VolumeData
+                .Skip(i)
+                .Take(chunkSize)
+                .Select(row => ParseValue(row, 2))
+                .ToList();
+
+            seriesList.Add(new LineSeries<double?>
+            {
+                Values = chunk,
+                Name = $"Фактический объем (год {cycleNumber})",
+                GeometrySize = 6
+            });
+
+            cycleNumber++;
+        }
+
+        // 3. Заполняем массивы, которые привязаны к XAML
+        VolumeChartSeries = seriesList.ToArray();
+
+        VolXAxes = new Axis[]
+        {
+        new Axis
+        {
+            Labels = new string[] { "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12" },
+            Name = "Месяцы"
+        }
+        };
+
+        VolYAxes = new Axis[]
+        {
+        new Axis
+        {
+            Name = "Объем",
+            Labeler = value => value.ToString("N0") // Разделение тысяч для красоты (например, 10 000)
+        }
+        };
+
+
         // Уведомляем интерфейс об обновлении всех осей
         OnPropertyChanged(nameof(DischChartSeries));
         OnPropertyChanged(nameof(XAxes));
@@ -266,6 +349,10 @@ public partial class SecondPage : ContentPage, IQueryAttributable
         OnPropertyChanged(nameof(PowerChartSeries));
         OnPropertyChanged(nameof(XAxes));
         OnPropertyChanged(nameof(PowerYAxes));
+
+        OnPropertyChanged(nameof(VolumeChartSeries));
+        OnPropertyChanged(nameof(VolXAxes));
+        OnPropertyChanged(nameof(VolYAxes));
     }
 
     private double ParseCell(string value)
