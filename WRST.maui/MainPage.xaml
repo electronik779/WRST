@@ -153,14 +153,10 @@
 
                     <!-- ScrollableView для горизонтальной прокрутки -->
                     <ScrollView Orientation="Horizontal">
-                        <CollectionView x:Name="InflowCollectionView"
-                            ItemsSource="{Binding InflowData}"
-                            ItemsLayout="VerticalList"
-                            Margin="0,0,0,0">
-
-                            <CollectionView.ItemTemplate>
+                        <VerticalStackLayout BindableLayout.ItemsSource="{Binding InflowData}" Margin="0,0,0,0">
+                            <BindableLayout.ItemTemplate>
                                 <DataTemplate>
-                                    <Grid ColumnDefinitions="60,*" BackgroundColor="{AppThemeBinding Light=White, Dark=#1C1C1E}">
+                                    <Grid ColumnDefinitions="60,Auto" BackgroundColor="{AppThemeBinding Light=White, Dark=#1C1C1E}">
                                         <!-- Привязка к свойству RowLabel -->
                                         <Label Text="{Binding RowLabel}" 
                                                Style="{StaticResource TableLabelStyle}"
@@ -169,22 +165,23 @@
                                             VerticalOptions="Center"/>
 
                                         <!-- Ячейки данных -->
-                                        <StackLayout Grid.Column="1" Orientation="Horizontal" Spacing="5"
-                                            BindableLayout.ItemsSource="{Binding Cells}">
+                                        <HorizontalStackLayout Grid.Column="1" Spacing="5"
+                                           BindableLayout.ItemsSource="{Binding Cells}">
                                             <BindableLayout.ItemTemplate>
                                                 <DataTemplate>
                                                     <!-- Применяем созданный стиль через StaticResource -->
                                                     <Entry Text="{Binding .}" 
+                                                           WidthRequest="70"
                                                         Style="{StaticResource TableCellEntryStyle}"
                                                         TextChanged="OnDoubleEntryTextChanged" 
                                                            Focused="OnEntryFocused"/>
                                                 </DataTemplate>
                                             </BindableLayout.ItemTemplate>
-                                        </StackLayout>
+                                        </HorizontalStackLayout>
                                     </Grid>
                                 </DataTemplate>
-                            </CollectionView.ItemTemplate>
-                        </CollectionView>
+                            </BindableLayout.ItemTemplate>
+                        </VerticalStackLayout>
                     </ScrollView>
                 </VerticalStackLayout>
 

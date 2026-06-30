@@ -1,9 +1,11 @@
 using LiveChartsCore;
+using LiveChartsCore.Defaults;
 using LiveChartsCore.SkiaSharpView;
+using LiveChartsCore.SkiaSharpView.Painting;
+using SkiaSharp;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Globalization;
-using System.Xml.Linq;
 
 namespace WRST.maui;
 
@@ -34,24 +36,40 @@ public partial class SecondPage : ContentPage, IQueryAttributable
         set { _volumeData = value; OnPropertyChanged(); }
     }
 
+    public double AverageAnnualElectricityGeneration { get; set; }
+    public double SumIdleResetVolume { get; set; }
+
     // Для графиков
-        // Расходы
+    // Расходы
     public ISeries[] DischChartSeries { get; set; }
     public Axis[] XAxes { get; set; }
     public Axis[] DischYAxes { get; set; }
-        // ВБ
+    // ВБ
     public ISeries[] UpLevelChartSeries { get; set; }
     public Axis[] UpLevelYAxes { get; set; }
-        // НБ
+    // НБ
     public ISeries[] DownLevelChartSeries { get; set; }
     public Axis[] DownLevelYAxes { get; set; }
-        // Статический напор
+    // Статический напор
     public ISeries[] StaticHeadChartSeries { get; set; }
     public Axis[] StaticHeadYAxes { get; set; }
-        // Мощность
+    // Мощность
     public ISeries[] PowerChartSeries { get; set; }
     public Axis[] PowerYAxes { get; set; }
-        // Диспетчерский
+    // Обеспеченности
+    public ISeries[] InflowSecurityChartSeries { get; set; }
+    public Axis[] SecXAxes { get; set; }
+    public Axis[] IYAxes { get; set; }
+
+    public ISeries[] ConsumptionSecurityChartSeries { get; set; }
+    public Axis[] CYAxes { get; set; }
+
+    public ISeries[] HeadSecurityChartSeries { get; set; }
+    public Axis[] HYAxes { get; set; }
+
+    public ISeries[] PowerSecurityChartSeries { get; set; }
+    public Axis[] PYAxes { get; set; }
+    // Диспетчерский
     public ISeries[] VolumeChartSeries { get; set; }
     public Axis[] VolXAxes { get; set; }
     public Axis[] VolYAxes { get; set; }
@@ -97,6 +115,23 @@ public partial class SecondPage : ContentPage, IQueryAttributable
             VolumeData = volumeData;
         }
 
+        // Безопасно извлекаем double число
+        if (query.TryGetValue("AverageAnnualElectricityGeneration", out var averageGenerationObj) &&
+            averageGenerationObj is double averageGenerationValue)
+        {
+            AverageAnnualElectricityGeneration = averageGenerationValue;
+
+            OnPropertyChanged(nameof(AverageAnnualElectricityGeneration));
+        }
+
+        if (query.TryGetValue("SumIdleResetVolume", out var sumResetVolumeObj) &&
+            sumResetVolumeObj is double sumResetVolumeValue)
+        {
+            SumIdleResetVolume = sumResetVolumeValue;
+
+            OnPropertyChanged(nameof(SumIdleResetVolume));
+        }
+
         // Строим графики
         if (ControlData != null)
         {
@@ -119,6 +154,15 @@ public partial class SecondPage : ContentPage, IQueryAttributable
 
         var powerValues = new List<double>();
 
+        var security = new List<double>();
+        var inflowSecurityValue = new List<double>();
+
+        var consumptionSecurityValue = new List<double>();
+
+        var headSecurityValue = new List<double>();
+
+        var powerSecurityValue = new List<double>();
+
         // Извлекаем данные из коллекции строк
         foreach (var row in ControlData)
         {
@@ -139,8 +183,24 @@ public partial class SecondPage : ContentPage, IQueryAttributable
             powerValues.Add(ParseCell(row.GetCell(8))); // Мощность
         }
 
+        foreach (var row in SecurityData)
+        {
+            security.Add(ParseCell(row.GetCell(0)));
+            inflowSecurityValue.Add(ParseCell(row.GetCell(1)));
+
+            consumptionSecurityValue.Add(ParseCell(row.GetCell(2)));
+
+            headSecurityValue.Add(ParseCell(row.GetCell(3)));
+
+            powerSecurityValue.Add(ParseCell(row.GetCell(4)));
+        }
+        var isPoints = security.Zip(inflowSecurityValue, (x,y) => new ObservablePoint(x, y)).ToArray();
+        var csPoints = security.Zip(consumptionSecurityValue, (x, y) => new ObservablePoint(x, y)).ToArray();
+        var hsPoints = security.Zip(headSecurityValue, (x, y) => new ObservablePoint(x, y)).ToArray();
+        var psPoints = security.Zip(powerSecurityValue, (x, y) => new ObservablePoint(x, y)).ToArray();
+
         // Расходы
-            // Формируем столбчатые серии (ColumnSeries)
+        // Формируем столбчатые серии (ColumnSeries)
         DischChartSeries = new ISeries[]
         {
             new ColumnSeries<double> { Values = inflowValues, Name = "Приток" },
@@ -168,15 +228,15 @@ public partial class SecondPage : ContentPage, IQueryAttributable
                 Labeler = value => value.ToString("N0") // Форматирование чисел на оси (без дробной части)
             }
         };
-        
-            // ВБ
+
+        // ВБ
         UpLevelChartSeries = new ISeries[]
         {
             new LineSeries<double>
             {
                 Values = upstreamLevelValues,
                 Name = "Отметка ВБ",
-                GeometrySize = 8, // Размер точек-узлов на линии
+                GeometrySize = 6, // Размер точек-узлов на линии
                 LineSmoothness = 0.5 // Степень сглаживания линии (0 - ломаная, 1 - максимально плавная)
             }
         };
@@ -193,14 +253,14 @@ public partial class SecondPage : ContentPage, IQueryAttributable
             }
         };
 
-            // НБ
+        // НБ
         DownLevelChartSeries = new ISeries[]
         {
             new LineSeries<double>
             {
                 Values = downstreamLevelValues,
                 Name = "Отметка НБ",
-                GeometrySize = 8, // Размер точек-узлов на линии
+                GeometrySize = 6, // Размер точек-узлов на линии
                 LineSmoothness = 0.5 // Степень сглаживания линии (0 - ломаная, 1 - максимально плавная)
             }
         };
@@ -210,19 +270,19 @@ public partial class SecondPage : ContentPage, IQueryAttributable
             new Axis
             {
                 Name = "Отм.НБ, м",
-                Labeler = value => value.ToString("N2"), 
+                Labeler = value => value.ToString("N2"),
                 ForceStepToMin = false
             }
         };
-        
-            // Статический напор
+
+        // Статический напор
         StaticHeadChartSeries = new ISeries[]
         {
             new LineSeries<double>
             {
                 Values = staticHeadValues,
                 Name = "Статический напор",
-                GeometrySize = 8, // Размер точек-узлов на линии
+                GeometrySize = 6, // Размер точек-узлов на линии
                 LineSmoothness = 0.5 // Степень сглаживания линии (0 - ломаная, 1 - максимально плавная)
             }
         };
@@ -232,12 +292,12 @@ public partial class SecondPage : ContentPage, IQueryAttributable
             new Axis
             {
                 Name = "Статический напор, м",
-                Labeler = value => value.ToString("N2"), 
+                Labeler = value => value.ToString("N2"),
                 ForceStepToMin = false
             }
         };
-        
-            // Мощности
+
+        // Мощности
         PowerChartSeries = new ISeries[]
         {
             new ColumnSeries<double> { Values = powerValues, Name = "Мощность ГЭС" }
@@ -253,20 +313,122 @@ public partial class SecondPage : ContentPage, IQueryAttributable
             }
         };
 
+        // Обеспеченности
+        var defaultColor = new SKColor(33, 150, 243);
+        // Приток обеспеченность
+        InflowSecurityChartSeries = new ISeries[]
+        {
+            new LineSeries<ObservablePoint>
+            {
+                Values = isPoints,
+                Name = "Приток",
+                GeometrySize= 3,
+                Stroke = new SolidColorPaint(defaultColor, 2)
+            }
+        };
+
+        SecXAxes = new Axis[]
+        {
+            new Axis
+            {
+                Name = "Обеспеченность, %",
+                MinLimit = 0,
+                MaxLimit = 100
+            }
+        };
+
+        IYAxes = new Axis[]
+        {
+            new Axis
+            {
+                Name = "Приток, м³/с",
+                Labeler = value => value.ToString("N0"),
+                ForceStepToMin = false
+            }
+        };
+
+        // Расход ГЭС обеспеченность
+        ConsumptionSecurityChartSeries = new ISeries[]
+        {
+            new LineSeries<ObservablePoint>
+            {
+                Values = csPoints,
+                Name = "Расход ГЭС",
+                GeometrySize = 3,
+                Stroke = new SolidColorPaint(defaultColor, 2)
+            }
+        };
+
+        CYAxes = new Axis[]
+        {
+            new Axis
+            {
+                Name = "Расход ГЭС, м³/с",
+                Labeler = value => value.ToString("N0"),
+                ForceStepToMin = false
+            }
+        };
+
+        // Напор обеспеченность
+        HeadSecurityChartSeries = new ISeries[]
+        {
+            new LineSeries<ObservablePoint>
+            {
+                Values = hsPoints,
+                Name = "Статический напор",
+                GeometrySize = 3,
+                Stroke = new SolidColorPaint(defaultColor, 2)
+            }
+        };
+
+        HYAxes = new Axis[]
+        {
+            new Axis
+            {
+                Name = "Статический напор, м",
+                Labeler = value => value.ToString("N0"),
+                ForceStepToMin = false
+            }
+        };
+
+        // Мощность обеспеченность
+        PowerSecurityChartSeries = new ISeries[]
+        {
+            new LineSeries<ObservablePoint>
+            {
+                Values = psPoints,
+                Name = "Мощность",
+                GeometrySize = 3,
+                Stroke = new SolidColorPaint(defaultColor, 2)
+            }
+        };
+
+        PYAxes = new Axis[]
+        {
+            new Axis
+            {
+                Name = "Мощность, кВт",
+                Labeler = value => value.ToString("N0"),
+                ForceStepToMin = false
+            }
+        };
+
         // Объемы
         var seriesList = new List<ISeries>();
 
-        // Вспомогательная функция для безопасного конвертирования string -> double?
         double? ParseValue(TableRow row, int cellIndex)
         {
             if (row?.Cells == null || cellIndex >= row.Cells.Count) return null;
-
             string rawValue = row.Cells[cellIndex];
             if (string.IsNullOrWhiteSpace(rawValue)) return null;
 
-            // Заменяем точку на запятую (или наоборот) для универсальности парсинга
+            // 1. Удаляем обычные пробелы и неразрывные пробелы (\u00A0), очищающие разделители тысяч
+            rawValue = rawValue.Replace(" ", "").Replace("\u00A0", "");
+
+            // 2. Унифицируем разделитель дробной части (заменяем запятую на точку)
             rawValue = rawValue.Replace(',', '.').Trim();
 
+            // 3. Парсим чистую строку, где остались только цифры и возможная точка
             if (double.TryParse(rawValue, NumberStyles.Any, CultureInfo.InvariantCulture, out double result))
             {
                 return result;
@@ -274,22 +436,58 @@ public partial class SecondPage : ContentPage, IQueryAttributable
             return null;
         }
 
-        // 1. Формируем Дисп.график (берём только первые 12 строк, ячейка с индексом 1)
+        // 1. Диспетчерский график
+
+        //// ---- БЛОК ОТЛАДКИ (ВЫВОД В КОНСОЛЬ) ----
+        //System.Diagnostics.Debug.WriteLine($"=== ОТЛАДКА VolumeData. Всего строк: {VolumeData?.Count} ===");
+        //if (VolumeData != null)
+        //{
+        //    int counter = 0;
+        //    foreach (var row in VolumeData.Take(12)) // Смотрим первые 12 строк
+        //    {
+        //        string rawCell1 = (row?.Cells != null && row.Cells.Count > 1) ? row.Cells[1] : "НЕТ ЯЧЕЙКИ";
+        //        double? parsed = ParseValue(row, 1);
+
+        //        System.Diagnostics.Debug.WriteLine(
+        //            $"Строка {counter}: RowLabel='{row?.RowLabel}' | Сырое значение Cells[1]='{rawCell1}' | Результат парсинга={parsed?.ToString() ?? "NULL"}"
+        //        );
+        //        counter++;
+        //    }
+        //}
+        //System.Diagnostics.Debug.WriteLine("=== КОНЕЦ ЛОГА VolumeData ===");
+        //// ----------------------------------------
+
         var volume1Values = VolumeData
             .Take(12)
             .Select(row => ParseValue(row, 1))
-            .ToList();
+            .ToArray(); // Заменили на массив для стабильности LiveCharts
 
         seriesList.Add(new LineSeries<double?>
         {
             Values = volume1Values,
             Name = "Диспетчерский график",
-            GeometrySize = 6,
+            GeometrySize = 0, // Установили 0, чтобы убрать тяжелые маркеры точек
             LineSmoothness = 0,
+            //Stroke = new SolidColorPaint(SKColors.Red, 3), // Делаем главную линию видимой и потолще
             Fill = null
         });
 
-        // 2. Формируем Объемы по годам (разбиваем ВСЮ коллекцию по 12 строк, ячейка с индексом 2)
+        // 2. Объемы по годам
+        // 1. Создаем свой массив стандартных красивых цветов для графиков (Hex-формат)
+        var customColors = new SKColor[]
+        {
+            SKColor.Parse("#1f77b4"), // Синий
+            SKColor.Parse("#ff7f0e"), // Оранжевый
+            SKColor.Parse("#2ca02c"), // Зеленый
+            SKColor.Parse("#d62728"), // Красный
+            SKColor.Parse("#9467bd"), // Фиолетовый
+            SKColor.Parse("#8c564b"), // Коричневый
+            SKColor.Parse("#e377c2"), // Розовый
+            SKColor.Parse("#7f7f7f"), // Серый
+            SKColor.Parse("#bcbd22"), // Оливковый
+            SKColor.Parse("#17becf")  // Бирюзовый
+        };
+
         int chunkSize = 12;
         int cycleNumber = 1;
 
@@ -299,41 +497,48 @@ public partial class SecondPage : ContentPage, IQueryAttributable
                 .Skip(i)
                 .Take(chunkSize)
                 .Select(row => ParseValue(row, 2))
-                .ToList();
+                .ToArray();
+
+            // 2. Берем цвет из нашего массива по кругу (оператор %)
+            var baseColor = customColors[(cycleNumber - 1) % customColors.Length];
 
             seriesList.Add(new LineSeries<double?>
             {
                 Values = chunk,
-                Name = $"Фактический объем (год {cycleNumber})",
-                GeometrySize = 6,
-                LineSmoothness = 0.3,
+                Name = $"Год {cycleNumber}",
+                GeometrySize = 0,
+                LineSmoothness = 0.2,
+
+                // 3. Применяем цвет и задаем толщину 1
+                Stroke = new SolidColorPaint(baseColor, 1),
+                // Stroke = new SolidColorPaint(baseColor.WithAlpha(120), 1), // 120 — прозрачность около 50%
                 Fill = null
             });
 
             cycleNumber++;
         }
 
-        // 3. Заполняем массивы, которые привязаны к XAML
+        // 3. Привязка к свойствам
         VolumeChartSeries = seriesList.ToArray();
 
         VolXAxes = new Axis[]
         {
-        new Axis
-        {
-            Labels = new string[] { "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12" },
-            Name = "Месяцы"
-        }
+            new Axis
+            {
+                Labels = new string[] { "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12" },
+                Name = "Месяцы"
+            }
         };
 
         VolYAxes = new Axis[]
         {
-        new Axis
-        {
-            Name = "Объем, млн.м³",
-            Labeler = value => value.ToString("N0") // Разделение тысяч для красоты (например, 10 000)
-        }
+            new Axis
+            {
+                Name = "Объем на конец месяца, млн.м³",
+                MinLimit = 0,
+                Labeler = value => value.ToString("N0")
+            }
         };
-
 
         // Уведомляем интерфейс об обновлении всех осей
         OnPropertyChanged(nameof(DischChartSeries));
@@ -350,8 +555,20 @@ public partial class SecondPage : ContentPage, IQueryAttributable
         OnPropertyChanged(nameof(StaticHeadYAxes));
 
         OnPropertyChanged(nameof(PowerChartSeries));
-        OnPropertyChanged(nameof(XAxes));
         OnPropertyChanged(nameof(PowerYAxes));
+
+        OnPropertyChanged(nameof(InflowSecurityChartSeries));
+        OnPropertyChanged(nameof(SecXAxes));
+        OnPropertyChanged(nameof(IYAxes));
+
+        OnPropertyChanged(nameof(ConsumptionSecurityChartSeries));
+        OnPropertyChanged(nameof(CYAxes));
+
+        OnPropertyChanged(nameof(HeadSecurityChartSeries));
+        OnPropertyChanged(nameof(HYAxes));
+
+        OnPropertyChanged(nameof(PowerSecurityChartSeries));
+        OnPropertyChanged(nameof(PYAxes));
 
         OnPropertyChanged(nameof(VolumeChartSeries));
         OnPropertyChanged(nameof(VolXAxes));
