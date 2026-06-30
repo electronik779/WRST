@@ -482,7 +482,7 @@ namespace WRST.maui
                 var intakeData = blocks[5].Take(12).ToList();
                 FillTableFromCSV(IntakeData, intakeData);
 
-                InflowCollectionView.ItemsSource = InflowData;
+                //InflowCollectionView.ItemsSource = InflowData;
                 BathygraphyCollectionView.ItemsSource = BathygraphyData;
                 DownstreamCollectionView.ItemsSource = DownstreamData;
             }
@@ -684,14 +684,14 @@ namespace WRST.maui
             }
             catch (Exception ex)
             {
-                DisplayAlertAsync("Ошибка в исходных данных", ex.Message, "OK");
+                await DisplayAlertAsync("Ошибка в исходных данных", ex.Message, "OK");
                 return;
             }
 
             // Проверяем кпд агрегата
             if (Efficiency >= 1)
             {
-                DisplayAlertAsync("Ошибка", "Кпд агрегата не может быть равен\nили больше единицы", "OK");
+                await DisplayAlertAsync("Ошибка", "Кпд агрегата не может быть равен\nили больше единицы", "OK");
                 return;
             }
 
@@ -857,7 +857,7 @@ namespace WRST.maui
                 row.SetCell(6, DownstreamLevel[i].ToString("F2"));               // 7: Уровень нижнего бьефа
                 row.SetCell(7, StaticHead[i].ToString("F2"));                    // 8: Статический напор
                 row.SetCell(8, Power[i].ToString("N0"));                         // 9: Мощность ГЭС
-                row.SetCell(9, ActualResidualVolume[i].ToString("N0"));          // 10: Остаточный объем над диспетчерсим объемом
+                row.SetCell(9, ActualResidualVolume[i].ToString("N1"));          // 10: Остаточный объем над диспетчерсим объемом
 
                 ControlData.Add(row);
 
@@ -981,7 +981,9 @@ namespace WRST.maui
                 { "ControlData", ControlData },
                 { "SecurityData", SecurityData },
                 { "GuaranteedDischarge", GuaranteedDischarge },
-                { "VolumeData", VolumeData }
+                { "VolumeData", VolumeData },
+                { "AverageAnnualElectricityGeneration", AverageAnnualElectricityGeneration },
+                { "SumIdleResetVolume", SumIdleResetVolume }
             };
 
             // Автоматический переход
