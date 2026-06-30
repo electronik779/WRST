@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Maui.Storage;
 using System.Collections.ObjectModel;
 using System.Data;
+using System.Diagnostics;
 using System.Globalization;
 using System.Text;
 
@@ -778,6 +779,10 @@ namespace WRST.maui
                 StaticHead[MonthOrdinalNumber] = UpstreamLevel[MonthOrdinalNumber] -
                     DownstreamLevel[MonthOrdinalNumber];
 
+                //Debug.WriteLine("#= {0}, Vol= {1}, UpEl= {2}, Disch= {3}, DownEl= {4}",
+                //    MonthOrdinalNumber, VolumeInReservoir, UpstreamLevel[MonthOrdinalNumber],
+                //    DischargeIntoDownstream, DownstreamLevel[MonthOrdinalNumber]);
+
                 object selectedValue = RadioButtonGroup.GetSelectedValue(RadioGroup);
                 if (selectedValue != null)
                 {
@@ -892,6 +897,10 @@ namespace WRST.maui
             Array.Sort(Consumption);
             Array.Sort(StaticHead);
             Array.Sort(Power);
+            Array.Reverse(Inflow);
+            Array.Reverse(Consumption);
+            Array.Reverse(StaticHead);
+            Array.Reverse(Power);
 
             SecurityOfInflow[0] = Inflow[0];
             SecurityOfConsumption[0] = Consumption[0];
@@ -984,7 +993,8 @@ namespace WRST.maui
             int i1 = 0;
             double dx = 0;
             double result = 0;
-            int quantity = xy.GetLength(0);
+            int quantity = xy.GetLength(1);
+            //Debug.WriteLine("quan= {0}", quantity);
             for (int i = 1; i < quantity; i++)
             {
                 if (argument - xy[0, i] <= 0)
@@ -992,6 +1002,11 @@ namespace WRST.maui
                     i1 = i - 1;
                     dx = xy[0, i] - xy[0, i1];
                     result = (xy[1, i] * (argument - xy[0, i1]) - xy[1, i1] * (argument - xy[0, i])) / dx;
+
+                    //Debug.WriteLine("arg= {0}, i= {1}, i1= {2}, dx= {3}," +
+                    //    "xy[0,i]= {4}, xy[0,i1]= {5}, xy[1,i]= {6}, xy[1,i1]= {7}, res= {8}",
+                    //    argument, i, i1, dx, xy[0, i], xy[0, i1], xy[1, i], xy[1, i1], result);
+                    
                     return result;
                 }
             }
@@ -999,6 +1014,13 @@ namespace WRST.maui
             dx = xy[0, quantity - 1] - xy[0, i1];
             result = (xy[1, quantity - 1] * (argument - xy[0, i1]) -
                 xy[1, i1] * (argument - xy[0, quantity - 1])) / dx;
+
+            //Debug.WriteLine("arg= {0}, dx= {1}, i1= {2}" +
+            //            "xy[1,quantity - 1]= {3}, xy[0,i1]= {4}, xy[1,i1]= {5}, xy[0, quantity - 1]= {6}," +
+            //            " res= {7}",
+            //            argument, dx, i1, xy[1, quantity - 1], xy[0, i1], xy[1, i1], xy[0, quantity - 1],
+            //            result);
+
             return result;
         }
 
