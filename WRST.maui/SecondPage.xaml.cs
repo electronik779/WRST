@@ -274,7 +274,7 @@ public partial class SecondPage : ContentPage, IQueryAttributable
             return null;
         }
 
-        // 1. Формируем Объем 1 (берём только первые 12 строк, ячейка с индексом 1)
+        // 1. Формируем Дисп.график (берём только первые 12 строк, ячейка с индексом 1)
         var volume1Values = VolumeData
             .Take(12)
             .Select(row => ParseValue(row, 1))
@@ -285,10 +285,11 @@ public partial class SecondPage : ContentPage, IQueryAttributable
             Values = volume1Values,
             Name = "Диспетчерский график",
             GeometrySize = 6,
-            LineSmoothness = 0
+            LineSmoothness = 0,
+            Fill = null
         });
 
-        // 2. Формируем Объем 2 (разбиваем ВСЮ коллекцию по 12 строк, ячейка с индексом 2)
+        // 2. Формируем Объемы по годам (разбиваем ВСЮ коллекцию по 12 строк, ячейка с индексом 2)
         int chunkSize = 12;
         int cycleNumber = 1;
 
@@ -304,7 +305,9 @@ public partial class SecondPage : ContentPage, IQueryAttributable
             {
                 Values = chunk,
                 Name = $"Фактический объем (год {cycleNumber})",
-                GeometrySize = 6
+                GeometrySize = 6,
+                LineSmoothness = 0.3,
+                Fill = null
             });
 
             cycleNumber++;
@@ -326,7 +329,7 @@ public partial class SecondPage : ContentPage, IQueryAttributable
         {
         new Axis
         {
-            Name = "Объем",
+            Name = "Объем, млн.м³",
             Labeler = value => value.ToString("N0") // Разделение тысяч для красоты (например, 10 000)
         }
         };
