@@ -1,11 +1,14 @@
+using CommunityToolkit.Maui.Storage;
 using LiveChartsCore;
 using LiveChartsCore.Defaults;
 using LiveChartsCore.SkiaSharpView;
 using LiveChartsCore.SkiaSharpView.Painting;
+using Microsoft.Maui.Controls.Shapes;
 using SkiaSharp;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Globalization;
+using System.Text;
 
 namespace WRST.maui;
 
@@ -194,7 +197,7 @@ public partial class SecondPage : ContentPage, IQueryAttributable
 
             powerSecurityValue.Add(ParseCell(row.GetCell(4)));
         }
-        var isPoints = security.Zip(inflowSecurityValue, (x,y) => new ObservablePoint(x, y)).ToArray();
+        var isPoints = security.Zip(inflowSecurityValue, (x, y) => new ObservablePoint(x, y)).ToArray();
         var csPoints = security.Zip(consumptionSecurityValue, (x, y) => new ObservablePoint(x, y)).ToArray();
         var hsPoints = security.Zip(headSecurityValue, (x, y) => new ObservablePoint(x, y)).ToArray();
         var psPoints = security.Zip(powerSecurityValue, (x, y) => new ObservablePoint(x, y)).ToArray();
@@ -595,50 +598,164 @@ public partial class SecondPage : ContentPage, IQueryAttributable
         return 0;
     }
 
-    private void Save_Click(object sender, EventArgs e)
+    private async void Save_Click(object sender, EventArgs e)
     {
+        await ExportControlDataToCsvAsync();
 
     }
-}
 
-// Конвертер: принимает индекс (int) и возвращает цвет фона
-public class IndexToColorConverter : IValueConverter
-{
-    public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+    public async Task ExportControlDataToCsvAsync()
     {
-        if (value is int index)
+        try
         {
-            // Для четных индексов — белый, для нечетных — светло-серый
-            return (index % 2 == 0) ? Colors.White : Color.FromArgb("#F4F4F6");
-        }
-        return Colors.White;
-    }
+            var csvContent = new StringBuilder();
 
-    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-    {
-        throw new NotImplementedException();
-    }
-}
+            // 1. Скрытый трюк для Excel: жестко задаем разделитель-запятую
+            //csvContent.AppendLine("sep=;");
 
-public class DischargeColorConverter : IValueConverter
-{
-    public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-    {
-        // value теперь — это весь объект строки TableRow
-        if (value is TableRow row && row.Cells.Count > 3)
-        {
-            string cellValue = row.Cells[3];
-            if (double.TryParse(cellValue.Replace(',', '.'), CultureInfo.InvariantCulture, out double currentDischarge))
+            // 1. Массив названий колонок для шапки (запятые внутри строк теперь безопасны)
+            string[] headers = new string[]
             {
-                // Сравниваем напрямую со свойством из этой же строки
-                if (currentDischarge < row.GuaranteedLimit)
-                {
-                    return Color.FromArgb("#FFD2D2"); // Красный фон при дефиците
-                }
+            "#", "Месяц", "Приток, м³/с", "Расход ГЭС, м³/с", "Сбросы, м³/с",
+            "Отм. ВБ, м", "Отм. НБ, м", "Статический напор, м",
+                "Мощность ГЭС, кВт", "Избыт. объем над дисп. остатком, млн.м³"
+            };
+
+            string headerLine = string.Join(";", headers.Select(EscapeCsvField));
+            csvContent.AppendLine(headerLine);
+
+            // 3. Наполняем строками из ControlData
+            foreach (var row in ControlData)
+            {
+                // Берем первые 10 ячеек, очищаем от разделителей разрядов, а затем экранируем
+                var processedCells = row.Cells
+                    .Take(10)
+                    .Select(CleanNumberFormat)
+                    .Select(EscapeCsvField);
+
+                string line = string.Join(";", processedCells);
+                csvContent.AppendLine(line);
+            }
+
+            string Electricity = CleanNumberFormat(EscapeCsvField(AverageAnnualElectricityGeneration.
+                ToString("F0")));
+            string Reset = CleanNumberFormat(EscapeCsvField(SumIdleResetVolume.
+                ToString("F0")));
+            string tmpLine = $"Среднегодовая выработка {Electricity} кВтч" + ";" +
+                $"Суммарный объем сбросов {Reset} млн.м³";
+            csvContent.AppendLine("");
+            csvContent.AppendLine(tmpLine);
+            csvContent.AppendLine("");
+
+            headers = Array.Empty<string>();
+            headers = new [] { 
+                "Обеспеченность, %", "Приток, м³/с", "Расход ГЭС, м³/с", "Статический напор, м",
+                    "Мощность ГЭС, кВт"
+                    };
+            headerLine = string.Join(";", headers.Select(EscapeCsvField));
+            csvContent.AppendLine(headerLine);
+
+            foreach (var row in SecurityData)
+            {
+                // Берем первые 10 ячеек, очищаем от разделителей разрядов, а затем экранируем
+                var processedCells = row.Cells
+                    .Take(5)
+                    .Select(CleanNumberFormat)
+                    .Select(EscapeCsvField);
+
+                string line = string.Join(";", processedCells);
+                csvContent.AppendLine(line);
+            }
+
+            csvContent.AppendLine("");
+
+            headers = Array.Empty<string>();
+            headers = new[] {
+                "#", "Месяц", "Диспетчерский объем, м³", "Фактический объем, м³"
+                    };
+            headerLine = string.Join(";", headers.Select(EscapeCsvField));
+            csvContent.AppendLine(headerLine);
+
+            int month = 1;
+            for(int i = 0; i < VolumeData.Count; i++)
+            {
+                List<string> lineTmp = new List<string>();
+                string tmp = VolumeData[i].GetCell(0);
+                lineTmp.Add(tmp);
+                lineTmp.Add(month.ToString());
+                tmp = VolumeData[i].GetCell(1);
+                lineTmp.Add(tmp);
+                tmp = VolumeData[i].GetCell(2);
+                lineTmp.Add(tmp);
+                string line = string.Join (";", lineTmp.Select(CleanNumberFormat).Select(EscapeCsvField));
+                csvContent.AppendLine(line);
+
+                month++;
+                if(month > 12) month = 1;
+            }
+
+            // 4. принудительно создаем кодировку UTF-8 с меткой BOM (true)
+            var encodingWithBom = new UTF8Encoding(encoderShouldEmitUTF8Identifier: true);
+            byte[] fileBytes = encodingWithBom.GetBytes(csvContent.ToString());
+            using var stream = new MemoryStream(fileBytes);
+
+            // 5. Вызываем системный диалог сохранения файла
+            var fileSaverResult = await FileSaver.Default.SaveAsync("Result_data.csv", stream, CancellationToken.None);
+
+            if (fileSaverResult.IsSuccessful)
+            {
+                await DisplayAlertAsync(
+                    "Успех!",
+                    $"Файл успешно сохранен: {fileSaverResult.FilePath}\n(разделитель - точка с запятой)",
+                    "OK"
+                );
+            }
+            else if (fileSaverResult.Exception != null)
+            {
+                throw fileSaverResult.Exception;
             }
         }
-        return Colors.Transparent;
+        catch (Exception ex)
+        {
+            await DisplayAlertAsync(
+                "Ошибка!",
+                $"Не удалось сохранить файл: {ex.Message}",
+                "OK"
+            );
+        }
     }
 
-    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) => throw new NotImplementedException();
+    // Метод для очистки чисел от разделителей разрядов
+    private string CleanNumberFormat(string field)
+    {
+        if (string.IsNullOrWhiteSpace(field))
+        {
+            return string.Empty;
+        }
+
+        // Удаляем обычные пробелы, неразрывные пробелы (\u00A0) и апострофы, 
+        // которые часто используются для разделения тысяч (например, "1 500.50" -> "1500.50")
+        string cleaned = field
+            .Replace(" ", "")
+            .Replace("\u00A0", "")
+            .Replace("'", "");
+
+        return cleaned;
+    }
+
+    // Вспомогательная функция для экранирования по стандарту CSV
+    private string EscapeCsvField(string field)
+    {
+        if (string.IsNullOrEmpty(field))
+        {
+            return string.Empty;
+        }
+
+        if (field.Contains(";") || field.Contains("\"") || field.Contains("\n") || field.Contains("\r"))
+        {
+            return $"\"{field.Replace("\"", "\"\"")}\"";
+        }
+
+        return field;
+    }
 }
