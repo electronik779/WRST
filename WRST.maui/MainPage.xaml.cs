@@ -1,7 +1,6 @@
 ﻿using CommunityToolkit.Maui.Storage;
 using System.Collections.ObjectModel;
 using System.Data;
-using System.Diagnostics;
 using System.Globalization;
 using System.Text;
 
@@ -599,11 +598,17 @@ namespace WRST.maui
                 var result = await FileSaver.Default.SaveAsync("Initial_data.csv", stream, CancellationToken.None);
 
                 if (result.IsSuccessful)
-                    await DisplayAlertAsync("Успех!", "Файл сохранен.\n(разделитель - точка с запятой).", "OK");
+                    await DisplayAlertAsync(
+                        "Успех!", 
+                        $"Файл сохранен: {result.FilePath}\n(разделитель - точка с запятой).", 
+                        "OK");
             }
             catch (Exception ex)
             {
-                await DisplayAlertAsync("Ошибка", "Ошибка записи: " + ex.Message, "OK");
+                await DisplayAlertAsync(
+                    "Ошибка!", 
+                    "Ошибка записи: " + ex.Message, 
+                    "OK");
             }
         }
 
@@ -963,9 +968,9 @@ namespace WRST.maui
                 row.InitializeCells(3, string.Empty);
 
                 row.SetCell(0, (i + 1).ToString());
-                row.SetCell(1, RemainderAccordingDispatchScheduleTableData[0, month].ToString("N0"));
+                row.SetCell(1, RemainderAccordingDispatchScheduleTableData[0, month].ToString("N1"));
                 row.SetCell(2, (RemainderAccordingDispatchScheduleTableData[0, month] +
-                    ActualResidualVolume[pointer]).ToString("N0"));
+                    ActualResidualVolume[pointer]).ToString("N1"));
 
                 VolumeData.Add(row);
 
@@ -1008,7 +1013,7 @@ namespace WRST.maui
                     //Debug.WriteLine("arg= {0}, i= {1}, i1= {2}, dx= {3}," +
                     //    "xy[0,i]= {4}, xy[0,i1]= {5}, xy[1,i]= {6}, xy[1,i1]= {7}, res= {8}",
                     //    argument, i, i1, dx, xy[0, i], xy[0, i1], xy[1, i], xy[1, i1], result);
-                    
+
                     return result;
                 }
             }
