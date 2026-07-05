@@ -856,18 +856,18 @@ namespace WRST
             }
 
             double[] DVM = new double[600];
-            double QP1;
-            double QS1;
-            double DV1;
-            double VM1;
-            double VD1;
-            double[] MDK = new double[600];
-            double[] QP = new double[600];
-            double[] QS = new double[600];
-            double[] ZU = new double[600];
-            double[] ZL = new double[600];
-            double[] PH = new double[600];
-            double[] PN = new double[600];
+            double QP1; // Текущий расход ГЭС
+            double QS1; // -/- расход холостого сброса
+            double DV1; // Приращение объема за текущий месяц
+            double VM1; // Текущий объем в вдхр
+            double VD1; // -/- диспетчерский объем
+            double[] MDK = new double[600]; // Календарный номер месяца
+            double[] QP = new double[600];  // Расход ГЭС
+            double[] QS = new double[600];  // Расход холостого сброса
+            double[] ZU = new double[600];  // Отм. ВБ
+            double[] ZL = new double[600];  // Отм. НБ
+            double[] PH = new double[600];  // Статический напор
+            double[] PN = new double[600];  // Мощность ГЭС
             double PHL;
             double VM11;
             double ZU1;
@@ -890,12 +890,17 @@ namespace WRST
 
             while (M <= MF)
             {
+                // Предыдущий месяц
                 QP1 = QR + DV / 2.63;
                 //Debug.WriteLine("Start[{0}]. QR={1}, DV={2}, QP1={3}", M, QR, DV, QP1);
                 if (QP1 > QPF) { QP1 = QPF; }
                 QS1 = 0;
+
                 MD++;
                 if (MD > 11) { MD = 0; }
+
+                // Текущий месяц
+                // Вариант 1 - между УМО и НПУ - если не варианты 2 и 3 
                 DV1 = (Q[M] - QP1 - QS1 - QU[MD]) * 2.63;
                 //Debug.WriteLine("Start[{0}]. DV1={1}, Q[M]={2}, QP1={3}, QS1={4} QU[MD]={5}, MD={6}",
                 //    M, DV1, Q[M], QP1, QS1, QU[MD], MD);
@@ -904,35 +909,39 @@ namespace WRST
                 VD1 = VD[MD];
                 //Debug.WriteLine("VD[MD]={0}, MD={1}", VD1, MD);
                 //Debug.WriteLine("IF VU={0}, VM1={1}, VD1={2}", VU, VM1, VD1);
-                if (VM1 > VU | VM1 < VD1)
+                
+                // Вариант 2 - превысили НПУ
+                if (VM1 > VU)
                 {
-                    if (VM1 > VU)
+                    QP1 = QP1 + (VM1 - VU) / 2.63;
+                    //Debug.WriteLine("VM1>VU[{0}]. VM1={1}, VU={2}, QP1={3}",M, VM1, VU, QP1);
+                    // Нет сбросов
+                    if (QP1 <= QPF)
                     {
-                        QP1 = QP1 + (VM1 - VU) / 2.63;
-                        //Debug.WriteLine("VM1>VU[{0}]. VM1={1}, VU={2}, QP1={3}",M, VM1, VU, QP1);
-                        if (QP1 <= QPF)
-                        {
-                            DV1 = (Q[M] - QP1 - QS1 - QU[MD]) * 2.63;
-                            //Debug.WriteLine("VM1 > VU . QP1 <= QPF[{0}]. DV1={1}", M, DV);
-                            VM1 = VM + DV1;
-                        }
-                        else
-                        {
-                            QS1 = QP1 - QPF;
-                            QP1 = QPF;
-                            //Debug.WriteLine("VM1>VU, QP1>QPF[{0}]", M);
-                            VM1 = VU;
-                        }
-                    }
-                    else
-                    {
-                        QP1 = QP1 + (VM1 - VD1) / 2.63;
-                        //Debug.WriteLine("VM1<=VU[{0}]. VM1={1}, VD1={2}, QP1={3}", M, VM1, VD1, QP1);
                         DV1 = (Q[M] - QP1 - QS1 - QU[MD]) * 2.63;
-                        //Debug.WriteLine("VM1 <= VU");
+                        //Debug.WriteLine("VM1 > VU . QP1 <= QPF[{0}]. DV1={1}", M, DV);
                         VM1 = VM + DV1;
                     }
+                    // Сбросы
+                    else
+                    {
+                        QS1 = QP1 - QPF;
+                        QP1 = QPF;
+                        //Debug.WriteLine("VM1>VU, QP1>QPF[{0}]", M);
+                        VM1 = VU;
+                    }
                 }
+
+                // Вариант 3 - ниже диспетчерского графика
+                else if (VM1 < VD1)
+                {
+                    QP1 = QP1 + (VM1 - VD1) / 2.63;
+                    //Debug.WriteLine("VM1<=VU[{0}]. VM1={1}, VD1={2}, QP1={3}", M, VM1, VD1, QP1);
+                    DV1 = (Q[M] - QP1 - QS1 - QU[MD]) * 2.63;
+                    //Debug.WriteLine("VM1 <= VU");
+                    VM1 = VM + DV1;
+                }
+              
                 MDK[M] = MD;
                 QP[M] = QP1;
                 QS[M] = QS1;
