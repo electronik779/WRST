@@ -2,6 +2,7 @@ using CommunityToolkit.Maui.Storage;
 using LiveChartsCore;
 using LiveChartsCore.Defaults;
 using LiveChartsCore.SkiaSharpView;
+using LiveChartsCore.SkiaSharpView.Drawing;
 using LiveChartsCore.SkiaSharpView.Painting;
 using SkiaSharp;
 using System.Collections.ObjectModel;
@@ -13,17 +14,18 @@ namespace WRST.maui;
 public partial class SecondPage : ContentPage, IQueryAttributable
 {
     // Для таблиц
-    private ObservableCollection<TableRow> _controlData;
-    private ObservableCollection<TableRow> _securityData;
-    private ObservableCollection<TableRow> _volumeData;
+    private ObservableCollection<TableRow>? _controlData;
+    private ObservableCollection<TableRow>? _securityData;
+    private ObservableCollection<TableRow>? _volumeData;
 
-    public ObservableCollection<TableRow> ControlData
+    public ObservableCollection<TableRow>? ControlData
     {
         get => _controlData;
+
         set { _controlData = value; OnPropertyChanged(); }
     }
 
-    public ObservableCollection<TableRow> SecurityData
+    public ObservableCollection<TableRow>? SecurityData
     {
         get => _securityData;
         set { _securityData = value; OnPropertyChanged(); }
@@ -31,7 +33,7 @@ public partial class SecondPage : ContentPage, IQueryAttributable
 
     public double GuaranteedDischarge { get; set; }
 
-    public ObservableCollection<TableRow> VolumeData
+    public ObservableCollection<TableRow>? VolumeData
     {
         get => _volumeData;
         set { _volumeData = value; OnPropertyChanged(); }
@@ -42,38 +44,38 @@ public partial class SecondPage : ContentPage, IQueryAttributable
 
     // Для графиков
     // Расходы
-    public ISeries[] DischChartSeries { get; set; }
-    public Axis[] XAxes { get; set; }
-    public Axis[] DischYAxes { get; set; }
+    public ISeries[]? DischChartSeries { get; set; }
+    public Axis[]? XAxes { get; set; }
+    public Axis[]? DischYAxes { get; set; }
     // ВБ
-    public ISeries[] UpLevelChartSeries { get; set; }
-    public Axis[] UpLevelYAxes { get; set; }
+    public ISeries[]? UpLevelChartSeries { get; set; }
+    public Axis[]? UpLevelYAxes { get; set; }
     // НБ
-    public ISeries[] DownLevelChartSeries { get; set; }
-    public Axis[] DownLevelYAxes { get; set; }
+    public ISeries[]? DownLevelChartSeries { get; set; }
+    public Axis[]? DownLevelYAxes { get; set; }
     // Статический напор
-    public ISeries[] StaticHeadChartSeries { get; set; }
-    public Axis[] StaticHeadYAxes { get; set; }
+    public ISeries[]? StaticHeadChartSeries { get; set; }
+    public Axis[]? StaticHeadYAxes { get; set; }
     // Мощность
-    public ISeries[] PowerChartSeries { get; set; }
-    public Axis[] PowerYAxes { get; set; }
+    public ISeries[]? PowerChartSeries { get; set; }
+    public Axis[]? PowerYAxes { get; set; }
     // Обеспеченности
-    public ISeries[] InflowSecurityChartSeries { get; set; }
-    public Axis[] SecXAxes { get; set; }
-    public Axis[] IYAxes { get; set; }
+    public ISeries[]? InflowSecurityChartSeries { get; set; }
+    public Axis[]? SecXAxes { get; set; }
+    public Axis[]? IYAxes { get; set; }
 
-    public ISeries[] ConsumptionSecurityChartSeries { get; set; }
-    public Axis[] CYAxes { get; set; }
+    public ISeries[]? ConsumptionSecurityChartSeries { get; set; }
+    public Axis[]? CYAxes { get; set; }
 
-    public ISeries[] HeadSecurityChartSeries { get; set; }
-    public Axis[] HYAxes { get; set; }
+    public ISeries[]? HeadSecurityChartSeries { get; set; }
+    public Axis[]? HYAxes { get; set; }
 
-    public ISeries[] PowerSecurityChartSeries { get; set; }
-    public Axis[] PYAxes { get; set; }
+    public ISeries[]? PowerSecurityChartSeries { get; set; }
+    public Axis[]? PYAxes { get; set; }
     // Диспетчерский
-    public ISeries[] VolumeChartSeries { get; set; }
-    public Axis[] VolXAxes { get; set; }
-    public Axis[] VolYAxes { get; set; }
+    public ISeries[]? VolumeChartSeries { get; set; }
+    public Axis[]? VolXAxes { get; set; }
+    public Axis[]? VolYAxes { get; set; }
 
     public SecondPage()
     {
@@ -220,10 +222,13 @@ public partial class SecondPage : ContentPage, IQueryAttributable
 
                 SeparatorsPaint = new SolidColorPaint
                     {
-                        Color = SKColors.LightGray,
-                        StrokeThickness = 1,
-                        // Можно сделать линию пунктирной (опционально):
-                        // PathEffect = new SKPathEffect.CreateDash(new float[] { 4, 4 }, 0)
+                        // Для Светлой темы (Light): черный цвет с прозрачностью ~9% (22 из 255)
+                        Color = new SKColor(0, 0, 0, 22), 
+                        
+                        // Если у вас в приложении Темная тема (Dark), используйте белый с прозрачностью ~14%:
+                        // Color = new SKColor(255, 255, 255, 35),
+                        
+                        StrokeThickness = 1f // Ровно 1 пиксель
                     }
             }
         };
@@ -346,10 +351,9 @@ public partial class SecondPage : ContentPage, IQueryAttributable
 
                 SeparatorsPaint = new SolidColorPaint
                     {
-                        Color = SKColors.LightGray,
-                        StrokeThickness = 1,
-                        // Можно сделать линию пунктирной (опционально):
-                        // PathEffect = new SKPathEffect.CreateDash(new float[] { 4, 4 }, 0)
+                        // Для Светлой темы (Light): черный цвет с прозрачностью ~9% (22 из 255)
+                        Color = new SKColor(0, 0, 0, 22),                         
+                        StrokeThickness = 1f // Ровно 1 пиксель
                     }
             }
         };
@@ -547,10 +551,9 @@ public partial class SecondPage : ContentPage, IQueryAttributable
 
                 SeparatorsPaint = new SolidColorPaint
                     {
-                        Color = SKColors.LightGray,
-                        StrokeThickness = 1,
-                        // Можно сделать линию пунктирной (опционально):
-                        // PathEffect = new SKPathEffect.CreateDash(new float[] { 4, 4 }, 0)
+                        // Для Светлой темы (Light): черный цвет с прозрачностью ~9% (22 из 255)
+                        Color = new SKColor(0, 0, 0, 22),
+                        StrokeThickness = 1f // Ровно 1 пиксель
                     }
             }
         };
