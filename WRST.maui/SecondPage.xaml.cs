@@ -3,10 +3,8 @@ using LiveChartsCore;
 using LiveChartsCore.Defaults;
 using LiveChartsCore.SkiaSharpView;
 using LiveChartsCore.SkiaSharpView.Painting;
-using Microsoft.Maui.Controls.Shapes;
 using SkiaSharp;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.Globalization;
 using System.Text;
 
@@ -218,7 +216,15 @@ public partial class SecondPage : ContentPage, IQueryAttributable
             {
                 Name = "Месяц", // Название оси X
                 Labels = months.ToArray(),
-                LabelsRotation = 0
+                LabelsRotation = 0,
+
+                SeparatorsPaint = new SolidColorPaint
+                    {
+                        Color = SKColors.LightGray,
+                        StrokeThickness = 1,
+                        // Можно сделать линию пунктирной (опционально):
+                        // PathEffect = new SKPathEffect.CreateDash(new float[] { 4, 4 }, 0)
+                    }
             }
         };
 
@@ -336,7 +342,15 @@ public partial class SecondPage : ContentPage, IQueryAttributable
             {
                 Name = "Обеспеченность, %",
                 MinLimit = 0,
-                MaxLimit = 100
+                MaxLimit = 100,
+
+                SeparatorsPaint = new SolidColorPaint
+                    {
+                        Color = SKColors.LightGray,
+                        StrokeThickness = 1,
+                        // Можно сделать линию пунктирной (опционально):
+                        // PathEffect = new SKPathEffect.CreateDash(new float[] { 4, 4 }, 0)
+                    }
             }
         };
 
@@ -529,7 +543,15 @@ public partial class SecondPage : ContentPage, IQueryAttributable
             new Axis
             {
                 Labels = new string[] { "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12" },
-                Name = "Месяцы"
+                Name = "Месяцы",
+
+                SeparatorsPaint = new SolidColorPaint
+                    {
+                        Color = SKColors.LightGray,
+                        StrokeThickness = 1,
+                        // Можно сделать линию пунктирной (опционально):
+                        // PathEffect = new SKPathEffect.CreateDash(new float[] { 4, 4 }, 0)
+                    }
             }
         };
 
@@ -648,7 +670,7 @@ public partial class SecondPage : ContentPage, IQueryAttributable
             csvContent.AppendLine("");
 
             headers = Array.Empty<string>();
-            headers = new [] { 
+            headers = new[] {
                 "Обеспеченность, %", "Приток, м³/с", "Расход ГЭС, м³/с", "Статический напор, м",
                     "Мощность ГЭС, кВт"
                     };
@@ -677,7 +699,7 @@ public partial class SecondPage : ContentPage, IQueryAttributable
             csvContent.AppendLine(headerLine);
 
             int month = 1;
-            for(int i = 0; i < VolumeData.Count; i++)
+            for (int i = 0; i < VolumeData.Count; i++)
             {
                 List<string> lineTmp = new List<string>();
                 string tmp = VolumeData[i].GetCell(0);
@@ -687,11 +709,11 @@ public partial class SecondPage : ContentPage, IQueryAttributable
                 lineTmp.Add(tmp);
                 tmp = VolumeData[i].GetCell(2);
                 lineTmp.Add(tmp);
-                string line = string.Join (";", lineTmp.Select(CleanNumberFormat).Select(EscapeCsvField));
+                string line = string.Join(";", lineTmp.Select(CleanNumberFormat).Select(EscapeCsvField));
                 csvContent.AppendLine(line);
 
                 month++;
-                if(month > 12) month = 1;
+                if (month > 12) month = 1;
             }
 
             // 4. принудительно создаем кодировку UTF-8 с меткой BOM (true)
