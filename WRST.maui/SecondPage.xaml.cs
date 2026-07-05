@@ -226,7 +226,7 @@ public partial class SecondPage : ContentPage, IQueryAttributable
                         Color = new SKColor(0, 0, 0, 22), 
                         
                         // Если у вас в приложении Темная тема (Dark), используйте белый с прозрачностью ~14%:
-                        // Color = new SKColor(255, 255, 255, 35),
+                        //Color = new SKColor(255, 255, 255, 35),
                         
                         StrokeThickness = 1f // Ровно 1 пиксель
                     }
