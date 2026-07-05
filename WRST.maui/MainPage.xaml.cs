@@ -1,7 +1,6 @@
 ﻿using CommunityToolkit.Maui.Storage;
 using System.Collections.ObjectModel;
 using System.Data;
-using System.Diagnostics;
 using System.Globalization;
 using System.Text;
 
@@ -644,15 +643,15 @@ namespace WRST.maui
 
                 if (result.IsSuccessful)
                     await DisplayAlertAsync(
-                        "Успех!", 
-                        $"Файл сохранен: {result.FilePath}\n(разделитель - точка с запятой).", 
+                        "Успех!",
+                        $"Файл сохранен: {result.FilePath}\n(разделитель - точка с запятой).",
                         "OK");
             }
             catch (Exception ex)
             {
                 await DisplayAlertAsync(
-                    "Ошибка!", 
-                    "Ошибка записи: " + ex.Message, 
+                    "Ошибка!",
+                    "Ошибка записи: " + ex.Message,
                     "OK");
             }
         }
