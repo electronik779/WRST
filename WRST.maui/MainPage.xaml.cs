@@ -250,7 +250,7 @@ namespace WRST.maui
 
         // По нажатию кнопки "Создать" напротив поля ввода Количество значений притока
         // рисуем таблицу притока
-        private void InflowButton_Clicked(object sender, EventArgs e)
+        private void InflowButton_Clicked(object? sender, EventArgs? e)
         {
             // Получение значения начального месяца. Проверка корректности
             if (!int.TryParse(BeginningMonthInput.Text, NumberStyles.Any,
@@ -329,7 +329,7 @@ namespace WRST.maui
 
         // По нажатию кнопки "Создать" напротив поля ввода Количество точек характеристики верхнего бьефа
         // рисуем таблицу верхнего бьефа
-        private void BathygraphyButton_Clicked(object sender, EventArgs e)
+        private void BathygraphyButton_Clicked(object? sender, EventArgs? e)
         {
             // Получение значения количества точек характеристики верхнего бьефа. Проверка корректности
             if (!int.TryParse(BathygraphyCountInput.Text, NumberStyles.Any,
@@ -374,7 +374,7 @@ namespace WRST.maui
 
         // По нажатию кнопки "Создать" напротив поля ввода Количество точек характеристики нижнего бьефа
         // рисуем таблицу нижнего бьефа
-        private void CharacteristicOfDownstreamButton_Clicked(object sender, EventArgs e)
+        private void CharacteristicOfDownstreamButton_Clicked(object? sender, EventArgs? e)
         {
             // Получение значения количества точек характеристики нижнего бьефа. Проверка корректности
             if (!int.TryParse(CharacteristicOfDownstreamCountInput.Text,
@@ -581,7 +581,7 @@ namespace WRST.maui
                 table[0].SetCell(i, processedValue1);
 
                 // Строка 2 (table[1]) - ИСПРАВЛЕНО: проверяем rawValue2 вместо rawValue1
-                string rawValue2 = i < data2.Count ? data2[i] : null;
+                string? rawValue2 = i < data2.Count ? data2[i] : null;
                 string processedValue2 = "0";
                 if (!string.IsNullOrWhiteSpace(rawValue2))
                 {
