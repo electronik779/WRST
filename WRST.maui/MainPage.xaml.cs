@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Maui.Storage;
 using System.Collections.ObjectModel;
 using System.Data;
+using System.Diagnostics;
 using System.Globalization;
 using System.Text;
 
@@ -168,40 +169,84 @@ namespace WRST.maui
         {
             if (sender is Entry entry)
             {
-                // 1.Находим строку TableRow, к которой принадлежит этот Entry
-                if (entry.BindingContext is string && entry.Parent is StackLayout parentLayout)
-                {
-                    // Находим индекс текущего поля ввода среди соседей (это и есть индекс ячейки)
-                    int cellIndex = parentLayout.Children.IndexOf(entry);
+                // 1. Ищем строку данных (TableRow) и контейнер ячеек, поднимаясь вверх по визуальному дереву
+                TableRow? row = null;
+                Element? current = entry.Parent;
+                Layout? cellsLayout = null;
 
-                    // Находим саму строку данных
-                    if (parentLayout.BindingContext is TableRow row)
+                while (current != null)
+                {
+                    // Первый Layout на пути вверх, в котором лежат наши Entry — это контейнер ячеек
+                    if (cellsLayout == null && current is Layout layout)
                     {
-                        // Сохраняем введенный пользователем текст в память коллекции Cells
-                        if (cellIndex >= 0 && cellIndex < row.Cells.Count)
+                        cellsLayout = layout;
+                    }
+
+                    // Как только нашли элемент, привязанный к TableRow — мы нашли нашу строку
+                    if (current.BindingContext is TableRow matchedRow)
+                    {
+                        row = matchedRow;
+                        break;
+                    }
+                    current = current.Parent;
+                }
+
+                // 2. Если строка и контейнер ячеек успешно найдены
+                if (row != null && cellsLayout != null)
+                {
+                    // Находим индекс текущего поля ввода внутри его непосредственного контейнера-родителя
+                    // Для CollectionView непосредственным родителем entry может быть внутренний контейнер,
+                    // поэтому надежнее искать entry или его предка внутри cellsLayout.
+                    int cellIndex = -1;
+
+                    if (cellsLayout.Children.Contains(entry))
+                    {
+                        cellIndex = cellsLayout.Children.IndexOf(entry);
+                    }
+                    else
+                    {
+                        // Если MAUI обернул Entry во внутренний контейнер, ищем этот контейнер
+                        var visualChild = cellsLayout.Children.FirstOrDefault(c =>
+                            c == entry || (c is Element el && IsAncestorOf(el, entry)));
+                        if (visualChild != null)
                         {
-                            row.Cells[cellIndex] = entry.Text;
+                            cellIndex = cellsLayout.Children.IndexOf(visualChild);
                         }
+                    }
+
+                    // Сохраняем введенный текст напрямую в коллекцию Cells
+                    if (cellIndex >= 0 && cellIndex < row.Cells.Count)
+                    {
+                        row.Cells[cellIndex] = e.NewTextValue ?? "";
                     }
                 }
 
-                string text = entry.Text?.Replace(',', '.') ?? "";
-
-                // Проверяем: не пусто ли и является ли целым числом
+                // 3. Логика валидации (остается без изменений)
+                string text = e.NewTextValue?.Replace(',', '.') ?? "";
                 bool isValid = !string.IsNullOrWhiteSpace(text) &&
                               double.TryParse(text, NumberStyles.Any, CultureInfo.InvariantCulture, out _);
 
                 if (isValid)
                 {
-                    // Возвращаем стандартное состояние (цвета подтянутся из Normal/Focused в зависимости от темы)
                     VisualStateManager.GoToState(entry, "Normal");
                 }
                 else
                 {
-                    // Переключаем в наше кастомное состояние ошибки
                     VisualStateManager.GoToState(entry, "Invalid");
                 }
             }
+        }
+
+        // Вспомогательный метод для проверки вложенности элементов (нужен для CollectionView)
+        private bool IsAncestorOf(Element ancestor, Element descendent)
+        {
+            Element? current = descendent.Parent;
+            while (current != null)
+            {
+                if (current == ancestor) return true;
+                current = current.Parent;
+            }
+            return false;
         }
 
         // По нажатию кнопки "Создать" напротив поля ввода Количество значений притока
@@ -705,7 +750,7 @@ namespace WRST.maui
                                                     // Индексы массивов 0-11, месяцы - 1-12, поэтому -1.
             int PreviousMonth = CalendarMonth - 1; // Предыдущий месяц
             if (PreviousMonth < 0) PreviousMonth = 11; // Сразу в индексах
-            double ExcessVolume = 0; // Избыточный объем
+            double ExcessVolume = 0; // Избыточный объем. Ноль, т.к. начинаем с полного вдхр
             double CurrentConsumption = 0; // Текущий расход ГЭС
             double IdleDischargeFlowRate = 0; // Расход холостых сбросов
             double IncreaseVolume = 0; // Приращение объема водохранилища
@@ -741,6 +786,15 @@ namespace WRST.maui
                 RequiredVolumeAccordingDispatchSchedule =
                     RemainderAccordingDispatchScheduleTableData[0, CalendarMonth];
 
+                //Debug.WriteLine($"=== ВАРИАНТ 1 === {MonthOrdinalNumber}");
+                //Debug.WriteLine("");
+                //Debug.WriteLine($"Inflow = {InflowTableData[0, MonthOrdinalNumber]}");
+                //Debug.WriteLine($"CurrentConsumption = {CurrentConsumption}");
+                //Debug.WriteLine($"IncreaseVolume = {IncreaseVolume}");
+                //Debug.WriteLine($"ResidualVolumeCurrentMonth = {ResidualVolumeCurrentMonth}");
+                //Debug.WriteLine($"RequiredVolumeAccordingDispatchSchedule = {RequiredVolumeAccordingDispatchSchedule}");
+                //Debug.WriteLine("");
+
                 // Вариант 2 - вышли за НПУ
                 if (ResidualVolumeCurrentMonth > UsefullVolume)
                 {
@@ -759,6 +813,16 @@ namespace WRST.maui
                     IdleDischargeFlowRate - IntakeFromReservoirTableData[0, CalendarMonth]) * 2.63;
                         ResidualVolumeCurrentMonth = ResidualVolumePreviousMonth + IncreaseVolume;
                     }
+
+                    //Debug.WriteLine("=== ВАРИАНТ 2 ===");
+                    //Debug.WriteLine("");
+                    //Debug.WriteLine($"CurrentConsumption = {CurrentConsumption}");
+                    //Debug.WriteLine($"IdleDischargeFlowRate = {IdleDischargeFlowRate}");
+                    //Debug.WriteLine($"IncreaseVolume = {IncreaseVolume}");
+                    //Debug.WriteLine($"ResidualVolumeCurrentMonth = {ResidualVolumeCurrentMonth}");
+                    //Debug.WriteLine($"RequiredVolumeAccordingDispatchSchedule = {RequiredVolumeAccordingDispatchSchedule}");
+                    //Debug.WriteLine("");
+
                 }
                 // Вариант 3 - ниже диспетчерской линии
                 else if (ResidualVolumeCurrentMonth < RequiredVolumeAccordingDispatchSchedule)
@@ -768,6 +832,14 @@ namespace WRST.maui
                     IncreaseVolume = (InflowTableData[0, MonthOrdinalNumber] - CurrentConsumption -
                         IdleDischargeFlowRate - IntakeFromReservoirTableData[0, CalendarMonth]) * 2.63;
                     ResidualVolumeCurrentMonth = ResidualVolumePreviousMonth + IncreaseVolume;
+
+                    //Debug.WriteLine("=== ВАРИАНТ 3 ===");
+                    //Debug.WriteLine("");
+                    //Debug.WriteLine($"CurrentConsumption = {CurrentConsumption}");
+                    //Debug.WriteLine($"IncreaseVolume = {IncreaseVolume}");
+                    //Debug.WriteLine($"ResidualVolumeCurrentMonth = {ResidualVolumeCurrentMonth}");
+                    //Debug.WriteLine($"RequiredVolumeAccordingDispatchSchedule = {RequiredVolumeAccordingDispatchSchedule}");
+                    //Debug.WriteLine("");
                 }
 
                 // Запоминаем результаты и вычисляем статический напор, мощность
@@ -806,6 +878,7 @@ namespace WRST.maui
 
                 // Переприсваивание
                 ResidualVolumePreviousMonth = ResidualVolumeCurrentMonth;
+                ExcessVolume = ResidualVolumeCurrentMonth - RequiredVolumeAccordingDispatchSchedule;
 
                 // Следующий месяц
                 MonthOrdinalNumber++;
