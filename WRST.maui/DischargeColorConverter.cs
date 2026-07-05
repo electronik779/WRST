@@ -15,7 +15,19 @@ namespace WRST.maui
                     // Сравниваем напрямую со свойством из этой же строки
                     if (currentDischarge < row.GuaranteedLimit)
                     {
-                        return Color.FromArgb("#FFD2D2"); // Красный фон при дефиците
+                        // Проверяем текущую активную системную тему приложения
+                        bool isDark = Application.Current?.RequestedTheme == AppTheme.Dark;
+
+                        if (isDark)
+                        {
+                            // Приглушенный темно-бордовый для темной темы
+                            return Color.FromArgb("#5A1A1A");
+                        }
+                        else
+                        {
+                            // Ваш исходный нежно-розовый для светлой темы
+                            return Color.FromArgb("#FFD2D2");
+                        }
                     }
                 }
             }
