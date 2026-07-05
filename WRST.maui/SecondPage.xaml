@@ -17,6 +17,12 @@
                 <Setter Property="TextColor" Value="{AppThemeBinding Light=Black, Dark=White}" />
                 <Setter Property="VerticalOptions" Value="Center" />
             </Style>
+
+            <!-- логика фона строк таблицы -->
+            <Style x:Key="TableRowGridStyle" TargetType="Grid">
+                <Setter Property="BackgroundColor" Value="{Binding Index, Converter={StaticResource RowColorConverter}}" />
+            </Style>
+
         </ResourceDictionary>
 
         <local:IndexToColorConverter x:Key="RowColorConverter" />
@@ -34,7 +40,7 @@
                 <Grid Grid.Row="1" Grid.ColumnSpan="2"
                             ColumnDefinitions="50,30,80,85,80,80,80,90,90,85" 
                               HeightRequest="100"
-                              BackgroundColor="LightGray">
+                              BackgroundColor="{AppThemeBinding Light=LightGray, Dark=#1C1C1E}">
                         <Label Text="#"                                         Grid.Column="0" FontAttributes="Bold" HorizontalTextAlignment="Center" Style="{StaticResource TableLabelStyle}"/>
                         <Label Text="Ме-сяц"                                    Grid.Column="1" FontAttributes="Bold" HorizontalTextAlignment="Center" Style="{StaticResource TableLabelStyle}"/>
                         <Label Text="Приток, м³/с"                              Grid.Column="2" FontAttributes="Bold" HorizontalTextAlignment="Center" Style="{StaticResource TableLabelStyle}"/>
@@ -57,7 +63,7 @@
                         <DataTemplate x:DataType="local:TableRow">
                             <Grid ColumnDefinitions="50,30,80,85,80,80,80,90,90,85" 
                                   HeightRequest="30"
-                                  BackgroundColor="{Binding Index, Converter={StaticResource RowColorConverter}}">
+                                  Style="{StaticResource TableRowGridStyle}">
                                 <Label Text="{Binding Cells[0]}" Grid.Column="0" HorizontalTextAlignment="Center" Style="{StaticResource TableLabelStyle}"/>
                                 <Label Text="{Binding Cells[1]}" Grid.Column="1" HorizontalTextAlignment="Center" Style="{StaticResource TableLabelStyle}"/>
                                 <Label Text="{Binding Cells[2]}" Grid.Column="2" HorizontalTextAlignment="Center" Style="{StaticResource TableLabelStyle}"/>
@@ -70,7 +76,8 @@
                                     <Label Text="{Binding Cells[3]}" 
                                         HorizontalTextAlignment="Center" 
                                         VerticalOptions="Center" 
-                                        Padding="0,0,5,0"/>
+                                        Padding="0,0,5,0"
+                                           Style="{StaticResource TableLabelStyle}"/>
                                 </Border>
                                 <Label Text="{Binding Cells[4]}" Grid.Column="4" HorizontalTextAlignment="Center" Style="{StaticResource TableLabelStyle}"/>
                                 <Label Text="{Binding Cells[5]}" Grid.Column="5" HorizontalTextAlignment="Center" Style="{StaticResource TableLabelStyle}"/>
@@ -93,7 +100,7 @@
                 <Label Grid.Row="4" Grid.ColumnSpan="2" Text="Обеспеченности" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center"/>
                 <Grid Grid.Row="5" Grid.ColumnSpan="2" RowDefinitions="Auto, Auto">
                     <!-- Заголовок второй таблицы -->
-                    <Grid Grid.Row="0" ColumnDefinitions="*,*,*,*,*" BackgroundColor="LightGray">
+                    <Grid Grid.Row="0" ColumnDefinitions="*,*,*,*,*" BackgroundColor="{AppThemeBinding Light=LightGray, Dark=#1C1C1E}">
                         <Label Text="Обеспеченность, %"      Grid.Column="0" FontAttributes="Bold" HorizontalTextAlignment="Center" Style="{StaticResource TableLabelStyle}"/>
                         <Label Text="Приток, м³/с"           Grid.Column="1" FontAttributes="Bold" HorizontalTextAlignment="Center" Style="{StaticResource TableLabelStyle}"/>
                         <Label Text="Расход ГЭС, м³/с"       Grid.Column="2" FontAttributes="Bold" HorizontalTextAlignment="Center" Style="{StaticResource TableLabelStyle}"/>
@@ -105,7 +112,7 @@
                     <VerticalStackLayout Grid.Row="1" BindableLayout.ItemsSource="{Binding SecurityData}">
                         <BindableLayout.ItemTemplate>
                             <DataTemplate x:DataType="local:TableRow">
-                                <Grid ColumnDefinitions="*,*,*,*,*" BackgroundColor="{Binding Index, Converter={StaticResource RowColorConverter}}">
+                                <Grid ColumnDefinitions="*,*,*,*,*" Style="{StaticResource TableRowGridStyle}">
                                     <Label Text="{Binding Cells[0]}" Grid.Column="0" HorizontalTextAlignment="Center" Style="{StaticResource TableLabelStyle}"/>
                                     <Label Text="{Binding Cells[1]}" Grid.Column="1" HorizontalTextAlignment="Center" Style="{StaticResource TableLabelStyle}"/>
                                     <Label Text="{Binding Cells[2]}" Grid.Column="2" HorizontalTextAlignment="Center" Style="{StaticResource TableLabelStyle}"/>
