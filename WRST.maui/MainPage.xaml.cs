@@ -350,7 +350,8 @@ namespace WRST.maui
                 return;
             }
 
-            BathygraphyData.Clear();
+            //BathygraphyData.Clear();
+            var tempCollection = new ObservableCollection<TableRow>();
 
             // Первая строка - объем
             var inputRowVol = new TableRow();
@@ -358,7 +359,8 @@ namespace WRST.maui
             inputRowVol.IsEditable = true;
             inputRowVol.RowLabel = "Объем, млн.м³"; // Метка в заголовке
             inputRowVol.InitializeCells(BathygraphyCount, "0"); // Только данные 
-            BathygraphyData.Add(inputRowVol);
+            //BathygraphyData.Add(inputRowVol);
+            tempCollection.Add(inputRowVol);
 
             // Вторая строка - отметка
             var inputRowEl = new TableRow();
@@ -366,7 +368,10 @@ namespace WRST.maui
             inputRowEl.IsEditable = true;
             inputRowEl.RowLabel = "Отметка, м";
             inputRowEl.InitializeCells(BathygraphyCount, "0");
-            BathygraphyData.Add(inputRowEl);
+            //BathygraphyData.Add(inputRowEl);
+            tempCollection.Add(inputRowEl);
+
+            BathygraphyData = tempCollection;
 
             //BathygraphyCollectionView.ItemsSource = null;
             //BathygraphyCollectionView.ItemsSource = BathygraphyData;
@@ -395,7 +400,8 @@ namespace WRST.maui
                     "«Количество точек характеристики нижнего бьефа» -\n2-20.", "OK");
             }
 
-            DownstreamData.Clear();
+            //DownstreamData.Clear();
+            var tempCollection = new ObservableCollection<TableRow>();
 
             // Первая строка - расход
             var inputRowFl = new TableRow();
@@ -403,7 +409,8 @@ namespace WRST.maui
             inputRowFl.IsEditable = true;
             inputRowFl.RowLabel = "Расход, м³/с";
             inputRowFl.InitializeCells(CharacteristicOfDownstreamCount, "0");
-            DownstreamData.Add(inputRowFl);
+            //DownstreamData.Add(inputRowFl);
+            tempCollection.Add(inputRowFl);
 
             // Вторая строка - отметка
             var inputRowEl = new TableRow();
@@ -411,7 +418,11 @@ namespace WRST.maui
             inputRowEl.IsEditable = true;
             inputRowEl.RowLabel = "Отметка, м";
             inputRowEl.InitializeCells(CharacteristicOfDownstreamCount, "0");
-            DownstreamData.Add(inputRowEl);
+            //DownstreamData.Add(inputRowEl);
+            tempCollection.Add(inputRowEl);
+
+            // Подменяем ссылку целиком. CollectionView получит один глобальный сигнал обновления
+            DownstreamData = tempCollection;
 
             //DownstreamCollectionView.ItemsSource = null;
             //DownstreamCollectionView.ItemsSource = DownstreamData;
