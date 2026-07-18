@@ -65,7 +65,7 @@ jobs:
           name: win-app-${{ matrix.arch }}
           path: WRST-${{ inputs.release_tag }}-${{ matrix.arch }}.zip
 
-   build-macos:
+  build-macos:
     if: inputs.build_macos == true
     runs-on: macos-26
     strategy:
