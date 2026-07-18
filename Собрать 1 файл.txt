@@ -1,0 +1,21 @@
+Собираем в папке WRST.maui
+
+В WRST.maui.csproj добавляем в блок PropertyGroup: 
+<!-- Обрезка лишнего -->
+<!-- Включаем сборку в единый исполняемый файл -->
+<PublishSingleFile>true</PublishSingleFile>
+<SelfContained>true</SelfContained>
+<UseAppHost>true</UseAppHost>
+
+<!-- Включаем сжатие упакованных библиотек внутри .exe файла -->
+<EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
+
+<!-- Отключаем обрезку кода, чтобы избежать падений приложения -->
+<PublishTrimmed>false</PublishTrimmed>
+
+<!-- Отключает генерацию промежуточных пакетов для других платформ при сборке под конкретную ОС 
+<EnableWinUIStandaloneMode>true</EnableWinUIStandaloneMode> --> Раскоментить если ругается, что не найдена библиотека mono
+
+В командной строке:
+dotnet clean
+dotnet publish -c Release -f net10.0-windows10.0.19041.0 -r win-x64 --self-contained true /p:PublishSingleFile=true /p:EnableCompressionInSingleFile=true /p:TargetPlatformIdentifier=windows /p:GenerateAppxPackageOnBuild=false
