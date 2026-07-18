@@ -75,15 +75,20 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      # ИСПРАВЛЕНО: Вместо костылей в .NET, мы просто переключаем систему на 
+      # предустановленный в образе Xcode 26.6, который так сильно требует .NET 10 MAUI.
+      - name: Select Xcode 26.6
+        run: |
+          sudo xcode-select --switch /Applications/Xcode_26.6.app
+
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '10.0.x'
 
-      # ИСПРАВЛЕНО: Явно фиксируем ревизию 10.0.500.
-      # Она скачивает SDK 26.5, который идеально совпадает с Xcode 26.5 на сервере GitHub
-      - name: Install Compatible MAUI Workload
-        run: dotnet workload install maui --version 10.0.500
+      # Устанавливаем самый свежий воркбэнч в штатном режиме
+      - name: Install MAUI Workload
+        run: dotnet workload install maui
 
       - name: Build macOS
         run: >
