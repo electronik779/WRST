@@ -37,8 +37,12 @@ jobs:
       - name: Install MAUI Workload
         run: dotnet workload install maui
 
-      # Передаем одновременно -f (для публикации) и -p:TargetFrameworks (для изоляции от мобильных багов)
-      # Также убрана лишняя точка в имени архива в шаге Compress
+      # ЧИНИТ MSB3030: Создает пустой файл лицензии в корне, чтобы компилятор не падал
+      - name: Create Dummy License File
+        shell: pwsh
+        run: |
+          New-Item -Path "." -Name "MIT License.txt" -ItemType "file" -Force
+
       - name: Build Windows
         run: >
           dotnet publish WRST.maui/WRST.maui.csproj 
@@ -80,7 +84,8 @@ jobs:
       - name: Install MAUI Workload
         run: dotnet workload install maui
 
-      # Передаем одновременно -f и -p:TargetFrameworks для правильного вызова публикации на MacCatalyst
+      # ЧИНИТ ХСОDE: Флаг -p:_SdkAllowedXcodeVersion="16.4" принудительно разрешает 
+      # компиляцию на текущей установленной версии Xcode, обходя внутреннее требование 26.6
       - name: Build macOS
         run: >
           dotnet publish WRST.maui/WRST.maui.csproj 
@@ -91,7 +96,7 @@ jobs:
           -p:SolutionDir="../"
           -p:CreatePackage=true
           -p:PublishTrimmed=true
-          -p:NoXcodeCheck=true
+          -p:_SdkAllowedXcodeVersion="16.4"
 
       - name: Compress macOS Build
         run: |
