@@ -80,13 +80,9 @@ jobs:
         with:
           dotnet-version: '10.0.x'
 
-      # Устанавливаем воркбэнч без фиксации версий (он стянет самый свежий)
       - name: Install MAUI Workload
         run: dotnet workload install maui
 
-      # ЧИНИТ СБОРКУ MAC: 
-      # 1. -p:_MtouchOverrideXcodeRequirement=true глушит проверку соответствия версий компилятора
-      # 2. -p:MtouchSdkRoot указывает жесткий путь к установленному в системе Xcode, чтобы сборщик не потерял SDK
       - name: Build macOS
         run: >
           dotnet publish WRST.maui/WRST.maui.csproj 
@@ -97,8 +93,8 @@ jobs:
           -p:SolutionDir="../"
           -p:CreatePackage=true
           -p:PublishTrimmed=true
-          -p:_MtouchOverrideXcodeRequirement=true
-          -p:MtouchSdkRoot=/Applications/Xcode_26.5.app
+          -p:MtouchSdkRoot=/Applications/Xcode.app
+          -p:_ForceXcodeVersion="26.5"
 
       - name: Compress macOS Build
         run: |
