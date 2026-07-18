@@ -41,7 +41,7 @@ jobs:
       # Сборка сгенерирует единый мульти-архитектурный MSIX пакет.
       - name: Build Windows Universal
         run: >
-          dotnet publish WRST/WRST.maui/WRST.maui.csproj 
+          dotnet publish WRST.maui/WRST.maui.csproj 
           -f net10.0-windows10.0.19041.0 
           -c Release 
           -p:RuntimeIdentifiers="win-x64;win-arm64" 
@@ -53,7 +53,7 @@ jobs:
         shell: pwsh
         run: |
           New-Item -ItemType Directory -Force -Path ./win-out
-          Get-ChildItem -Path WRST/WRST.maui/bin/Release/net10.0-windows10.0.19041.0/ -Filter *.msix* -Recurse | Copy-Item -Destination ./win-out/
+          Get-ChildItem -Path WRST.maui/bin/Release/net10.0-windows10.0.19041.0/ -Filter *.msix* -Recurse | Copy-Item -Destination ./win-out/
           Compress-Archive -Path ./win-out/* -DestinationPath WRST-Windows-Universal.zip
 
       - name: Upload Windows Artifact
@@ -81,11 +81,11 @@ jobs:
         run: dotnet restore WRST/WRST.maui/WRST.maui.csproj
 
       - name: Build macOS Universal
-        run: dotnet publish WRST/WRST.maui/WRST.maui.csproj -f net10.0-maccatalyst -c Release -p:RuntimeIdentifiers="maccatalyst-x64;maccatalyst-arm64" -p:CreatePackage=true
+        run: dotnet publish WRST.maui/WRST.maui.csproj -f net10.0-maccatalyst -c Release -p:RuntimeIdentifiers="maccatalyst-x64;maccatalyst-arm64" -p:CreatePackage=true
 
       - name: Compress macOS Build
         run: |
-          cd WRST/WRST.maui/bin/Release/net10.0-maccatalyst/publish/
+          cd WRST.maui/bin/Release/net10.0-maccatalyst/publish/
           zip -r ../../../../WRST-macOS-Universal.zip .
 
       - name: Upload macOS Artifact
