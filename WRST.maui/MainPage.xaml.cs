@@ -18,6 +18,9 @@ namespace WRST.maui
         public ObservableCollection<TableRow> SecurityData { get; set; } = new();
         public ObservableCollection<TableRow> VolumeData { get; set; } = new();
 
+        // Страница с проектом и помощью
+        private Uri uri = new Uri("https://github.com/electronik779/WRST");
+
         // Исходные данные
         int BeginningMonth = 0; // Месяц начала расчета
         int InflowCount = 0; // Количество значений притока
@@ -1263,5 +1266,19 @@ namespace WRST.maui
             }
         }
 
+        private async void Help_Click(object? sender, EventArgs e)
+        {
+            try
+            {
+                await Browser.Default.OpenAsync(uri, BrowserLaunchMode.SystemPreferred);
+            }
+            catch (Exception ex)
+            {
+                // Обработка ошибок (например, если браузер не установлен на устройстве)
+                await DisplayAlertAsync("Ошибка!",
+                    "Не удалось открыть ссылку.\nОткройте ссылку в браузере https://github.com/electronik779/WRST", 
+                    "OK");
+            }
+        }
     }
 }
