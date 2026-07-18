@@ -44,7 +44,7 @@ jobs:
           dotnet publish WRST.maui/WRST.maui.csproj 
           -f net10.0-windows10.0.19041.0 
           -c Release 
-          -p:RuntimeIdentifiers="win-x64;win-arm64" 
+          -p:RuntimeIdentifiers="win-x64%3Bwin-arm64" 
           -p:GenerateAppxPackageOnBuild=true 
           -p:AppxPackageSigningEnabled=false
 
@@ -52,9 +52,20 @@ jobs:
       - name: Prepare Windows Artifact
         shell: pwsh
         run: |
-          New-Item -ItemType Directory -Force -Path ./win-out
-          Get-ChildItem -Path WRST.maui/bin/Release/net10.0-windows10.0.19041.0/ -Filter *.msix* -Recurse | Copy-Item -Destination ./win-out/
-          Compress-Archive -Path ./win-out/* -DestinationPath WRST-Windows-Universal.zip
+          New-Item 
+          -ItemType Directory 
+          -Force 
+          -Path ./win-out
+          
+          Get-ChildItem 
+          -Path WRST.maui/bin/Release/net10.0-windows10.0.19041.0/ 
+          -Filter *.msix* 
+          -Recurse | Copy-Item 
+          -Destination ./win-out/
+          
+          Compress-Archive 
+          -Path ./win-out/* 
+          -DestinationPath WRST-Windows-Universal.zip
 
       - name: Upload Windows Artifact
         uses: actions/upload-artifact@v4
@@ -72,7 +83,7 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '10.0.x' # Перешли на .NET 10
+          dotnet-version: '10.0.x'
 
       - name: Install MAUI Workload
         run: dotnet workload install maui
@@ -81,7 +92,7 @@ jobs:
         run: dotnet restore WRST.maui/WRST.maui.csproj
 
       - name: Build macOS Universal
-        run: dotnet publish WRST.maui/WRST.maui.csproj -f net10.0-maccatalyst -c Release -p:RuntimeIdentifiers="maccatalyst-x64;maccatalyst-arm64" -p:CreatePackage=true
+        run: dotnet publish WRST.maui/WRST.maui.csproj -f net10.0-maccatalyst -c Release -p:RuntimeIdentifiers="maccatalyst-x64%3Bmaccatalyst-arm64" -p:CreatePackage=true
 
       - name: Compress macOS Build
         run: |
