@@ -78,7 +78,7 @@ jobs:
         run: dotnet workload install maui
 
       - name: Restore dependencies
-        run: dotnet restore WRST/WRST.maui/WRST.maui.csproj
+        run: dotnet restore WRST.maui/WRST.maui.csproj
 
       - name: Build macOS Universal
         run: dotnet publish WRST.maui/WRST.maui.csproj -f net10.0-maccatalyst -c Release -p:RuntimeIdentifiers="maccatalyst-x64;maccatalyst-arm64" -p:CreatePackage=true
