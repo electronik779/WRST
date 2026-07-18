@@ -9,6 +9,7 @@
         <ToolbarItem Text="Открыть" Clicked="Open_Click" IconImageSource="open_icon.png" />
         <ToolbarItem Text="Сохранить" Clicked="Save_Click" IconImageSource="save_icon.png" />
         <ToolbarItem Text="Выполнить" Clicked="Execute_Click" IconImageSource="execute_icon.png" />
+        <ToolbarItem Clicked="Help_Click" IconImageSource="help_icon.png" />
     </ContentPage.ToolbarItems>
 
     <ContentPage.Resources>
