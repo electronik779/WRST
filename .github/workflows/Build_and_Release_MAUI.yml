@@ -24,7 +24,7 @@ jobs:
     runs-on: windows-latest
     strategy:
       matrix:
-        arch: [win-x64, win-arm64] # Возвращаем правильные системные RID
+        arch: [win-x64, win-arm64]
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -37,15 +37,13 @@ jobs:
       - name: Install MAUI Workload
         run: dotnet workload install maui
 
-      # Восстанавливаем с явным указанием флага архитектуры
-      - name: Restore Windows
-        run: dotnet restore WRST.maui/WRST.maui.csproj -p:TargetFramework=net10.0-windows10.0.19041.0 -r ${{ matrix.arch }}
-
-      # Благодаря <EnableWinUIStandaloneMode> собираем чистый, автономный .exe
+      # ЧИНИТ БАГ NU1102: Принудительно заставляем компилятор забыть про существование 
+      # мобильных фреймворков во время сборки под Windows. 
+      # Параметр %3B используется для экранирования точки с запятой в MSBuild.
       - name: Build Windows
         run: >
           dotnet publish WRST.maui/WRST.maui.csproj 
-          -f net10.0-windows10.0.19041.0 
+          -p:TargetFrameworks=net10.0-windows10.0.19041.0
           -c Release 
           -r ${{ matrix.arch }}
           -p:SolutionDir="../"
@@ -56,27 +54,23 @@ jobs:
       - name: Compress Windows Build
         shell: pwsh
         run: |
-          Compress-Archive -Path WRST.maui/bin/Release/net10.0-windows10.0.19041.0/${{ matrix.arch }}/publish/* -DestinationPath WRST-${{ inputs.release_tag }}-${{ matrix.arch }}.zip
+          Compress-Archive -Path WRST.maui/bin/Release/net10.0-windows10.0.19041.0/${{ matrix.arch }}/publish/* -DestinationPath WRST-${{ inputs.release_tag }}-${{ matrix.arch }}..zip
 
       - name: Upload Windows Artifact
         uses: actions/upload-artifact@v4
         with:
           name: win-app-${{ matrix.arch }}
-          path: WRST-${{ inputs.release_tag }}-${{ matrix.arch }}.zip
+          path: WRST-${{ inputs.release_tag }}-${{ matrix.arch }}..zip
 
   build-macos:
     if: inputs.build_macos == true
-    runs-on: macos-15
+    runs-on: macos-15 # macOS 15 содержит новейшие SDK из коробки
     strategy:
       matrix:
         arch: [maccatalyst-x64, maccatalyst-arm64]
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
-      - name: Set Xcode Version
-        run: |
-          sudo xcode-select -s /Applications/Xcode_26.6.app || sudo xcode-select -s /Applications/Xcode_26.5.app
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
@@ -86,13 +80,12 @@ jobs:
       - name: Install MAUI Workload
         run: dotnet workload install maui
 
-      - name: Restore macOS
-        run: dotnet restore WRST.maui/WRST.maui.csproj -p:TargetFramework=net10.0-maccatalyst -r ${{ matrix.arch }} -p:EnableWindowsTargeting=true
-
+      # ЧИНИТ БАГ Xcode: Собираем строго изолированный фреймворк maccatalyst.
+      # По умолчанию Xcode на macOS-15 сам подхватит нужные зависимости.
       - name: Build macOS
         run: >
           dotnet publish WRST.maui/WRST.maui.csproj 
-          -f net10.0-maccatalyst 
+          -p:TargetFrameworks=net10.0-maccatalyst
           -c Release 
           -r ${{ matrix.arch }}
           -p:SolutionDir="../"
@@ -103,13 +96,13 @@ jobs:
         run: |
           PUBLISH_DIR=$(find . -type d -path "*/bin/Release/net10.0-maccatalyst/${{ matrix.arch }}/publish" | head -n 1)
           cd "$PUBLISH_DIR"
-          zip -r ../../../../../WRST-${{ inputs.release_tag }}-${{ matrix.arch }}.zip .
+          zip -r ../../../../../WRST-${{ inputs.release_tag }}-${{ matrix.arch }}..zip .
 
       - name: Upload macOS Artifact
         uses: actions/upload-artifact@v4
         with:
           name: mac-app-${{ matrix.arch }}
-          path: WRST-${{ inputs.release_tag }}-${{ matrix.arch }}.zip
+          path: WRST-${{ inputs.release_tag }}-${{ matrix.arch }}..zip
 
   publish-release:
     runs-on: ubuntu-latest
