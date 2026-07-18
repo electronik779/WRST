@@ -80,9 +80,14 @@ jobs:
         with:
           dotnet-version: '10.0.x'
 
-      - name: Install MAUI Workload
-        run: dotnet workload install maui
+      # Фиксируем версию набора воркload на 10.0.100.
+      # Это установит SDK MacCatalyst, работающий с Xcode 26.5 без ошибок.
+      - name: Install Compatible Workload Set
+        run: |
+          dotnet workload update --version 10.0.100
+          dotnet workload install maui
 
+      # Сборка без искусственных флагов переопределения — теперь версии совпадают
       - name: Build macOS
         run: >
           dotnet publish WRST.maui/WRST.maui.csproj 
@@ -93,8 +98,6 @@ jobs:
           -p:SolutionDir="../"
           -p:CreatePackage=true
           -p:PublishTrimmed=true
-          -p:MtouchSdkRoot=/Applications/Xcode.app
-          -p:_ForceXcodeVersion="26.5"
 
       - name: Compress macOS Build
         run: |
