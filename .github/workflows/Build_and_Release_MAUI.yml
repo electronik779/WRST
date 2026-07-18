@@ -1,19 +1,19 @@
-name: Build and Publish MAUI Release
+name: Build and Publish Release
 
 on:
   workflow_dispatch:
     inputs:
       release_tag:
-        description: 'Имя тега (например, v2026.1)'
+        description: 'Имя тега (например, v1.0.0)'
         required: true
         type: string
       build_windows:
-        description: 'Собрать под Windows (Universal)?'
+        description: 'Собрать под Windows?'
         required: true
         type: boolean
         default: true
       build_macos:
-        description: 'Собрать под macOS (Universal)?'
+        description: 'Собрать под macOS?'
         required: true
         type: boolean
         default: true
@@ -22,6 +22,9 @@ jobs:
   build-windows:
     if: inputs.build_windows == true
     runs-on: windows-latest
+    strategy:
+      matrix:
+        arch: [win-x64, win-arm64]
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -34,36 +37,37 @@ jobs:
       - name: Install MAUI Workload
         run: dotnet workload install maui
 
-      # Исправлено: передаем фреймворк через -p:TargetFramework
       - name: Restore Windows
-        run: dotnet restore WRST.maui/WRST.maui.csproj -p:TargetFramework=net10.0-windows10.0.19041.0
+        run: dotnet restore WRST.maui/WRST.maui.csproj -p:TargetFramework=net10.0-windows10.0.19041.0 -r ${{ matrix.arch }}
 
-      - name: Build Windows Universal
+      - name: Build Windows
         run: >
           dotnet publish WRST.maui/WRST.maui.csproj 
           -f net10.0-windows10.0.19041.0 
           -c Release 
+          -r ${{ matrix.arch }}
           -p:SolutionDir="../"
-          -p:_MauiTargetRuntimeIdentifiers="win-x64%3Bwin-arm64" 
-          -p:GenerateAppxPackageOnBuild=true 
-          -p:AppxPackageSigningEnabled=false
+          -p:PublishSingleFile=true 
+          --self-contained true
 
-      - name: Prepare Windows Artifact
+      # Архивируем и подставляем имя тега в название zip-файла
+      - name: Compress Windows Build
         shell: pwsh
         run: |
-          New-Item -ItemType Directory -Force -Path ./win-out
-          Get-ChildItem -Path ./ -Filter *.msix* -Recurse | Where-Object { $_.FullName -notlike "*obj*" } | Copy-Item -Destination ./win-out/
-          Compress-Archive -Path ./win-out/* -DestinationPath WRST-Windows-Universal.zip
+          Compress-Archive -Path WRST.maui/bin/Release/net10.0-windows10.0.19041.0/${{ matrix.arch }}/publish/* -DestinationPath WRST-${{ inputs.release_tag }}-${{ matrix.arch }}.zip
 
       - name: Upload Windows Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: win-app
-          path: WRST-Windows-Universal.zip
+          name: win-app-${{ matrix.arch }}
+          path: WRST-${{ inputs.release_tag }}-${{ matrix.arch }}.zip
 
   build-macos:
     if: inputs.build_macos == true
     runs-on: macos-14
+    strategy:
+      matrix:
+        arch: [maccatalyst-x64, maccatalyst-arm64]
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -76,30 +80,30 @@ jobs:
       - name: Install MAUI Workload
         run: dotnet workload install maui
 
-      # Исправлено: передаем фреймворк через -p:TargetFramework
       - name: Restore macOS
-        run: dotnet restore WRST.maui/WRST.maui.csproj -p:TargetFramework=net10.0-maccatalyst -p:EnableWindowsTargeting=true
+        run: dotnet restore WRST.maui/WRST.maui.csproj -p:TargetFramework=net10.0-maccatalyst -r ${{ matrix.arch }} -p:EnableWindowsTargeting=true
 
-      - name: Build macOS Universal
+      - name: Build macOS
         run: >
           dotnet publish WRST.maui/WRST.maui.csproj 
           -f net10.0-maccatalyst 
           -c Release 
+          -r ${{ matrix.arch }}
           -p:SolutionDir="../"
-          -p:RuntimeIdentifiers="maccatalyst-x64%3Bmaccatalyst-arm64" 
           -p:CreatePackage=true
 
+      # Переходим в папку публикации и упаковываем всё с новым именем архива, содержащим тег
       - name: Compress macOS Build
         run: |
-          PUBLISH_DIR=$(find . -type d -path "*/bin/Release/net10.0-maccatalyst/publish" | head -n 1)
+          PUBLISH_DIR=$(find . -type d -path "*/bin/Release/net10.0-maccatalyst/${{ matrix.arch }}/publish" | head -n 1)
           cd "$PUBLISH_DIR"
-          zip -r ../../../../../WRST-macOS-Universal.zip .
+          zip -r ../../../../../WRST-${{ inputs.release_tag }}-${{ matrix.arch }}.zip .
 
       - name: Upload macOS Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: mac-app
-          path: WRST-macOS-Universal.zip
+          name: mac-app-${{ matrix.arch }}
+          path: WRST-${{ inputs.release_tag }}-${{ matrix.arch }}.zip
 
   publish-release:
     runs-on: ubuntu-latest
@@ -110,18 +114,15 @@ jobs:
     permissions:
       contents: write
     steps:
-      - name: Download Windows artifact
-        if: inputs.build_windows == true
+      # Загружаем файлы из кэша артефактов в общую временную папку
+      - name: Download All Artifacts
         uses: actions/download-artifact@v4
         with:
-          name: win-app
+          path: all-artifacts
+          pattern: '*-app-*'
+          merge-multiple: true
 
-      - name: Download macOS artifact
-        if: inputs.build_macos == true
-        uses: actions/download-artifact@v4
-        with:
-          name: mac-app
-
+      # Публикуем релиз, используя маску *.zip, чтобы автоматически подхватить все файлы с тегами
       - name: Publish to GitHub Releases
         uses: softprops/action-gh-release@v2
         with:
@@ -131,5 +132,4 @@ jobs:
           draft: false
           prerelease: false
           files: |
-            WRST-Windows-Universal.zip
-            WRST-macOS-Universal.zip
+            all-artifacts/*.zip
