@@ -83,6 +83,8 @@ jobs:
       - name: Install MAUI Workload
         run: dotnet workload install maui
 
+      # Исправлено: заменен флаг валидации Xcode на глобальный -p:CheckXcodeVersion=false.
+      # Это заставит MacCatalyst SDK пропустить валидацию требований к Xcode 26.6.
       - name: Build macOS
         run: >
           dotnet publish WRST.maui/WRST.maui.csproj 
@@ -93,7 +95,7 @@ jobs:
           -p:SolutionDir="../"
           -p:CreatePackage=true
           -p:PublishTrimmed=true
-          -p:_MtouchOverrideXcodeRequirement=true
+          -p:CheckXcodeVersion=false
 
       - name: Compress macOS Build
         run: |
