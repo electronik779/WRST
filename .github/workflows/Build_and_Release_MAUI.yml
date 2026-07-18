@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       release_tag:
-        description: 'Имя тега (например, v1.0.0)'
+        description: 'Имя тега (например, v2026.1)'
         required: true
         type: string
       build_windows:
@@ -37,20 +37,22 @@ jobs:
       - name: Install MAUI Workload
         run: dotnet workload install maui
 
+      # Восстанавливаем без указания -r, чтобы обойти баг NU1102 в .NET 10
       - name: Restore Windows
-        run: dotnet restore WRST.maui/WRST.maui.csproj -p:TargetFramework=net10.0-windows10.0.19041.0 -r ${{ matrix.arch }}
+        run: dotnet restore WRST.maui/WRST.maui.csproj -p:TargetFramework=net10.0-windows10.0.19041.0
 
+      # Передаем архитектуру строго через внутренний параметр MSBuild -p:RuntimeIdentifier,
+      # полностью исключая флаг -r из команды публикации. Это чинит сборку.
       - name: Build Windows
         run: >
           dotnet publish WRST.maui/WRST.maui.csproj 
           -f net10.0-windows10.0.19041.0 
           -c Release 
-          -r ${{ matrix.arch }}
+          -p:RuntimeIdentifier=${{ matrix.arch }}
           -p:SolutionDir="../"
           -p:PublishSingleFile=true 
           --self-contained true
 
-      # Архивируем и подставляем имя тега в название zip-файла
       - name: Compress Windows Build
         shell: pwsh
         run: |
@@ -83,6 +85,8 @@ jobs:
       - name: Restore macOS
         run: dotnet restore WRST.maui/WRST.maui.csproj -p:TargetFramework=net10.0-maccatalyst -r ${{ matrix.arch }} -p:EnableWindowsTargeting=true
 
+      # Добавлен принудительный тримминг кода (-p:PublishTrimmed=true) для MacCatalyst
+      # Если приложение будет падать из-за тримминга, замените этот флаг на -p:MtouchLink=None
       - name: Build macOS
         run: >
           dotnet publish WRST.maui/WRST.maui.csproj 
@@ -91,8 +95,8 @@ jobs:
           -r ${{ matrix.arch }}
           -p:SolutionDir="../"
           -p:CreatePackage=true
+          -p:PublishTrimmed=true
 
-      # Переходим в папку публикации и упаковываем всё с новым именем архива, содержащим тег
       - name: Compress macOS Build
         run: |
           PUBLISH_DIR=$(find . -type d -path "*/bin/Release/net10.0-maccatalyst/${{ matrix.arch }}/publish" | head -n 1)
@@ -114,7 +118,6 @@ jobs:
     permissions:
       contents: write
     steps:
-      # Загружаем файлы из кэша артефактов в общую временную папку
       - name: Download All Artifacts
         uses: actions/download-artifact@v4
         with:
@@ -122,7 +125,6 @@ jobs:
           pattern: '*-app-*'
           merge-multiple: true
 
-      # Публикуем релиз, используя маску *.zip, чтобы автоматически подхватить все файлы с тегами
       - name: Publish to GitHub Releases
         uses: softprops/action-gh-release@v2
         with:
