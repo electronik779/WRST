@@ -133,7 +133,7 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           tag_name: ${{ inputs.release_tag }}
-          name: Release ${{ inputs.release_tag }}
+          name: ${{ inputs.release_tag }}
           draft: false
           prerelease: false
           files: |
