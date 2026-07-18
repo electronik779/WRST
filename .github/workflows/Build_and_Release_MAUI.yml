@@ -91,6 +91,7 @@ jobs:
           -p:SolutionDir="../"
           -p:CreatePackage=true
           -p:PublishTrimmed=true
+          -p:NoXcodeCheck=true
 
       - name: Compress macOS Build
         run: |
