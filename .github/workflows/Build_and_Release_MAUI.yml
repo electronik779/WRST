@@ -80,10 +80,10 @@ jobs:
         with:
           dotnet-version: '10.0.x'
 
-      # ЧИНИТ СБОРКУ MAC: Явно ставим ревизию 10.0.300.
-      # Этот срез SDK MacCatalyst идеально совместим с Xcode 26.5 на сервере GitHub.
+      # ИСПРАВЛЕНО: Явно фиксируем ревизию 10.0.500.
+      # Она скачивает SDK 26.5, который идеально совпадает с Xcode 26.5 на сервере GitHub
       - name: Install Compatible MAUI Workload
-        run: dotnet workload install maui --version 10.0.300
+        run: dotnet workload install maui --version 10.0.500
 
       - name: Build macOS
         run: >
