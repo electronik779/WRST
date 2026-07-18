@@ -37,12 +37,12 @@ jobs:
       - name: Install MAUI Workload
         run: dotnet workload install maui
 
-      # ЧИНИТ БАГ NU1102: Принудительно заставляем компилятор забыть про существование 
-      # мобильных фреймворков во время сборки под Windows. 
-      # Параметр %3B используется для экранирования точки с запятой в MSBuild.
-      - name: Build Windows
+      # Передаем одновременно -f (для публикации) и -p:TargetFrameworks (для изоляции от мобильных багов)
+      # Также убрана лишняя точка в имени архива в шаге Compress
+      name: Build Windows
         run: >
           dotnet publish WRST.maui/WRST.maui.csproj 
+          -f net10.0-windows10.0.19041.0
           -p:TargetFrameworks=net10.0-windows10.0.19041.0
           -c Release 
           -r ${{ matrix.arch }}
@@ -54,17 +54,17 @@ jobs:
       - name: Compress Windows Build
         shell: pwsh
         run: |
-          Compress-Archive -Path WRST.maui/bin/Release/net10.0-windows10.0.19041.0/${{ matrix.arch }}/publish/* -DestinationPath WRST-${{ inputs.release_tag }}-${{ matrix.arch }}..zip
+          Compress-Archive -Path WRST.maui/bin/Release/net10.0-windows10.0.19041.0/${{ matrix.arch }}/publish/* -DestinationPath WRST-${{ inputs.release_tag }}-${{ matrix.arch }}.zip
 
       - name: Upload Windows Artifact
         uses: actions/upload-artifact@v4
         with:
           name: win-app-${{ matrix.arch }}
-          path: WRST-${{ inputs.release_tag }}-${{ matrix.arch }}..zip
+          path: WRST-${{ inputs.release_tag }}-${{ matrix.arch }}.zip
 
   build-macos:
     if: inputs.build_macos == true
-    runs-on: macos-15 # macOS 15 содержит новейшие SDK из коробки
+    runs-on: macos-15
     strategy:
       matrix:
         arch: [maccatalyst-x64, maccatalyst-arm64]
@@ -80,11 +80,11 @@ jobs:
       - name: Install MAUI Workload
         run: dotnet workload install maui
 
-      # ЧИНИТ БАГ Xcode: Собираем строго изолированный фреймворк maccatalyst.
-      # По умолчанию Xcode на macOS-15 сам подхватит нужные зависимости.
+      # Передаем одновременно -f и -p:TargetFrameworks для правильного вызова публикации на MacCatalyst
       - name: Build macOS
         run: >
           dotnet publish WRST.maui/WRST.maui.csproj 
+          -f net10.0-maccatalyst
           -p:TargetFrameworks=net10.0-maccatalyst
           -c Release 
           -r ${{ matrix.arch }}
@@ -96,13 +96,13 @@ jobs:
         run: |
           PUBLISH_DIR=$(find . -type d -path "*/bin/Release/net10.0-maccatalyst/${{ matrix.arch }}/publish" | head -n 1)
           cd "$PUBLISH_DIR"
-          zip -r ../../../../../WRST-${{ inputs.release_tag }}-${{ matrix.arch }}..zip .
+          zip -r ../../../../../WRST-${{ inputs.release_tag }}-${{ matrix.arch }}.zip .
 
       - name: Upload macOS Artifact
         uses: actions/upload-artifact@v4
         with:
           name: mac-app-${{ matrix.arch }}
-          path: WRST-${{ inputs.release_tag }}-${{ matrix.arch }}..zip
+          path: WRST-${{ inputs.release_tag }}-${{ matrix.arch }}.zip
 
   publish-release:
     runs-on: ubuntu-latest
