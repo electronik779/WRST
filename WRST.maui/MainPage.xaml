@@ -1,0 +1,408 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:WRST.maui"
+             x:Class="WRST.maui.MainPage"
+             Title="ВЭР годичного регулирования">
+
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="Открыть" Clicked="Open_Click" IconImageSource="open_icon.png" />
+        <ToolbarItem Text="Сохранить" Clicked="Save_Click" IconImageSource="save_icon.png" />
+        <ToolbarItem Text="Выполнить" Clicked="Execute_Click" IconImageSource="execute_icon.png" />
+        <ToolbarItem Clicked="Help_Click" IconImageSource="help_icon.png" />
+    </ContentPage.ToolbarItems>
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <!-- Общий стиль для всех ячеек ввода в таблицах -->
+            <Style x:Key="TableCellEntryStyle" TargetType="Entry">
+                <Setter Property="WidthRequest" Value="80" />
+                <Setter Property="Keyboard" Value="Numeric" />
+
+                <!-- Привязка IsEnabled и IsVisible к свойствам родительской строки TableRow -->
+                <Setter Property="IsEnabled" Value="{Binding Source={RelativeSource AncestorType={x:Type local:TableRow}}, Path=IsEditable}" />
+                <Setter Property="IsVisible" Value="{Binding Source={RelativeSource AncestorType={x:Type local:TableRow}}, Path=IsVisible}" /> 
+
+                <!-- Выделение текста при фокусе (Tab) -->
+                <Setter Property="VisualStateManager.VisualStateGroups">
+                    <VisualStateGroupList>
+                        <VisualStateGroup Name="CommonStates">
+                            <!-- Состояние по умолчанию -->
+                            <VisualState Name="Normal">
+                                <VisualState.Setters>
+                                    <Setter Property="TextColor" Value="{AppThemeBinding Light=Black, Dark=White}" />
+                                    <Setter Property="BackgroundColor" Value="{AppThemeBinding Light=White, Dark=#2C2C2C}" />
+                                </VisualState.Setters>
+                            </VisualState>
+
+                            <!-- Состояние при фокусе (Tab / Клик) -->
+                            <VisualState Name="Focused">
+                                <VisualState.Setters>
+                                    <!-- <Setter Property="CursorPosition" Value="0" />
+                                    <Setter Property="SelectionLength" Value="100" /> -->
+                                    <Setter Property="TextColor" Value="{AppThemeBinding Light=Black, Dark=White}" />
+                                    <Setter Property="BackgroundColor" Value="{AppThemeBinding Light=White, Dark=#333333}" />
+                                </VisualState.Setters>
+                            </VisualState>
+
+                            <VisualState Name="Invalid">
+                                <VisualState.Setters>
+                                    <!-- Красный текст и светло-красный фон для ошибки -->
+                                    <Setter Property="TextColor" Value="Red" />
+                                    <Setter Property="BackgroundColor" Value="{AppThemeBinding Light=#FFEAEA, Dark=#4A2323}" />
+                                </VisualState.Setters>
+                            </VisualState>
+
+                            <!-- Состояние, когда поле заблокировано (IsEnabled="False") -->
+                            <VisualState Name="Disabled">
+                                <VisualState.Setters>
+                                    <Setter Property="TextColor" Value="{AppThemeBinding Light=Gray, Dark=#888888}" />
+                                    <Setter Property="BackgroundColor" Value="{AppThemeBinding Light=#E0E0E0, Dark=#1E1E1E}" />
+                                </VisualState.Setters>
+                            </VisualState>
+                        </VisualStateGroup>
+                    </VisualStateGroupList>
+                </Setter>
+            </Style>
+            
+            <Style x:Key="TableLabelStyle" TargetType="Label">
+                <!-- Автоматический цвет текста: черный для светлой темы, белый для темной -->
+                <Setter Property="TextColor" Value="{AppThemeBinding Light=Black, Dark=White}" />
+                <Setter Property="VerticalOptions" Value="Center" />
+            </Style>
+
+            <!-- Стиль для одиночных полей ввода параметров -->
+            <Style x:Key="ParamEntryStyle" TargetType="Entry">
+                <!-- Размеры и выравнивание -->
+                <Setter Property="WidthRequest" Value="240" />
+                <Setter Property="HorizontalOptions" Value="Start" />
+                <Setter Property="Keyboard" Value="Numeric" />
+
+                <!-- Адаптивные цвета для темной и светлой темы 
+                <Setter Property="TextColor" Value="{AppThemeBinding Light=Black, Dark=White}" />
+                <Setter Property="BackgroundColor" Value="{AppThemeBinding Light=#F0F0F2, Dark=#2C2C2C}" /> -->
+
+                <!-- Выделение текста при фокусе (Tab) -->
+                <Setter Property="VisualStateManager.VisualStateGroups">
+                    <VisualStateGroupList>
+                        <VisualStateGroup Name="CommonStates">
+                            <!-- Состояние по умолчанию -->
+                            <VisualState Name="Normal">
+                                <VisualState.Setters>
+                                    <Setter Property="TextColor" Value="{AppThemeBinding Light=Black, Dark=White}" />
+                                    <!-- Для ParamEntryStyle измените Light на #F0F0F2 -->
+                                    <Setter Property="BackgroundColor" Value="{AppThemeBinding Light=White, Dark=#2C2C2C}" />
+                                </VisualState.Setters>
+                            </VisualState>
+
+                            <!-- Состояние при фокусе (Tab / Клик) -->
+                            <VisualState Name="Focused">
+                                <VisualState.Setters>
+                                    <!-- <Setter Property="CursorPosition" Value="0" />
+                                    <Setter Property="SelectionLength" Value="100" /> -->
+                                    <Setter Property="TextColor" Value="{AppThemeBinding Light=Black, Dark=White}" />
+                                    <!-- Для ParamEntryStyle измените Light на #F0F0F2 -->
+                                    <Setter Property="BackgroundColor" Value="{AppThemeBinding Light=White, Dark=#333333}" />
+                                </VisualState.Setters>
+                            </VisualState>
+
+                            <VisualState Name="Invalid">
+                                <VisualState.Setters>
+                                    <!-- Красный текст и светло-красный фон для ошибки -->
+                                    <Setter Property="TextColor" Value="Red" />
+                                    <Setter Property="BackgroundColor" Value="{AppThemeBinding Light=#FFEAEA, Dark=#4A2323}" />
+                                </VisualState.Setters>
+                            </VisualState>
+
+                            <!-- Состояние, когда поле заблокировано (IsEnabled="False") -->
+                            <VisualState Name="Disabled">
+                                <VisualState.Setters>
+                                    <Setter Property="TextColor" Value="{AppThemeBinding Light=Gray, Dark=#888888}" />
+                                    <Setter Property="BackgroundColor" Value="{AppThemeBinding Light=#E0E0E0, Dark=#1E1E1E}" />
+                                </VisualState.Setters>
+                            </VisualState>
+                        </VisualStateGroup>
+                    </VisualStateGroupList>
+                </Setter>
+            </Style>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <ScrollView>
+        <VerticalStackLayout Padding="15" Spacing="10">
+
+            <Grid ColumnDefinitions="*, 240, 120" RowDefinitions=
+                  "Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto" 
+                  RowSpacing="10">
+
+                <Label Grid.Row="0" Grid.Column="0" Text="Номер календарного месяца начала расчета" VerticalOptions="Center"/>
+                <Entry Grid.Row="0" Grid.Column="1" x:Name="BeginningMonthInput" Style="{StaticResource ParamEntryStyle}" TextChanged="OnIntEntryTextChanged" Keyboard="Numeric"/>
+
+                <Label Grid.Row="1" Grid.Column="0" Text="Количество значений притока" VerticalOptions="Center"/>
+                <Entry Grid.Row="1" Grid.Column="1" x:Name="InflowCountInput" Style="{StaticResource ParamEntryStyle}" 
+                       TextChanged="OnIntEntryTextChanged" Keyboard="Numeric" Focused="OnEntryFocused"/>
+                <Button Grid.Row="1" Grid.Column="2" Text="Создать" Margin="10,0,0,0" Clicked="InflowButton_Clicked" />
+
+                <!-- Таблица притока -->
+                <VerticalStackLayout Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Padding="10" Spacing="0">
+                    <!-- Заголовок таблицы -->
+                    <Label Text="{Binding HeaderText}" 
+                        Style="{StaticResource TableLabelStyle}"
+                        FontAttributes="Bold" 
+                        HorizontalOptions="Center"
+                        Margin="0,0,0,0"/>
+
+                    <!-- ScrollableView для горизонтальной прокрутки -->
+                    <ScrollView Orientation="Horizontal">
+                        <VerticalStackLayout BindableLayout.ItemsSource="{Binding InflowData}" Margin="0,0,0,0">
+                            <BindableLayout.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid ColumnDefinitions="60,Auto" BackgroundColor="{AppThemeBinding Light=White, Dark=#1C1C1E}">
+                                        <!-- Привязка к свойству RowLabel -->
+                                        <Label Text="{Binding RowLabel}" 
+                                               Style="{StaticResource TableLabelStyle}"
+                                            Grid.Column="0" 
+                                            HorizontalTextAlignment="Center" 
+                                            VerticalOptions="Center"/>
+
+                                        <!-- Ячейки данных -->
+                                        <HorizontalStackLayout Grid.Column="1" Spacing="5"
+                                           BindableLayout.ItemsSource="{Binding Cells}">
+                                            <BindableLayout.ItemTemplate>
+                                                <DataTemplate>
+                                                    <!-- Применяем созданный стиль через StaticResource -->
+                                                    <Entry Text="{Binding .}" 
+                                                           WidthRequest="70"
+                                                        Style="{StaticResource TableCellEntryStyle}"
+                                                        TextChanged="OnDoubleEntryTextChanged" 
+                                                           Focused="OnEntryFocused"/>
+                                                </DataTemplate>
+                                            </BindableLayout.ItemTemplate>
+                                        </HorizontalStackLayout>
+                                    </Grid>
+                                </DataTemplate>
+                            </BindableLayout.ItemTemplate>
+                        </VerticalStackLayout>
+                    </ScrollView>
+                </VerticalStackLayout>
+
+                <Label Grid.Row="3" Grid.Column="0" Text="Полезный объем водохранилища, млн.м³" VerticalOptions="Center"/>
+                <Entry Grid.Row="3" Grid.Column="1" x:Name="UsefulVolumeInput" Style="{StaticResource ParamEntryStyle}" 
+                       TextChanged="OnDoubleEntryTextChanged" Keyboard="Numeric" Focused="OnEntryFocused"/>
+
+                <Label Grid.Row="4" Grid.Column="0" Text="Мёртвый объем водохранилища, млн.м³" VerticalOptions="Center"/>
+                <Entry Grid.Row="4" Grid.Column="1" x:Name="UselessVolumeInput" Style="{StaticResource ParamEntryStyle}" 
+                       TextChanged="OnDoubleEntryTextChanged" Keyboard="Numeric" Focused="OnEntryFocused"/>
+
+                <Label Grid.Row="5" Grid.Column="0" Text="Количество точек характеристики верхнего бьефа" VerticalOptions="Center"/>
+                <Entry Grid.Row="5" Grid.Column="1" x:Name="BathygraphyCountInput" Style="{StaticResource ParamEntryStyle}" 
+                       TextChanged="OnIntEntryTextChanged" Keyboard="Numeric" Focused="OnEntryFocused"/>
+                <Button Grid.Row="5" Grid.Column="2" Text="Создать" Margin="10,0,0,0" Clicked="BathygraphyButton_Clicked" />
+
+                <!-- Таблица верхнего бьефа -->
+                <VerticalStackLayout Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="3" Padding="10" Spacing="20">
+                    <!-- ScrollableView для горизонтальной прокрутки -->
+                    <ScrollView Orientation="Horizontal">
+                        <CollectionView x:Name="BathygraphyCollectionView"
+                                        ItemsSource="{Binding BathygraphyData}"
+                                        ItemsLayout="VerticalList"
+                                        Margin="0,0,0,0">
+
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid ColumnDefinitions="70,*" BackgroundColor="{AppThemeBinding Light=White, Dark=#1C1C1E}">
+                                        <!-- Название строки в первом столбце -->
+                                        <Label Text="{Binding RowLabel}" 
+                                               Style="{StaticResource TableLabelStyle}"
+                                               Grid.Column="0" 
+                                               HorizontalTextAlignment="Center" 
+                                               VerticalOptions="Center"/>
+
+                                        <!-- Ячейки данных через BindableLayout -->
+                                        <StackLayout Grid.Column="1" Orientation="Horizontal" Spacing="5"
+                                                     BindableLayout.ItemsSource="{Binding Cells}">
+                                            <BindableLayout.ItemTemplate>
+                                                <DataTemplate>
+                                                    <!-- Применяем созданный стиль через StaticResource -->
+                                                    <Entry Text="{Binding .}" 
+                                                        Style="{StaticResource TableCellEntryStyle}"
+                                                        TextChanged="OnDoubleEntryTextChanged" 
+                                                           Focused="OnEntryFocused"/>
+                                                </DataTemplate>
+                                            </BindableLayout.ItemTemplate>
+                                        </StackLayout>
+                                    </Grid>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                        </CollectionView>
+                    </ScrollView>
+                </VerticalStackLayout>
+                
+                <Label Grid.Row="7" Grid.Column="0" Text="Диспетчерские остатки на конец месяца" VerticalOptions="Center"/>
+
+                <!-- Таблица диспетчерские остатки -->
+                <VerticalStackLayout Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="3" Padding="10" Spacing="0">
+                    <!-- Заголовок таблицы -->
+                    <Label Text="{Binding HeaderText}" 
+                           Style="{StaticResource TableLabelStyle}"
+                        FontAttributes="Bold" 
+                        HorizontalOptions="Center"
+                        Margin="0,0,0,0"/>
+
+                    <!-- ScrollableView для горизонтальной прокрутки -->
+                    <ScrollView Orientation="Horizontal">
+                        <CollectionView x:Name="RemainderCollectionView"
+                            ItemsSource="{Binding RemainderData}"
+                            ItemsLayout="VerticalList"
+                            Margin="0,0,0,0">
+
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid ColumnDefinitions="60,*" BackgroundColor="{AppThemeBinding Light=White, Dark=#1C1C1E}">
+                                        <!-- Привязка к свойству RowLabel -->
+                                        <Label Text="{Binding RowLabel}"
+                                               Style="{StaticResource TableLabelStyle}"
+                                            Grid.Column="0" 
+                                            HorizontalTextAlignment="Center" 
+                                            VerticalOptions="Center"/>
+
+                                        <!-- Ячейки данных -->
+                                        <StackLayout Grid.Column="1" Orientation="Horizontal" Spacing="5"
+                                            BindableLayout.ItemsSource="{Binding Cells}">
+                                            <BindableLayout.ItemTemplate>
+                                                <DataTemplate>
+                                                    <!-- Применяем созданный стиль через StaticResource -->
+                                                    <Entry Text="{Binding .}" 
+                                                        Style="{StaticResource TableCellEntryStyle}"
+                                                        TextChanged="OnDoubleEntryTextChanged" 
+                                                           Focused="OnEntryFocused"/>
+                                                </DataTemplate>
+                                            </BindableLayout.ItemTemplate>
+                                        </StackLayout>
+                                    </Grid>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                        </CollectionView>
+                    </ScrollView>
+                </VerticalStackLayout>
+
+                <Label Grid.Row="9" Grid.Column="0" Text="Отбор из водохранилища" VerticalOptions="Center"/>
+                
+                <!-- Таблица отбор из вдхр -->
+                <VerticalStackLayout Grid.Row="10" Grid.Column="0" Grid.ColumnSpan="3" Padding="10" Spacing="0">
+                    <!-- Заголовок таблицы -->
+                    <Label Text="{Binding HeaderText}" 
+                           Style="{StaticResource TableLabelStyle}"
+                        FontAttributes="Bold" 
+                        HorizontalOptions="Center"
+                        Margin="0,0,0,0"/>
+
+                    <!-- ScrollableView для горизонтальной прокрутки -->
+                    <ScrollView Orientation="Horizontal">
+                        <CollectionView x:Name="IntakeCollectionView"
+                            ItemsSource="{Binding IntakeData}"
+                            ItemsLayout="VerticalList"
+                            Margin="0,0,0,0">
+
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid ColumnDefinitions="60,*" BackgroundColor="{AppThemeBinding Light=White, Dark=#1C1C1E}">
+                                        <!-- Привязка к свойству RowLabel -->
+                                        <Label Text="{Binding RowLabel}" 
+                                               Style="{StaticResource TableLabelStyle}"
+                                            Grid.Column="0" 
+                                            HorizontalTextAlignment="Center" 
+                                            VerticalOptions="Center"/>
+
+                                        <!-- Ячейки данных -->
+                                        <StackLayout Grid.Column="1" Orientation="Horizontal" Spacing="5"
+                                            BindableLayout.ItemsSource="{Binding Cells}">
+                                            <BindableLayout.ItemTemplate>
+                                                <DataTemplate>
+                                                    <!-- Применяем созданный стиль через StaticResource -->
+                                                    <Entry Text="{Binding .}" 
+                                                        Style="{StaticResource TableCellEntryStyle}"
+                                                        TextChanged="OnDoubleEntryTextChanged" 
+                                                           Focused="OnEntryFocused"/>
+                                                </DataTemplate>
+                                            </BindableLayout.ItemTemplate>
+                                        </StackLayout>
+                                    </Grid>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                        </CollectionView>
+                    </ScrollView>
+                </VerticalStackLayout>
+
+                <Label Grid.Row="11" Grid.Column="0" Text="Количество точек характеристики нижнего бьефа" VerticalOptions="Center"/>
+                <Entry Grid.Row="11" Grid.Column="1" x:Name="CharacteristicOfDownstreamCountInput" Style="{StaticResource ParamEntryStyle}" 
+                       TextChanged="OnIntEntryTextChanged" Keyboard="Numeric" Focused="OnEntryFocused"/>
+                <Button Grid.Row="11" Grid.Column="2" Text="Создать" Margin="10,0,0,0" Clicked="CharacteristicOfDownstreamButton_Clicked" />
+
+                <!-- Таблица нижнего бьефа -->
+                <VerticalStackLayout Grid.Row="12" Grid.Column="0" Grid.ColumnSpan="3" Padding="10" Spacing="20">
+                    <!-- СкроллableView для горизонтальной прокрутки -->
+                    <ScrollView Orientation="Horizontal">
+                        <CollectionView x:Name="DownstreamCollectionView"
+                            ItemsSource="{Binding DownstreamData}"
+                            ItemsLayout="VerticalList"
+                            Margin="0,0,0,0">
+
+                            <CollectionView.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid ColumnDefinitions="70,*" BackgroundColor="{AppThemeBinding Light=White, Dark=#1C1C1E}">
+                                        <!-- Название строки в первом столбце -->
+                                        <Label Text="{Binding RowLabel}" 
+                                               Style="{StaticResource TableLabelStyle}"
+                                            Grid.Column="0" 
+                                            HorizontalTextAlignment="Center" 
+                                            VerticalOptions="Center"/>
+
+                                        <!-- Ячейки данных через BindableLayout -->
+                                        <StackLayout Grid.Column="1" Orientation="Horizontal" Spacing="5"
+                                            BindableLayout.ItemsSource="{Binding Cells}">
+                                            <BindableLayout.ItemTemplate>
+                                                <DataTemplate>
+                                                    <!-- Применяем созданный стиль через StaticResource -->
+                                                    <Entry Text="{Binding .}" 
+                                                        Style="{StaticResource TableCellEntryStyle}"
+                                                        TextChanged="OnDoubleEntryTextChanged" 
+                                                           Focused="OnEntryFocused"/>
+                                                </DataTemplate>
+                                            </BindableLayout.ItemTemplate>
+                                        </StackLayout>
+                                    </Grid>
+                                </DataTemplate>
+                            </CollectionView.ItemTemplate>
+                        </CollectionView>
+                    </ScrollView>
+                </VerticalStackLayout>
+
+                <Label Grid.Row="13" Grid.Column="0" Text="Схема питания ГЭС" VerticalOptions="Center"/>
+                <VerticalStackLayout Grid.Row="13" Grid.Column="1" x:Name="RadioGroup">
+                    <RadioButton Content="индивидуальная" Value="0" TextColor="{AppThemeBinding Light=Black, Dark=White}" 
+                                 CheckedChanged="OnRadioChanged" IsChecked="True" />
+                    <RadioButton Content="групповая" Value="1" TextColor="{AppThemeBinding Light=Black, Dark=White}" 
+                                 CheckedChanged="OnRadioChanged"/>
+                </VerticalStackLayout>
+
+                <Label Grid.Row="14" Grid.Column="0" Text="Гарантированный расход ГЭС, м³/с" VerticalOptions="Center"/>
+                <Entry Grid.Row="14" Grid.Column="1" x:Name="GuaranteedDischargeInput" Style="{StaticResource ParamEntryStyle}" 
+                       TextChanged="OnDoubleEntryTextChanged" Keyboard="Numeric" Focused="OnEntryFocused"/>
+
+                <Label Grid.Row="15" Grid.Column="0" Text="Полный (максимальный) расход ГЭС, м³/с" VerticalOptions="Center"/>
+                <Entry Grid.Row="15" Grid.Column="1" x:Name="FullDischargeInput" Style="{StaticResource ParamEntryStyle}" 
+                       TextChanged="OnDoubleEntryTextChanged" Keyboard="Numeric" Focused="OnEntryFocused"/>
+
+                <Label Grid.Row="16" Grid.Column="0" x:Name="HeadLossLable" Text="Потери напора, м" VerticalOptions="Center"/>
+                <Entry Grid.Row="16" Grid.Column="1" x:Name="HeadLossInput" Style="{StaticResource ParamEntryStyle}" 
+                       TextChanged="OnDoubleEntryTextChanged" Keyboard="Numeric" Focused="OnEntryFocused"/>
+
+                <Label Grid.Row="17" Grid.Column="0" Text="Кпд гидроагрегата" VerticalOptions="Center"/>
+                <Entry Grid.Row="17" Grid.Column="1" x:Name="EfficiencyInput" Style="{StaticResource ParamEntryStyle}" 
+                       TextChanged="OnDoubleEntryTextChanged" Keyboard="Numeric" Focused="OnEntryFocused"/>
+            </Grid>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>
