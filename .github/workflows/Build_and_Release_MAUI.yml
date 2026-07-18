@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       release_tag:
-        description: 'Имя тега (например, v2026.1)'
+        description: 'Имя тега (например, v2026.0)'
         required: true
         type: string
       build_windows:
@@ -39,7 +39,7 @@ jobs:
 
       # Передаем одновременно -f (для публикации) и -p:TargetFrameworks (для изоляции от мобильных багов)
       # Также убрана лишняя точка в имени архива в шаге Compress
-      name: Build Windows
+      - name: Build Windows
         run: >
           dotnet publish WRST.maui/WRST.maui.csproj 
           -f net10.0-windows10.0.19041.0
