@@ -37,7 +37,6 @@ jobs:
       - name: Install MAUI Workload
         run: dotnet workload install maui
 
-      # ЧИНИТ MSB3030: Создает пустой файл лицензии в корне, чтобы компилятор не падал
       - name: Create Dummy License File
         shell: pwsh
         run: |
@@ -84,8 +83,6 @@ jobs:
       - name: Install MAUI Workload
         run: dotnet workload install maui
 
-      # ЧИНИТ ХСОDE: Флаг -p:_SdkAllowedXcodeVersion="16.4" принудительно разрешает 
-      # компиляцию на текущей установленной версии Xcode, обходя внутреннее требование 26.6
       - name: Build macOS
         run: >
           dotnet publish WRST.maui/WRST.maui.csproj 
@@ -96,7 +93,7 @@ jobs:
           -p:SolutionDir="../"
           -p:CreatePackage=true
           -p:PublishTrimmed=true
-          -p:_SdkAllowedXcodeVersion="16.4"
+          -p:_MtouchOverrideXcodeRequirement=true
 
       - name: Compress macOS Build
         run: |
