@@ -65,7 +65,7 @@ jobs:
           name: win-app-${{ matrix.arch }}
           path: WRST-${{ inputs.release_tag }}-${{ matrix.arch }}.zip
 
-  build-macos:
+   build-macos:
     if: inputs.build_macos == true
     runs-on: macos-26
     strategy:
@@ -80,12 +80,13 @@ jobs:
         with:
           dotnet-version: '10.0.x'
 
-      # ИСПРАВЛЕНО: Явно устанавливаем стабильную минорную версию MAUI для .NET 10.
-      # Версия 10.0.300 использует SDK, который идеально совместим с Xcode 26.5 на сервере, 
-      # что полностью предотвратит ошибку валидации Xcode.
-      - name: Install Compatible MAUI Workload
-        run: dotnet workload install maui --version 10.0.300
+      # Устанавливаем воркбэнч без фиксации версий (он стянет самый свежий)
+      - name: Install MAUI Workload
+        run: dotnet workload install maui
 
+      # ЧИНИТ СБОРКУ MAC: 
+      # 1. -p:_MtouchOverrideXcodeRequirement=true глушит проверку соответствия версий компилятора
+      # 2. -p:MtouchSdkRoot указывает жесткий путь к установленному в системе Xcode, чтобы сборщик не потерял SDK
       - name: Build macOS
         run: >
           dotnet publish WRST.maui/WRST.maui.csproj 
@@ -96,6 +97,8 @@ jobs:
           -p:SolutionDir="../"
           -p:CreatePackage=true
           -p:PublishTrimmed=true
+          -p:_MtouchOverrideXcodeRequirement=true
+          -p:MtouchSdkRoot=/Applications/Xcode_26.5.app
 
       - name: Compress macOS Build
         run: |
