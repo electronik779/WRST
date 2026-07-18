@@ -87,7 +87,6 @@ jobs:
       - name: Install MAUI Workload
         run: dotnet workload install maui
 
-      # ИСПРАВЛЕНО: Создаем пустой файл лицензии в корне macOS-раннера, чтобы MSBuild не падал с ошибкой MSB3030
       - name: Create Dummy License File (macOS)
         run: |
           touch "MIT License.txt"
@@ -107,8 +106,7 @@ jobs:
       - name: Compress macOS Build
         run: |
           PUBLISH_DIR=$(find . -type d -path "*/bin/Release/net10.0-maccatalyst/${{ matrix.arch }}/publish" | head -n 1)
-          cd "$PUBLISH_DIR"
-          zip -r ../../../../../WRST-${{ inputs.release_tag }}-${{ matrix.arch }}.zip .
+          zip -rj "WRST-${{ inputs.release_tag }}-${{ matrix.arch }}.zip" "$PUBLISH_DIR/"
 
       - name: Upload macOS Artifact
         uses: actions/upload-artifact@v4
@@ -128,8 +126,6 @@ jobs:
       - name: Download All Artifacts
         uses: actions/download-artifact@v4
         with:
-          path: all-artifacts
-          pattern: '*-app-*'
           merge-multiple: true
 
       - name: Publish to GitHub Releases
@@ -141,4 +137,4 @@ jobs:
           draft: false
           prerelease: false
           files: |
-            all-artifacts/*.zip
+            *.zip
