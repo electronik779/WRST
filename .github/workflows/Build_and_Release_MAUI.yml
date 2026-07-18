@@ -67,7 +67,8 @@ jobs:
 
   build-macos:
     if: inputs.build_macos == true
-    runs-on: macos-15
+    # Переводим сборку на новый официальный раннер macOS 26
+    runs-on: macos-26
     strategy:
       matrix:
         arch: [maccatalyst-x64, maccatalyst-arm64]
@@ -83,8 +84,7 @@ jobs:
       - name: Install MAUI Workload
         run: dotnet workload install maui
 
-      # Исправлено: заменен флаг валидации Xcode на глобальный -p:CheckXcodeVersion=false.
-      # Это заставит MacCatalyst SDK пропустить валидацию требований к Xcode 26.6.
+      # Сборка без хаков и обходов — Xcode 26.6 подхватится автоматически
       - name: Build macOS
         run: >
           dotnet publish WRST.maui/WRST.maui.csproj 
@@ -95,7 +95,6 @@ jobs:
           -p:SolutionDir="../"
           -p:CreatePackage=true
           -p:PublishTrimmed=true
-          -p:CheckXcodeVersion=false
 
       - name: Compress macOS Build
         run: |
