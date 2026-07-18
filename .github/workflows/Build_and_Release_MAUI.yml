@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       release_tag:
-        description: 'Имя тега (например, v1.0.0)'
+        description: 'Имя тега (например, v2026.1)'
         required: true
         type: string
       build_windows:
@@ -34,16 +34,21 @@ jobs:
       - name: Install MAUI Workload
         run: dotnet workload install maui
 
-      - name: Restore dependencies
-        run: dotnet restore
+      # Явно восстанавливаем только нужный проект, изолируя Windows-фреймворк
+      - name: Restore Windows
+        run: dotnet restore WRST.maui/WRST.maui.csproj -f net10.0-windows10.0.19041.0
 
-      # Для Windows Universal передаем список целевых архитектур через точку с запятой.
-      # Сборка сгенерирует единый мульти-архитектурный MSIX пакет.
+      # Публикуем напрямую .csproj, привязывая его к каталогу решения через SolutionDir.
+      # Используем %3B для безопасного разделения архитектур в MSBuild.
       - name: Build Windows Universal
-        shell: pwsh
-        run: |
-          $projectFile = (Get-ChildItem -Recurse -Filter *maui.csproj).FullName
-          dotnet publish $projectFile -f net10.0-windows10.0.19041.0 -c Release -p:RuntimeIdentifiers=win-x64%3Bwin-arm64 -p:GenerateAppxPackageOnBuild=true -p:AppxPackageSigningEnabled=false
+        run: >
+          dotnet publish WRST.maui/WRST.maui.csproj 
+          -f net10.0-windows10.0.19041.0 
+          -c Release 
+          -p:SolutionDir="../"
+          -p:_MauiTargetRuntimeIdentifiers="win-x64%3Bwin-arm64" 
+          -p:GenerateAppxPackageOnBuild=true 
+          -p:AppxPackageSigningEnabled=false
 
       - name: Prepare Windows Artifact
         shell: pwsh
@@ -73,13 +78,18 @@ jobs:
       - name: Install MAUI Workload
         run: dotnet workload install maui
 
-      - name: Restore dependencies
-        run: dotnet restore
+      # На macOS полностью изолируем восстановление от Windows-кода
+      - name: Restore macOS
+        run: dotnet restore WRST.maui/WRST.maui.csproj -f net10.0-maccatalyst -p:EnableWindowsTargeting=true
 
       - name: Build macOS Universal
-        run: |
-          PROJECT_FILE=$(find . -name "*maui.csproj" | head -n 1)
-          dotnet publish "$PROJECT_FILE" -f net10.0-maccatalyst -c Release -p:RuntimeIdentifiers=maccatalyst-x64%3Bmaccatalyst-arm64 -p:CreatePackage=true
+        run: >
+          dotnet publish WRST.maui/WRST.maui.csproj 
+          -f net10.0-maccatalyst 
+          -c Release 
+          -p:SolutionDir="../"
+          -p:RuntimeIdentifiers="maccatalyst-x64%3Bmaccatalyst-arm64" 
+          -p:CreatePackage=true
 
       - name: Compress macOS Build
         run: |
@@ -96,7 +106,9 @@ jobs:
   publish-release:
     runs-on: ubuntu-latest
     needs: [build-windows, build-macos]
-    if: always()
+    if: |
+      success() && 
+      (inputs.build_windows == true || inputs.build_macos == true)
     permissions:
       contents: write
     steps:
