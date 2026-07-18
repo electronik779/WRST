@@ -1,7 +1,7 @@
 name: Build and Publish MAUI Release
 
 on:
-  workflow_dispatch:
+  workflow_dispatch: # Запуск вручную
     inputs:
       release_tag:
         description: 'Имя тега (например, v2026.0)'
@@ -37,7 +37,7 @@ jobs:
       - name: Install MAUI Workload
         run: dotnet workload install maui
 
-      - name: Create Dummy License File
+      - name: Create Dummy License File (Windows)
         shell: pwsh
         run: |
           New-Item -Path "." -Name "MIT License.txt" -ItemType "file" -Force
@@ -50,9 +50,9 @@ jobs:
           -c Release 
           -r ${{ matrix.arch }}
           -p:SolutionDir="../"
-          -p:PublishSingleFile=true 
-          -p:WindowsAppSDKSelfContained=true
-          --self-contained true
+          -p:PublishSingleFile=false
+          -p:WindowsAppSDKSelfContained=false
+          --self-contained false
 
       - name: Compress Windows Build
         shell: pwsh
