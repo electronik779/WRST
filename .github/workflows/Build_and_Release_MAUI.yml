@@ -1,0 +1,126 @@
+name: Build and Publish MAUI Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: 'Имя тега (например, v1.0.0)'
+        required: true
+        type: string
+      build_windows:
+        description: 'Собрать под Windows (Universal)?'
+        required: true
+        type: boolean
+        default: true
+      build_macos:
+        description: 'Собрать под macOS (Universal)?'
+        required: true
+        type: boolean
+        default: true
+
+jobs:
+  build-windows:
+    if: inputs.build_windows == true
+    runs-on: windows-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Install MAUI Workload
+        run: dotnet workload install maui
+
+      - name: Restore dependencies
+        run: dotnet restore WRST.maui/WRST.maui.csproj
+
+      # Для Windows Universal передаем список целевых архитектур через точку с запятой.
+      # Сборка сгенерирует единый мульти-архитектурный MSIX пакет.
+      - name: Build Windows Universal
+        run: >
+          dotnet publish WRST.maui/WRST.maui.csproj 
+          -f net10.0-windows10.0.19041.0 
+          -c Release 
+          -p:RuntimeIdentifiers="win-x64;win-arm64" 
+          -p:GenerateAppxPackageOnBuild=true 
+          -p:AppxPackageSigningEnabled=false
+
+      # Копируем созданный .msixbundle или .msix из выходной папки во временный каталог
+      - name: Prepare Windows Artifact
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path ./win-out
+          Get-ChildItem -Path WRST.maui/bin/Release/net10.0-windows10.0.19041.0/ -Filter *.msix* -Recurse | Copy-Item -Destination ./win-out/
+          Compress-Archive -Path ./win-out/* -DestinationPath WRST-Windows-Universal.zip
+
+      - name: Upload Windows Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: win-app
+          path: WRST-Windows-Universal.zip
+
+  build-macos:
+    if: inputs.build_macos == true
+    runs-on: macos-14
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x' # Перешли на .NET 10
+
+      - name: Install MAUI Workload
+        run: dotnet workload install maui
+
+      - name: Restore dependencies
+        run: dotnet restore WRST.maui/WRST.maui.csproj
+
+      - name: Build macOS Universal
+        run: dotnet publish WRST.maui/WRST.maui.csproj -f net10.0-maccatalyst -c Release -p:RuntimeIdentifiers="maccatalyst-x64;maccatalyst-arm64" -p:CreatePackage=true
+
+      - name: Compress macOS Build
+        run: |
+          cd WRST.maui/bin/Release/net10.0-maccatalyst/publish/
+          zip -r ../../../../WRST-macOS-Universal.zip .
+
+      - name: Upload macOS Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: mac-app
+          path: WRST-macOS-Universal.zip
+
+  publish-release:
+    runs-on: ubuntu-latest
+    needs: [build-windows, build-macos]
+    if: always()
+    permissions:
+      contents: write
+    steps:
+      - name: Download Windows artifact
+        if: inputs.build_windows == true
+        uses: actions/download-artifact@v4
+        with:
+          name: win-app
+
+      - name: Download macOS artifact
+        if: inputs.build_macos == true
+        uses: actions/download-artifact@v4
+        with:
+          name: mac-app
+
+      - name: Publish to GitHub Releases
+        uses: softprops/action-gh-release@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          tag_name: ${{ inputs.release_tag }}
+          name: Release ${{ inputs.release_tag }}
+          draft: false
+          prerelease: false
+          files: |
+            WRST-Windows-Universal.zip
+            WRST-macOS-Universal.zip
