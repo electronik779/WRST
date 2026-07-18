@@ -35,37 +35,22 @@ jobs:
         run: dotnet workload install maui
 
       - name: Restore dependencies
-        run: dotnet restore WRST.maui/WRST.maui.csproj
+        run: dotnet restore
 
       # Для Windows Universal передаем список целевых архитектур через точку с запятой.
       # Сборка сгенерирует единый мульти-архитектурный MSIX пакет.
       - name: Build Windows Universal
-        run: >
-          dotnet publish WRST.maui/WRST.maui.csproj 
-          -f net10.0-windows10.0.19041.0 
-          -c Release 
-          -p:RuntimeIdentifiers="win-x64%3Bwin-arm64" 
-          -p:GenerateAppxPackageOnBuild=true 
-          -p:AppxPackageSigningEnabled=false
+        shell: pwsh
+        run: |
+          $projectFile = (Get-ChildItem -Recurse -Filter *maui.csproj).FullName
+          dotnet publish $projectFile -f net10.0-windows10.0.19041.0 -c Release -p:RuntimeIdentifiers=win-x64%3Bwin-arm64 -p:GenerateAppxPackageOnBuild=true -p:AppxPackageSigningEnabled=false
 
-      # Копируем созданный .msixbundle или .msix из выходной папки во временный каталог
       - name: Prepare Windows Artifact
         shell: pwsh
         run: |
-          New-Item 
-          -ItemType Directory 
-          -Force 
-          -Path ./win-out
-          
-          Get-ChildItem 
-          -Path WRST.maui/bin/Release/net10.0-windows10.0.19041.0/ 
-          -Filter *.msix* 
-          -Recurse | Copy-Item 
-          -Destination ./win-out/
-          
-          Compress-Archive 
-          -Path ./win-out/* 
-          -DestinationPath WRST-Windows-Universal.zip
+          New-Item -ItemType Directory -Force -Path ./win-out
+          Get-ChildItem -Path ./ -Filter *.msix* -Recurse | Where-Object { $_.FullName -notlike "*obj*" } | Copy-Item -Destination ./win-out/
+          Compress-Archive -Path ./win-out/* -DestinationPath WRST-Windows-Universal.zip
 
       - name: Upload Windows Artifact
         uses: actions/upload-artifact@v4
@@ -89,15 +74,18 @@ jobs:
         run: dotnet workload install maui
 
       - name: Restore dependencies
-        run: dotnet restore WRST.maui/WRST.maui.csproj
+        run: dotnet restore
 
       - name: Build macOS Universal
-        run: dotnet publish WRST.maui/WRST.maui.csproj -f net10.0-maccatalyst -c Release -p:RuntimeIdentifiers="maccatalyst-x64%3Bmaccatalyst-arm64" -p:CreatePackage=true
+        run: |
+          PROJECT_FILE=$(find . -name "*maui.csproj" | head -n 1)
+          dotnet publish "$PROJECT_FILE" -f net10.0-maccatalyst -c Release -p:RuntimeIdentifiers=maccatalyst-x64%3Bmaccatalyst-arm64 -p:CreatePackage=true
 
       - name: Compress macOS Build
         run: |
-          cd WRST.maui/bin/Release/net10.0-maccatalyst/publish/
-          zip -r ../../../../WRST-macOS-Universal.zip .
+          PUBLISH_DIR=$(find . -type d -path "*/bin/Release/net10.0-maccatalyst/publish" | head -n 1)
+          cd "$PUBLISH_DIR"
+          zip -r ../../../../../WRST-macOS-Universal.zip .
 
       - name: Upload macOS Artifact
         uses: actions/upload-artifact@v4
