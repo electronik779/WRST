@@ -34,12 +34,10 @@ jobs:
       - name: Install MAUI Workload
         run: dotnet workload install maui
 
-      # Явно восстанавливаем только нужный проект, изолируя Windows-фреймворк
+      # Исправлено: передаем фреймворк через -p:TargetFramework
       - name: Restore Windows
-        run: dotnet restore WRST.maui/WRST.maui.csproj -f net10.0-windows10.0.19041.0
+        run: dotnet restore WRST.maui/WRST.maui.csproj -p:TargetFramework=net10.0-windows10.0.19041.0
 
-      # Публикуем напрямую .csproj, привязывая его к каталогу решения через SolutionDir.
-      # Используем %3B для безопасного разделения архитектур в MSBuild.
       - name: Build Windows Universal
         run: >
           dotnet publish WRST.maui/WRST.maui.csproj 
@@ -78,9 +76,9 @@ jobs:
       - name: Install MAUI Workload
         run: dotnet workload install maui
 
-      # На macOS полностью изолируем восстановление от Windows-кода
+      # Исправлено: передаем фреймворк через -p:TargetFramework
       - name: Restore macOS
-        run: dotnet restore WRST.maui/WRST.maui.csproj -f net10.0-maccatalyst -p:EnableWindowsTargeting=true
+        run: dotnet restore WRST.maui/WRST.maui.csproj -p:TargetFramework=net10.0-maccatalyst -p:EnableWindowsTargeting=true
 
       - name: Build macOS Universal
         run: >
