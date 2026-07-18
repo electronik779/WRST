@@ -24,7 +24,7 @@ jobs:
     runs-on: windows-latest
     strategy:
       matrix:
-        arch: [win-x64, win-arm64]
+        arch: [win-x64, win-arm64] # Возвращаем правильные системные RID
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -37,20 +37,20 @@ jobs:
       - name: Install MAUI Workload
         run: dotnet workload install maui
 
-      # Восстанавливаем без указания -r, чтобы обойти баг NU1102 в .NET 10
+      # Восстанавливаем с явным указанием флага архитектуры
       - name: Restore Windows
-        run: dotnet restore WRST.maui/WRST.maui.csproj -p:TargetFramework=net10.0-windows10.0.19041.0
+        run: dotnet restore WRST.maui/WRST.maui.csproj -p:TargetFramework=net10.0-windows10.0.19041.0 -r ${{ matrix.arch }}
 
-      # Передаем архитектуру строго через внутренний параметр MSBuild -p:RuntimeIdentifier,
-      # полностью исключая флаг -r из команды публикации. Это чинит сборку.
+      # Благодаря <EnableWinUIStandaloneMode> собираем чистый, автономный .exe
       - name: Build Windows
         run: >
           dotnet publish WRST.maui/WRST.maui.csproj 
           -f net10.0-windows10.0.19041.0 
           -c Release 
-          -p:RuntimeIdentifier=${{ matrix.arch }}
+          -r ${{ matrix.arch }}
           -p:SolutionDir="../"
           -p:PublishSingleFile=true 
+          -p:WindowsAppSDKSelfContained=true
           --self-contained true
 
       - name: Compress Windows Build
@@ -66,13 +66,17 @@ jobs:
 
   build-macos:
     if: inputs.build_macos == true
-    runs-on: macos-14
+    runs-on: macos-15
     strategy:
       matrix:
         arch: [maccatalyst-x64, maccatalyst-arm64]
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
+      - name: Set Xcode Version
+        run: |
+          sudo xcode-select -s /Applications/Xcode_26.6.app || sudo xcode-select -s /Applications/Xcode_26.5.app
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
@@ -85,8 +89,6 @@ jobs:
       - name: Restore macOS
         run: dotnet restore WRST.maui/WRST.maui.csproj -p:TargetFramework=net10.0-maccatalyst -r ${{ matrix.arch }} -p:EnableWindowsTargeting=true
 
-      # Добавлен принудительный тримминг кода (-p:PublishTrimmed=true) для MacCatalyst
-      # Если приложение будет падать из-за тримминга, замените этот флаг на -p:MtouchLink=None
       - name: Build macOS
         run: >
           dotnet publish WRST.maui/WRST.maui.csproj 
