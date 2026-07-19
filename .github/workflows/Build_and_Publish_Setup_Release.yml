@@ -84,10 +84,10 @@ jobs:
         shell: pwsh
         run: New-Item -Path "." -Name "MIT License.txt" -ItemType "file" -Force
 
-#      - name: Setup Inno Setup Compiler
-#        uses: amake/setup-inno-setup@v1
-#        with:
-#          inno-version: 7.0.2
+      # ГАРАНТИРУЕМ, что папка для сохранения готового установщика существует
+      - name: Create Output Directory
+        shell: pwsh
+        run: New-Item -ItemType Directory -Force -Path "WRST-setup-universal"
 
       - name: Compile Universal Installer
         run: iscc Installer_files/setup.iss
@@ -136,11 +136,11 @@ jobs:
           -p:PublishTrimmed=true
           -p:PublishSingleFile=false
 
-      # Архивируем .app в .zip перед отправкой, чтобы GitHub Actions не ломал структуру папки
+      # Заменили WRST.maui.app на универсальную маску *.app
       - name: Archive macOS App
         run: |
           cd WRST.maui/bin/Release/net10.0-maccatalyst/${{ matrix.arch }}/publish/
-          zip -r ../../../../../../../WRST.maui-${{ matrix.arch }}.zip WRST.maui.app
+          zip -r ../../../../../../../WRST.maui-${{ matrix.arch }}.zip *.app
 
       - name: Upload Raw macOS App
         uses: actions/upload-artifact@v4
@@ -165,7 +165,6 @@ jobs:
           name: raw-mac-maccatalyst-arm64
           path: .
 
-      # Распаковываем архивы обратно
       - name: Unzip macOS Apps
         run: |
           unzip WRST.maui-maccatalyst-x64.zip -d mac-x64
@@ -174,11 +173,15 @@ jobs:
       - name: Install create-dmg tool
         run: brew install create-dmg
 
+      # Скрипт автоматически найдет имя *.app внутри распакованных папок
       - name: Create Universal MacOS App Bundle
         run: |
+          APP_NAME=$(basename mac-arm64/*.app)
           mkdir -p WRST-Universal.app
-          cp -R mac-arm64/WRST.maui.app/ WRST-Universal.app/
-          lipo -create mac-x64/WRST.maui.app/Contents/MacOS/WRST.maui mac-arm64/WRST.maui.app/Contents/MacOS/WRST.maui -output WRST-Universal.app/Contents/MacOS/WRST.maui
+          cp -R "mac-arm64/$APP_NAME/" WRST-Universal.app/
+          
+          EXEC_NAME=$(defaults read "$PWD/WRST-Universal.app/Contents/Info.plist" CFBundleExecutable)
+          lipo -create "mac-x64/$APP_NAME/Contents/MacOS/$EXEC_NAME" "mac-arm64/$APP_NAME/Contents/MacOS/$EXEC_NAME" -output "WRST-Universal.app/Contents/MacOS/$EXEC_NAME"
 
       - name: Create DMG Installer
         run: |
