@@ -60,8 +60,8 @@
 
 		<UseAppHost>true</UseAppHost>
 
-		<!-- Отключает генерацию промежуточных пакетов для других платформ при сборке под конкретную ОС 
-		<EnableWinUIStandaloneMode>true</EnableWinUIStandaloneMode> -->
+		<!-- Отключает генерацию промежуточных пакетов для других платформ при сборке под конкретную ОС Win -->
+		<EnableWinUIStandaloneMode>true</EnableWinUIStandaloneMode>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net10.0-ios|AnyCPU'">
@@ -106,7 +106,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <None Include="F:\2026\WEC\MIT License.txt">
+	  <None Include="..\MIT License.txt" Link="MIT License.txt" CopyToOutputDirectory="Always">
 	    <Pack>True</Pack>
 	    <PackagePath>\</PackagePath>
 	  </None>
