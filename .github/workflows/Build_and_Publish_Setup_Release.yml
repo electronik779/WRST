@@ -99,7 +99,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: windows-universal-installer
-          path: WRST-setup-universal/setup_WRST_universal.exe
+          path: WRST-setup-universal/Setup-WRST-${{ inputs.release_tag }}-Universal.exe
 
   build-macos:
     if: inputs.build_macos == true
@@ -139,7 +139,6 @@ jobs:
           -p:PublishTrimmed=true
           -p:PublishSingleFile=false
 
-      # ИСПРАВЛЕНО: Переходим в корень архитектурной папки, где лежит WRST.maui.app
       - name: Archive macOS App
         run: |
           cd WRST.maui/bin/Release/net10.0-maccatalyst/${{ matrix.arch }}/
@@ -199,7 +198,7 @@ jobs:
             --icon-size 100 \
             --icon "WRST.app" 125 125 \
             --app-drop-link 375 125 \
-            "WRST-${{ inputs.release_tag }}-Universal.dmg" \
+            "Setup-WRST-${{ inputs.release_tag }}-Universal.dmg" \
             "dmg-source/"
 
       - name: Upload Final DMG Artifact
@@ -227,9 +226,9 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           tag_name: ${{ inputs.release_tag }}
-          name: Release ${{ inputs.release_tag }}
+          name: ${{ inputs.release_tag }}
           draft: false
           prerelease: false
           files: |
-            setup_WRST_universal.exe
+            *.exe
             *.dmg
