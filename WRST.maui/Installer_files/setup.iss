@@ -40,13 +40,6 @@ OutputBaseFilename=setup_WRST_universal
 SolidCompression=yes
 WizardStyle=modern dynamic
 
-[Languages]
-Name: "russian"; MessagesFile: "compiler:Default.isl"
-; ПОДКЛЮЧАЕМ ЛОКАЛЬНЫЙ ПЕРЕВОД ПЛАГИНА IDP:
-#include "unicode\idplang\Russian.iss"
-Name: "english"; MessagesFile: "compiler:Default.isl"
-; Name: "russian"; MessagesFile: "compiler:Languages\Russian.isl"
-
 [Tasks]
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
