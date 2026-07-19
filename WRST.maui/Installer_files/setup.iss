@@ -183,27 +183,61 @@ procedure CurStepChanged(CurStep: TSetupStep);
 var
  ErrorCode: Integer;
  ArchLabel: String;
+ DotNetPath: String;
+ SdkPath: String;
 begin
  if IsArm64 then ArchLabel := 'ARM64' else ArchLabel := 'x64';
+ 
  if CurStep = ssInstall then
  begin
- if DotNetMissing then
- begin
- WizardForm.StatusLabel.Caption := 'Установка среды выполнения .NET 10 Desktop Runtime (' + ArchLabel + ')...';
- if not Exec(ExpandConstant('{tmp}\dotnet_setup.exe'), '/install /quiet /norestart', '', SW_SHOW, ewWaitUntilTerminated, ErrorCode) then
- begin
- MsgBox('Не удалось установить .NET 10. Код ошибки: ' + IntToStr(ErrorCode), mbError, MB_OK);
- end;
- end;
- if SdkMissing then
- begin
- WizardForm.StatusLabel.Caption := 'Установка среды выполнения Windows App SDK (' + ArchLabel + ')...';
- // ИСПРАВЛЕНО: Флаг изменен на стандартные системные /quiet /norestart
- if not Exec(ExpandConstant('{tmp}\windowsappsdk_setup.exe'), '/quiet /norestart', '', SW_SHOW, ewWaitUntilTerminated, ErrorCode) then
- begin
- MsgBox('Не удалось установить Windows App SDK. Код ошибки: ' + IntToStr(ErrorCode), mbError, MB_OK);
- end;
- end;
+   // 1. Установка .NET 10 Desktop Runtime
+   if DotNetMissing then
+   begin
+     DotNetPath := ExpandConstant('{tmp}\dotnet_setup.exe');
+     
+     // Дополнительно проверяем, физически ли существует скачанный файл на диске
+     if FileExists(DotNetPath) then
+     begin
+       WizardForm.StatusLabel.Caption := 'Установка среды выполнения .NET 10 Desktop Runtime (' + ArchLabel + ')...';
+       // Передаем параметры тихой установки раздельно
+       if not Exec(DotNetPath, '/install /quiet /norestart', '', SW_SHOW, ewWaitUntilTerminated, ErrorCode) then
+       begin
+         MsgBox('Не удалось запустить установщик .NET 10. Код ошибки Inno: ' + IntToStr(ErrorCode), mbError, MB_OK);
+       end
+       else if (ErrorCode <> 0) and (ErrorCode <> 3010) then // 3010 - требуется перезагрузка (это успех)
+       begin
+         MsgBox('Установщик .NET 10 завершился с ошибкой системы. Код возврата: ' + IntToStr(ErrorCode), mbError, MB_OK);
+       end;
+     end
+     else
+     begin
+       MsgBox('Критическая ошибка: Файл dotnet_setup.exe не был загружен во временную папку!', mbError, MB_OK);
+     end;
+   end;
+
+   // 2. Установка Windows App SDK
+   if SdkMissing then
+   begin
+     SdkPath := ExpandConstant('{tmp}\windowsappsdk_setup.exe');
+     
+     if FileExists(SdkPath) then
+     begin
+       WizardForm.StatusLabel.Caption := 'Установка среды выполнения Windows App SDK (' + ArchLabel + ')...';
+       // ИСПРАВЛЕНО: Добавлен обязательный флаг --force для тихой системной установки под администратором
+       if not Exec(SdkPath, '--quiet --force', '', SW_SHOW, ewWaitUntilTerminated, ErrorCode) then
+       begin
+         MsgBox('Не удалось запустить установщик Windows App SDK. Код ошибки Inno: ' + IntToStr(ErrorCode), mbError, MB_OK);
+       end
+       else if (ErrorCode <> 0) and (ErrorCode <> 3010) then
+       begin
+         MsgBox('Установщик Windows App SDK завершился с ошибкой. Код возврата (HRESULT): ' + Format('0x%x', [ErrorCode]), mbError, MB_OK);
+       end;
+     end
+     else
+     begin
+       MsgBox('Критическая ошибка: Файл windowsappsdk_setup.exe не был загружен во временную папку!', mbError, MB_OK);
+     end;
+   end;
  end;
 end;
 
