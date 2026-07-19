@@ -22,11 +22,13 @@ ArchitecturesInstallIn64BitMode=x64compatible arm64
 
 DefaultGroupName={#MyAppName}
 AllowNoIcons=yes
-LicenseFile=MIT License.txt
+; ИСПРАВЛЕНО: Указан выход на уровень выше, так как лицензия создается в корне репозитория
+LicenseFile=..\MIT License.txt
 PrivilegesRequired=admin
 PrivilegesRequiredOverridesAllowed=dialog
 
-OutputDir=WRST-setup-universal
+; ИСПРАВЛЕНО: Добавлен выход на уровень выше, чтобы папка создавалась в корне билда
+OutputDir=..\WRST-setup-universal
 OutputBaseFilename=setup_WRST_universal
 SolidCompression=yes
 WizardStyle=modern dynamic
@@ -40,14 +42,13 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 
 [Files]
 ; ---- СБОРКА ДЛЯ ARM64 ----
-; Файлы будут копироваться только если процессор пользователя нативный ARM64
-Source: "win-arm64\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion; Check: IsArm64
-Source: "win-arm64\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs; Check: IsArm64
+; Добавлен выход на уровень выше (..\), так как папки win-* лежат в корне репозитория
+Source: "..\win-arm64\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion; Check: IsArm64
+Source: "..\win-arm64\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs; Check: IsArm64
 
 ; ---- СБОРКА ДЛЯ X64 ----
-; Файлы будут копироваться только если процессор стандартный Intel/AMD x64 (не ARM64)
-Source: "win-x64\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion; Check: not IsArm64
-Source: "win-x64\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs; Check: not IsArm64
+Source: "..\win-x64\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion; Check: not IsArm64
+Source: "..\win-x64\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs; Check: not IsArm64
 
 [Icons]
 Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"
