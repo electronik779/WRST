@@ -105,7 +105,7 @@ jobs:
           Get-ChildItem -Path "Installer_files"
 
       - name: Compile Universal Installer
-        run: iscc Installer_files/setup.iss
+        run: iscc WRST/WRST.maui/Installer_files/setup.iss
 
       - name: Upload Final Installer Artifact
         uses: actions/upload-artifact@v4
