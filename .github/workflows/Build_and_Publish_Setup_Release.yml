@@ -54,14 +54,7 @@ jobs:
           -p:WindowsAppSDKSelfContained=false
           --self-contained false
 
-      # ОТЛАДКА: Показываем, где лежат файлы на Windows
-      - name: Look for Windows Build Files
-        shell: pwsh
-        run: |
-          Get-ChildItem -Path "WRST.maui/bin/Release/" -Recurse -Filter "publish" | Select-Object FullName
-          echo "--- Содержимое папки publish ---"
-          Get-ChildItem -Path "WRST.maui/bin/Release/net10.0-windows10.0.19041.0/${{ matrix.arch }}/" -Recurse
-
+      # ИСПРАВЛЕНО: Указываем точный путь к папке публикации согласно логам отладки
       - name: Upload Raw Windows Files for Installer
         uses: actions/upload-artifact@v4
         with:
@@ -92,7 +85,6 @@ jobs:
         shell: pwsh
         run: New-Item -Path "." -Name "MIT License.txt" -ItemType "file" -Force
 
-      # ГАРАНТИРУЕМ, что папка для сохранения готового установщика существует
       - name: Create Output Directory
         shell: pwsh
         run: New-Item -ItemType Directory -Force -Path "WRST-setup-universal"
@@ -144,19 +136,11 @@ jobs:
           -p:PublishTrimmed=true
           -p:PublishSingleFile=false
 
-      # ОТЛАДКА: Смотрим, куда на самом деле скомпилировался Mac-апп
-      - name: Look for macOS Build Files
-        run: |
-          echo "=== Ищем все папки .app в bin/Release ==="
-          find WRST.maui/bin/Release -name "*.app"
-          echo "=== Структура папки publish ==="
-          ls -R WRST.maui/bin/Release/net10.0-maccatalyst/${{ matrix.arch }}/ || true
-
-      # Архивируем ВСЁ содержимое папки publish, чтобы не зависеть от имени .app
+      # ИСПРАВЛЕНО: Переходим в корень архитектурной папки, где лежит WRST.maui.app
       - name: Archive macOS App
         run: |
-          cd WRST.maui/bin/Release/net10.0-maccatalyst/${{ matrix.arch }}/publish/
-          zip -r ../../../../../../../WRST.maui-${{ matrix.arch }}.zip .
+          cd WRST.maui/bin/Release/net10.0-maccatalyst/${{ matrix.arch }}/
+          zip -r ../../../../../WRST.maui-${{ matrix.arch }}.zip WRST.maui.app
 
       - name: Upload Raw macOS App
         uses: actions/upload-artifact@v4
@@ -183,21 +167,23 @@ jobs:
 
       - name: Unzip macOS Apps
         run: |
-          unzip WRST-${{ inputs.release_tag }}-maccatalyst-x64.zip -d mac-x64
-          unzip  WRST-${{ inputs.release_tag }}-maccatalyst-arm64.zip
+          unzip WRST.maui-maccatalyst-x64.zip -d mac-x64
+          unzip WRST.maui-maccatalyst-arm64.zip -d mac-arm64
 
       - name: Install create-dmg tool
         run: brew install create-dmg
 
-      # Скрипт автоматически найдет имя *.app внутри распакованных папок
       - name: Create Universal MacOS App Bundle
         run: |
-          APP_NAME=$(basename mac-arm64/*.app)
           mkdir -p WRST-Universal.app
-          cp -R "mac-arm64/$APP_NAME/" WRST-Universal.app/
+          cp -R mac-arm64/WRST.maui.app/ WRST-Universal.app/
           
           EXEC_NAME=$(defaults read "$PWD/WRST-Universal.app/Contents/Info.plist" CFBundleExecutable)
-          lipo -create "mac-x64/$APP_NAME/Contents/MacOS/$EXEC_NAME" "mac-arm64/$APP_NAME/Contents/MacOS/$EXEC_NAME" -output "WRST-Universal.app/Contents/MacOS/$EXEC_NAME"
+          
+          lipo -create \
+            "mac-x64/WRST.maui.app/Contents/MacOS/$EXEC_NAME" \
+            "mac-arm64/WRST.maui.app/Contents/MacOS/$EXEC_NAME" \
+            -output "WRST-Universal.app/Contents/MacOS/$EXEC_NAME"
 
       - name: Create DMG Installer
         run: |
@@ -233,7 +219,6 @@ jobs:
         with:
           merge-multiple: true
 
-      # Публикуем только два идеальных файла: универсальный установщик Windows и универсальный DMG для Mac
       - name: Publish to GitHub Releases
         uses: softprops/action-gh-release@v2
         with:
