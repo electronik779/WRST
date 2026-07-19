@@ -48,7 +48,6 @@ Source: "..\..\win-arm64\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdi
 ; ---- СБОРКА ДЛЯ X64 ----
 Source: "..\..\win-x64\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion; Check: not IsArm64
 Source: "..\..\win-x64\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs; Check: not IsArm64
-Используйте код с осторожностью.
 
 [Icons]
 Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"
