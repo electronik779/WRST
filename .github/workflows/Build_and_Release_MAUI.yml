@@ -1,0 +1,140 @@
+name: Build and Publish MAUI Release
+
+on:
+  workflow_dispatch: # Запуск вручную
+    inputs:
+      release_tag:
+        description: 'Имя тега (например, v2026.0)'
+        required: true
+        type: string
+      build_windows:
+        description: 'Собрать под Windows?'
+        required: true
+        type: boolean
+        default: true
+      build_macos:
+        description: 'Собрать под macOS?'
+        required: true
+        type: boolean
+        default: true
+
+jobs:
+  build-windows:
+    if: inputs.build_windows == true
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        arch: [win-x64, win-arm64]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Install MAUI Workload
+        run: dotnet workload install maui
+
+      - name: Create Dummy License File (Windows)
+        shell: pwsh
+        run: |
+          New-Item -Path "." -Name "MIT License.txt" -ItemType "file" -Force
+
+      - name: Build Windows
+        run: >
+          dotnet publish WRST.maui/WRST.maui.csproj 
+          -f net10.0-windows10.0.19041.0
+          -p:TargetFrameworks=net10.0-windows10.0.19041.0
+          -c Release 
+          -r ${{ matrix.arch }}
+          -p:SolutionDir="../"
+          -p:PublishSingleFile=false
+          -p:WindowsAppSDKSelfContained=false
+          --self-contained false
+
+      - name: Compress Windows Build
+        shell: pwsh
+        run: |
+          Compress-Archive -Path WRST.maui/bin/Release/net10.0-windows10.0.19041.0/${{ matrix.arch }}/publish/* -DestinationPath WRST-${{ inputs.release_tag }}-${{ matrix.arch }}.zip
+
+      - name: Upload Windows Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: win-app-${{ matrix.arch }}
+          path: WRST-${{ inputs.release_tag }}-${{ matrix.arch }}.zip
+
+  build-macos:
+    if: inputs.build_macos == true
+    runs-on: macos-26
+    strategy:
+      matrix:
+        arch: [maccatalyst-x64, maccatalyst-arm64]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Select Xcode 26.6
+        run: |
+          sudo xcode-select --switch /Applications/Xcode_26.6.app
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Install MAUI Workload
+        run: dotnet workload install maui
+
+      - name: Create Dummy License File (macOS)
+        run: |
+          touch "MIT License.txt"
+
+      - name: Build macOS
+        run: >
+          dotnet publish WRST.maui/WRST.maui.csproj 
+          -f net10.0-maccatalyst
+          -p:TargetFrameworks=net10.0-maccatalyst
+          -c Release 
+          -r ${{ matrix.arch }}
+          -p:SolutionDir="../"
+          -p:CreatePackage=true
+          -p:PublishTrimmed=true
+          -p:PublishSingleFile=false
+
+      - name: Compress macOS Build
+        run: |
+          PUBLISH_DIR=$(find . -type d -path "*/bin/Release/net10.0-maccatalyst/${{ matrix.arch }}/publish" | head -n 1)
+          zip -rj "WRST-${{ inputs.release_tag }}-${{ matrix.arch }}.zip" "$PUBLISH_DIR/"
+
+      - name: Upload macOS Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: mac-app-${{ matrix.arch }}
+          path: WRST-${{ inputs.release_tag }}-${{ matrix.arch }}.zip
+
+  publish-release:
+    runs-on: ubuntu-latest
+    needs: [build-windows, build-macos]
+    if: |
+      success() && 
+      (inputs.build_windows == true || inputs.build_macos == true)
+    permissions:
+      contents: write
+    steps:
+      - name: Download All Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          merge-multiple: true
+
+      - name: Publish to GitHub Releases
+        uses: softprops/action-gh-release@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          tag_name: ${{ inputs.release_tag }}
+          name: ${{ inputs.release_tag }}
+          draft: false
+          prerelease: false
+          files: |
+            *.zip

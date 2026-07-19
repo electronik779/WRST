@@ -1,7 +1,9 @@
 ﻿using System.Data;
 using System.Globalization;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Windows.Forms.DataVisualization.Charting;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace WRST
 {
@@ -392,6 +394,8 @@ namespace WRST
 
                 using (StreamWriter writer = new StreamWriter(filename, true, Encoding.UTF8))
                 {
+                    var culture = CultureInfo.InvariantCulture;
+
                     List<string> columnsNames = new List<string>()
                    { "#", "Месяц", "Приток, м3/с", "Расход ГЭС, м3/с", "Сбросы, м3/с", "Отм. ВБ, м",
                    "Отм. НБ, м", "Напор, м", "Мощность, кВт", "Избыт. объем, млн.м3"};
@@ -407,7 +411,7 @@ namespace WRST
                             double tmp;
                             tmp = Convert.ToDouble(dataGridView1.Rows[j].Cells[i].Value);
                             //Debug.WriteLine("{0}, {1}, {2}", j, i, tmp);
-                            list.Add(tmp.ToString());
+                            list.Add(tmp.ToString(culture));
                         }
                         writer.WriteLine(string.Join(';', list));
                     }
@@ -426,7 +430,7 @@ namespace WRST
                         {
                             double tmp;
                             tmp = Convert.ToDouble(dataGridView2.Rows[j].Cells[i].Value);
-                            list.Add(tmp.ToString());
+                            list.Add(tmp.ToString(culture));
                         }
                         writer.WriteLine(string.Join(';', list));
                     }
@@ -435,17 +439,34 @@ namespace WRST
 
                     columnsNames = new List<string>()
                     { "Среднегодовая выработка, кВт ч"};
-                    columnsNames.Add(label2.Text);
+                    columnsNames.Add(GetDouble(label2.Text, 0d).ToString(culture));
                     writer.WriteLine(string.Join(";", columnsNames));
 
                     writer.WriteLine("\n");
 
                     columnsNames = new List<string>()
                     { "Суммарный объем сбросов, млн.м3"};
-                    columnsNames.Add(label4.Text);
+                    columnsNames.Add(GetDouble(label4.Text, 0d).ToString(culture));
                     writer.WriteLine(string.Join(";", columnsNames)); ;
                 }
             }
+        }
+
+        private double GetDouble(string str, double defaultValue)
+        {
+            double result;
+            //Try parsing in the current culture
+            if (!double.TryParse(str, NumberStyles.Any, CultureInfo.CurrentCulture, out result) &&
+                //Then try in US english
+                !double.TryParse(str, NumberStyles.Any, CultureInfo.GetCultureInfo("en-US"), out result) &&
+                //Then in neutral language
+                !double.TryParse(str, NumberStyles.Any, CultureInfo.InvariantCulture, out result))
+            {
+                result = defaultValue;
+                throw new ArgumentException("Необходимо ввести число.");
+            }
+
+            return result;
         }
     }
 }
