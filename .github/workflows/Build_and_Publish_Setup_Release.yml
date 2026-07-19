@@ -54,6 +54,14 @@ jobs:
           -p:WindowsAppSDKSelfContained=false
           --self-contained false
 
+      # ОТЛАДКА: Показываем, где лежат файлы на Windows
+      - name: Look for Windows Build Files
+        shell: pwsh
+        run: |
+          Get-ChildItem -Path "WRST.maui/bin/Release/" -Recurse -Filter "publish" | Select-Object FullName
+          echo "--- Содержимое папки publish ---"
+          Get-ChildItem -Path "WRST.maui/bin/Release/net10.0-windows10.0.19041.0/${{ matrix.arch }}/" -Recurse
+
       - name: Upload Raw Windows Files for Installer
         uses: actions/upload-artifact@v4
         with:
@@ -136,17 +144,16 @@ jobs:
           -p:PublishTrimmed=true
           -p:PublishSingleFile=false
 
-      # Заменили WRST.maui.app на универсальную маску *.app
-      - name: Archive macOS App
+      - name: Compress macOS Build
         run: |
-          cd WRST.maui/bin/Release/net10.0-maccatalyst/${{ matrix.arch }}/publish/
-          zip -r ../../../../../../../WRST.maui-${{ matrix.arch }}.zip *.app
+          PUBLISH_DIR=$(find . -type d -path "*/bin/Release/net10.0-maccatalyst/${{ matrix.arch }}/publish" | head -n 1)
+          zip -rj "WRST-${{ inputs.release_tag }}-${{ matrix.arch }}.zip" "$PUBLISH_DIR/"
 
-      - name: Upload Raw macOS App
+      - name: Upload macOS Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: raw-mac-${{ matrix.arch }}
-          path: WRST.maui-${{ matrix.arch }}.zip
+          name: mac-app-${{ matrix.arch }}
+          path: WRST-${{ inputs.release_tag }}-${{ matrix.arch }}.zip
 
   build-macos-dmg:
     if: inputs.build_macos == true
@@ -157,18 +164,18 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: raw-mac-maccatalyst-x64
-          path: .
+          path: WRST-${{ inputs.release_tag }}-maccatalyst-x64.zip
 
       - name: Download macOS arm64 App
         uses: actions/download-artifact@v4
         with:
           name: raw-mac-maccatalyst-arm64
-          path: .
+          path: WRST-${{ inputs.release_tag }}-maccatalyst-arm64.zip
 
       - name: Unzip macOS Apps
         run: |
-          unzip WRST.maui-maccatalyst-x64.zip -d mac-x64
-          unzip WRST.maui-maccatalyst-arm64.zip -d mac-arm64
+          unzip WRST-${{ inputs.release_tag }}-maccatalyst-x64.zip -d mac-x64
+          unzip  WRST-${{ inputs.release_tag }}-maccatalyst-arm64.zip
 
       - name: Install create-dmg tool
         run: brew install create-dmg
