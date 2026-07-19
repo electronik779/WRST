@@ -90,16 +90,16 @@ jobs:
         run: New-Item -ItemType Directory -Force -Path "WRST-setup-universal"
 
       - name: Compile Universal Installer
-        # Переходим в папку со скриптом и запускаем компиляцию локально
+        # Флаг /F переопределяет OutputBaseFilename из setup.iss на динамическое имя с тегом
         run: |
           cd WRST.maui\Installer_files
-          iscc setup.iss
+          iscc /F"Setup_WRST_${{ inputs.release_tag }}_Win" setup.iss
 
       - name: Upload Final Installer Artifact
         uses: actions/upload-artifact@v4
         with:
           name: windows-universal-installer
-          path: WRST-setup-universal/Setup-WRST-${{ inputs.release_tag }}-Universal.exe
+          path: WRST-setup-universal/Setup_WRST_${{ inputs.release_tag }}_Win.exe
 
   build-macos:
     if: inputs.build_macos == true
@@ -188,6 +188,7 @@ jobs:
             -output "WRST-Universal.app/Contents/MacOS/$EXEC_NAME"
 
       - name: Create DMG Installer
+        # ИСПРАВЛЕНО: Изменено имя результирующего .dmg файла
         run: |
           mkdir -p dmg-source
           mv WRST-Universal.app dmg-source/WRST.app
@@ -198,7 +199,7 @@ jobs:
             --icon-size 100 \
             --icon "WRST.app" 125 125 \
             --app-drop-link 375 125 \
-            "Setup-WRST-${{ inputs.release_tag }}-Universal.dmg" \
+            "Setup_WRST_${{ inputs.release_tag }}_Mac.dmg" \
             "dmg-source/"
 
       - name: Upload Final DMG Artifact
@@ -230,5 +231,5 @@ jobs:
           draft: false
           prerelease: false
           files: |
-            *.exe
-            *.dmg
+            Setup_WRST_*_Win.exe
+            Setup_WRST_*_Mac.dmg
