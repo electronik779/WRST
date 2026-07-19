@@ -5,8 +5,16 @@
 #define MyAppPublisher "НИУ МГСУ"
 #define MyAppExeName "WRST.maui.exe"
 
-// ВКЛЮЧАЕМ ПЛАГИН СКАЧИВАНИЯ
+; ---- ОБЪЯВЛЯЕМ ЯЗЫКИ ПЕРЕД ПОДКЛЮЧЕНИЕМ ПЛАГИНОВ ----
+[Languages]
+Name: "russian"; MessagesFile: "compiler:Languages\Russian.isl"
+Name: "english"; MessagesFile: "compiler:Default.isl"
+
+; ---- ПОДКЛЮЧАЕМ ПЛАГИН СКАЧИВАНИЯ ----
 #include "idp.iss"
+
+; ---- ПОДКЛЮЧАЕМ ЛОКАЛЬНЫЙ ПЕРЕВОД ПЛАГИНА IDP (если нужен) ----
+#include "unicode\idplang\Russian.iss"
 
 [Setup]
 AppId={{93E52303-A161-4F12-9BD1-348371540E41}}
