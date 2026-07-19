@@ -144,16 +144,25 @@ jobs:
           -p:PublishTrimmed=true
           -p:PublishSingleFile=false
 
-      - name: Compress macOS Build
+      # ОТЛАДКА: Смотрим, куда на самом деле скомпилировался Mac-апп
+      - name: Look for macOS Build Files
         run: |
-          PUBLISH_DIR=$(find . -type d -path "*/bin/Release/net10.0-maccatalyst/${{ matrix.arch }}/publish" | head -n 1)
-          zip -rj "WRST-${{ inputs.release_tag }}-${{ matrix.arch }}.zip" "$PUBLISH_DIR/"
+          echo "=== Ищем все папки .app в bin/Release ==="
+          find WRST.maui/bin/Release -name "*.app"
+          echo "=== Структура папки publish ==="
+          ls -R WRST.maui/bin/Release/net10.0-maccatalyst/${{ matrix.arch }}/ || true
 
-      - name: Upload macOS Artifact
+      # Архивируем ВСЁ содержимое папки publish, чтобы не зависеть от имени .app
+      - name: Archive macOS App
+        run: |
+          cd WRST.maui/bin/Release/net10.0-maccatalyst/${{ matrix.arch }}/publish/
+          zip -r ../../../../../../../WRST.maui-${{ matrix.arch }}.zip .
+
+      - name: Upload Raw macOS App
         uses: actions/upload-artifact@v4
         with:
-          name: mac-app-${{ matrix.arch }}
-          path: WRST-${{ inputs.release_tag }}-${{ matrix.arch }}.zip
+          name: raw-mac-${{ matrix.arch }}
+          path: WRST.maui-${{ matrix.arch }}.zip
 
   build-macos-dmg:
     if: inputs.build_macos == true
@@ -164,13 +173,13 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: raw-mac-maccatalyst-x64
-          path: WRST-${{ inputs.release_tag }}-maccatalyst-x64.zip
+          path: .
 
       - name: Download macOS arm64 App
         uses: actions/download-artifact@v4
         with:
           name: raw-mac-maccatalyst-arm64
-          path: WRST-${{ inputs.release_tag }}-maccatalyst-arm64.zip
+          path: .
 
       - name: Unzip macOS Apps
         run: |
