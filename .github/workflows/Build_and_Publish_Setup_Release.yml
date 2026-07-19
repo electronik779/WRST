@@ -58,7 +58,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: raw-files-${{ matrix.arch }}
-          path: WRST.maui/bin/Release/net10.0-windows10.0.19041.0/${{ matrix.arch }}/publish/*
+          path: WRST.maui/bin/Release/net10.0-windows10.0.19041.0/${{ matrix.arch }}/publish
 
   build-installer:
     if: inputs.build_windows == true
@@ -136,14 +136,18 @@ jobs:
           -p:PublishTrimmed=true
           -p:PublishSingleFile=false
 
-      # Сохраняем каждую архитектуру отдельно, чтобы потом объединить их на следующем общем шаге
+      # Архивируем .app в .zip перед отправкой, чтобы GitHub Actions не ломал структуру папки
+      - name: Archive macOS App
+        run: |
+          cd WRST.maui/bin/Release/net10.0-maccatalyst/${{ matrix.arch }}/publish/
+          zip -r ../../../../../../../WRST.maui-${{ matrix.arch }}.zip WRST.maui.app
+
       - name: Upload Raw macOS App
         uses: actions/upload-artifact@v4
         with:
           name: raw-mac-${{ matrix.arch }}
-          path: WRST.maui/bin/Release/net10.0-maccatalyst/${{ matrix.arch }}/publish/WRST.maui.app
+          path: WRST.maui-${{ matrix.arch }}.zip
 
-  # НОВЫЙ ДЖОБ: Объединяет macOS сборки в Universal DMG инсталлятор
   build-macos-dmg:
     if: inputs.build_macos == true
     runs-on: macos-26
@@ -153,13 +157,19 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: raw-mac-maccatalyst-x64
-          path: mac-x64
+          path: .
 
       - name: Download macOS arm64 App
         uses: actions/download-artifact@v4
         with:
           name: raw-mac-maccatalyst-arm64
-          path: mac-arm64
+          path: .
+
+      # Распаковываем архивы обратно
+      - name: Unzip macOS Apps
+        run: |
+          unzip WRST.maui-maccatalyst-x64.zip -d mac-x64
+          unzip WRST.maui-maccatalyst-arm64.zip -d mac-arm64
 
       - name: Install create-dmg tool
         run: brew install create-dmg
