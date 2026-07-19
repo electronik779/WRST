@@ -89,21 +89,6 @@ jobs:
         shell: pwsh
         run: New-Item -ItemType Directory -Force -Path "WRST-setup-universal"
 
-      # === ОКОШКО ОТЛАДКИ: Проверяем реальное положение папок перед запуском ISCC ===
-      - name: Debug Folder Structure
-        shell: pwsh
-        run: |
-          echo "=== Текущая директория воркфлоу ==="
-          pwd
-          echo "=== Файлы в корне проекта ==="
-          Get-ChildItem -Path "."
-          echo "=== Проверяем наличие папки win-x64 ==="
-          if (Test-Path "win-x64") { Get-ChildItem -Path "win-x64" } else { echo "Папка win-x64 НЕ найдена!" }
-          echo "=== Проверяем наличие папки win-arm64 ==="
-          if (Test-Path "win-arm64") { Get-ChildItem -Path "win-arm64" } else { echo "Папка win-arm64 НЕ найдена!" }
-          echo "=== Содержимое папки Installer_files ==="
-          Get-ChildItem -Path "Installer_files"
-
       - name: Compile Universal Installer
         run: iscc WRST/WRST.maui/Installer_files/setup.iss
 
