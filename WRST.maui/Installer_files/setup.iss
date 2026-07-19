@@ -145,16 +145,20 @@ begin
  SdkMissing := not IsWinAppSdkInstalled();
  DotNetMissing := not IsDotNet10Installed();
  if IsArm64 then ArchLabel := 'ARM64' else ArchLabel := 'x64';
+ 
  if SdkMissing or DotNetMissing then
  begin
  AlertMessage := 'Для работы программы на вашем компьютере не хватает важных компонентов (' + ArchLabel + '):' + #13#10;
  if DotNetMissing then AlertMessage := AlertMessage + ' - Среда выполнения .NET 10 Desktop Runtime' + #13#10;
  if SdkMissing then AlertMessage := AlertMessage + ' - Пакет Windows App SDK (не ниже 8000.731.1532.0)' + #13#10;
- AlertMessage := AlertMessage + #13#10 + 'Хотите, чтобы установщик автоматически скачал и установил их в фоновом режиме?';
+ AlertMessage := AlertMessage + #13#10 + 'Хотите, чтобы установщик автоматически скачал и установил их?';
  UserChoice := MsgBox(AlertMessage, mbConfirmation, MB_YESNO);
+ 
  if UserChoice = idYes then
  begin
- // ИСПРАВЛЕНО: Указаны прямые рабочие ссылки на официальные дистрибутивы Microsoft
+ // КРИТИЧЕСКИЙ ШАГ: Говорим плагину запуститься сразу после страницы "Готов к установке"
+ idpDownloadAfter(wpReady);
+
  if DotNetMissing then
  begin
  if IsArm64 then
@@ -162,6 +166,7 @@ begin
  else
  idpAddFile('https://microsoft.com', ExpandConstant('{tmp}\dotnet_setup.exe'));
  end;
+ 
  if SdkMissing then
  begin
  if IsArm64 then
