@@ -84,10 +84,10 @@ jobs:
         shell: pwsh
         run: New-Item -Path "." -Name "MIT License.txt" -ItemType "file" -Force
 
-      - name: Setup Inno Setup Compiler
-        uses: amake/setup-inno-setup@v1
-        with:
-          inno-version: 7.0.2
+#      - name: Setup Inno Setup Compiler
+#        uses: amake/setup-inno-setup@v1
+#        with:
+#          inno-version: 7.0.2
 
       - name: Compile Universal Installer
         run: iscc Installer_files/setup.iss
@@ -161,18 +161,15 @@ jobs:
           name: raw-mac-maccatalyst-arm64
           path: mac-arm64
 
-      # Устанавливаем утилиту создания DMG образов
       - name: Install create-dmg tool
         run: brew install create-dmg
 
-      # Создаем универсальное (Universal) приложение, объединяя бинарные файлы x64 и arm64 с помощью lipo
       - name: Create Universal MacOS App Bundle
         run: |
           mkdir -p WRST-Universal.app
           cp -R mac-arm64/WRST.maui.app/ WRST-Universal.app/
           lipo -create mac-x64/WRST.maui.app/Contents/MacOS/WRST.maui mac-arm64/WRST.maui.app/Contents/MacOS/WRST.maui -output WRST-Universal.app/Contents/MacOS/WRST.maui
 
-      # Упаковываем наше универсальное приложение в красивый DMG установщик со ссылкой на паку Applications
       - name: Create DMG Installer
         run: |
           mkdir -p dmg-source
@@ -191,7 +188,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: macos-universal-dmg
-          path: "*.dmg"
+          path: "*.dmg
 
   publish-release:
     runs-on: ubuntu-latest
