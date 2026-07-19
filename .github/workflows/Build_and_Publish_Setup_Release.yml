@@ -90,7 +90,10 @@ jobs:
         run: New-Item -ItemType Directory -Force -Path "WRST-setup-universal"
 
       - name: Compile Universal Installer
-        run: iscc WRST/WRST.maui/Installer_files/setup.iss
+        # Переходим в папку со скриптом и запускаем компиляцию локально
+        run: |
+          cd WRST\WRST.maui\Installer_files
+          iscc setup.iss
 
       - name: Upload Final Installer Artifact
         uses: actions/upload-artifact@v4
