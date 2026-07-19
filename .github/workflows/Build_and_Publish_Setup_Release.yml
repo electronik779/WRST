@@ -188,7 +188,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: macos-universal-dmg
-          path: "*.dmg
+          path: "*.dmg"
 
   publish-release:
     runs-on: ubuntu-latest
