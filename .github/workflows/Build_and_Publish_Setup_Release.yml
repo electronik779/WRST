@@ -92,7 +92,7 @@ jobs:
       - name: Compile Universal Installer
         # Переходим в папку со скриптом и запускаем компиляцию локально
         run: |
-          cd WRST\WRST.maui\Installer_files
+          cd WRST.maui\Installer_files
           iscc setup.iss
 
       - name: Upload Final Installer Artifact
