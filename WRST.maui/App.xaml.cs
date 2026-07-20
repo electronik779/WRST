@@ -10,6 +10,11 @@ namespace WRST.maui
         public App()
         {
             InitializeComponent();
+
+            #if MACCATALYST
+                // Устанавливаем делегат, чтобы отключить автоматическое завершение при закрытии последнего окна
+                NSApplication.SharedApplication.Delegate = new MyAppDelegate();
+            #endif
         }
 
         protected override Window CreateWindow(IActivationState? activationState)
@@ -59,5 +64,12 @@ namespace WRST.maui
 #endif
             return window;
         }
+#if MACCATALYST
+        // Внутренний класс-делегат, предотвращающий автоматическое завершение приложения
+        private class MyAppDelegate : NSApplicationDelegate
+        {
+            public override bool ApplicationShouldTerminateAfterLastWindowClosed(NSApplication sender) => false;
+        }
+#endif
     }
 }
