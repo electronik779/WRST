@@ -1,6 +1,4 @@
-﻿#if MACCATALYST
-using AppKit;
-using Foundation;
+﻿using Foundation;
 
 namespace WRST.maui
 {
@@ -8,12 +6,5 @@ namespace WRST.maui
     public class AppDelegate : MauiUIApplicationDelegate
     {
         protected override MauiApp CreateMauiApp() => MauiProgram.CreateMauiApp();
-
-        // Используем global:: для явного указания пространства имён
-        public override bool ApplicationShouldTerminateAfterLastWindowClosed(NSApplication sender)
-        {
-            return false; // предотвращает автоматическое завершение
-        }
     }
 }
-#endif
