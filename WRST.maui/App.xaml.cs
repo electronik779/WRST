@@ -29,8 +29,8 @@ namespace WRST.maui
                 {
                     nativeWindow.WillClose += async (sender, args) =>
                     {
-                        // Получаем MainPage из самого окна
-                        if (window.Page is not MainPage mainPage || mainPage.IsSaved)
+                        var mainPage = MainPage.Current;
+                        if (mainPage == null || mainPage.IsSaved)
                             return;
 
                         var alert = new NSAlert()
@@ -42,7 +42,7 @@ namespace WRST.maui
                         alert.AddButton("Да");
                         alert.AddButton("Нет");
 
-                        var result = alert.RunModal(); // блокирующий диалог
+                        var result = alert.RunModal();
 
                         if (result == 1000) // "Да"
                         {
@@ -53,7 +53,6 @@ namespace WRST.maui
                         {
                             NSApplication.SharedApplication.Terminate(NSApplication.SharedApplication.Delegate);
                         }
-                        // Если диалог закрыт по-другому (крестик) – окно остаётся открытым
                     };
                 }
             };
