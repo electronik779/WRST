@@ -58,6 +58,11 @@ namespace WRST.maui
                         });
                     });
 #endif
+#if MACCATALYST
+                events.AddMacCatalyst(mac => mac
+                    .ApplicationShouldTerminateAfterLastWindowClosed(sender => false)
+                );
+#endif
                 })
 
                 .UseSkiaSharp()
