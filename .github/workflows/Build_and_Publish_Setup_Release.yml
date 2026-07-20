@@ -130,7 +130,9 @@ jobs:
           touch "MIT License.txt"
 
       - name: Clean
-        run: dotnet clean --configuration Release
+        run: |
+          dotnet clean --configuration Release
+          rm -rf WRST.maui/bin WRST.maui/obj
 
       - name: Build macOS
         run: >
