@@ -127,6 +127,9 @@ jobs:
         run: |
           touch "MIT License.txt"
 
+      - name: Clean
+        run: dotnet clean --configuration Release
+
       - name: Build macOS
         run: >
           dotnet publish WRST.maui/WRST.maui.csproj 
