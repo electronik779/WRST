@@ -1,54 +1,61 @@
-﻿namespace WRST.maui
+namespace WRST.maui;
+
+public partial class App : Application
 {
-    public partial class App : Application
+    public App()
     {
-        public App()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
+    }
 
-        protected override Window CreateWindow(IActivationState? activationState)
-        {
-            var window = new Window(new AppShell());
-            //var window = new Window(new MainPage());
+    protected override Window CreateWindow(IActivationState? activationState)
+    {
+        var window = new Window(new AppShell());
 
-            // Установка размеров
-            window.Width = 800;
-            window.Height = 800;
-
-            // Этот блок будет работать на macOS (Mac Catalyst) в .NET 10
 #if MACCATALYST
-        window.Deactivating += async (s, e) =>
+        // Подписываемся на попытку закрытия окна через менеджер приложения
+        this.CloseWindowRequested += async (s, e) =>
         {
             var mainPage = MainPage.Current;
             if (mainPage == null || mainPage.IsSaved)
-                return;
+                return; // Если всё сохранено, окно закроется штатно
 
-            // На Mac Catalyst мы перехватываем деактивацию/закрытие окна.
-            // Примечание: Для полной отмены закрытия в MAUI на Mac используется 
-            // вызов программного предотвращения закрытия через Shell/Application методы,
-            // но в .NET 10 проще всего использовать механизм всплывающего окна на MainPage.
-            
-            // Получаем доступ к UI для вывода диалога
-            bool? shouldSave = await mainPage.DisplayAlertAsync(
-                "Несохранённые данные",
-                "Вы хотите сохранить изменения перед выходом?",
-                "Да", "Нет"
-            );
+            // e.Cancel = true; НЕ поддерживается напрямую в CloseWindowRequested, 
+            // поэтому в .NET 10 используется переопределение на уровне Window
 
-            if (shouldSave == true)
-            {
-                await mainPage.SaveDataAsync();
-                Current?.Quit(); // Закрываем приложение после сохранения
-            }
-            else if (shouldSave == false)
-            {
-                Current?.Quit(); // Закрываем без сохранения
-            }
+            // Чтобы предотвратить моментальное исчезновение UI, мы переносим 
+            // проверку сохранности на уровень закрытия конкретного окна ниже
         };
+
+        // Самый надежный способ в .NET 10 для Mac: событие уничтожения окна
+        window.Destroying += OnWindowDestroying;
 #endif
 
-            return window;
+        return window;
+    }
+
+#if MACCATALYST
+    private async void OnWindowDestroying(object? sender, EventArgs e)
+    {
+        var mainPage = MainPage.Current;
+        if (mainPage == null || mainPage.IsSaved)
+            return;
+
+        // Показываем нативный диалог MAUI
+        bool? shouldSave = await mainPage.DisplayAlertAsync(
+            "Несохранённые данные",
+            "Вы хотите сохранить изменения перед выходом?",
+            "Да", "Нет"
+        );
+
+        if (shouldSave == true)
+        {
+            await mainPage.SaveDataAsync();
+            this.Quit(); // Полностью завершаем процесс приложения
+        }
+        else if (shouldSave == false)
+        {
+            this.Quit(); // Завершаем процесс без сохранения
         }
     }
+#endif
 }
