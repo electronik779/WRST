@@ -9,11 +9,10 @@ namespace WRST.maui
     {
         protected override MauiApp CreateMauiApp() => MauiProgram.CreateMauiApp();
 
-        public override bool ApplicationShouldTerminateAfterLastWindowClosed(NSApplication sender)
+        // Используем global:: для явного указания пространства имён
+        public override bool ApplicationShouldTerminateAfterLastWindowClosed(global::AppKit.NSApplication sender)
         {
-            // Возвращаем false, чтобы приложение не закрывалось автоматически
-            // после закрытия последнего окна. Даём время на диалог.
-            return false;
+            return false; // предотвращает автоматическое завершение
         }
     }
 }
