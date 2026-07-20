@@ -63,12 +63,6 @@ namespace WRST.maui
                         });
                     });
 #endif
-#if MACCATALYST
-                // Теперь метод AddMacCatalyst будет успешно найден компилятором
-                events.AddMacCatalyst(mac => mac
-                    .ApplicationShouldTerminateAfterLastWindowClosed(sender => false)
-                );
-#endif
                 })
 
                 .UseSkiaSharp()
