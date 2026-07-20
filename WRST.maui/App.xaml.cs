@@ -12,50 +12,34 @@ public partial class App : Application
         var window = new Window(new AppShell());
 
 #if MACCATALYST
-        // Подписываемся на попытку закрытия окна через менеджер приложения
-        this.CloseWindowRequested += async (s, e) =>
+        // В .NET 10 на Mac событие Destroying срабатывает при закрытии окна
+        window.Destroying += async (s, e) =>
         {
-            var mainPage = MainPage.Current;
+            // Используем global::, чтобы компилятор не путал класс MainPage со свойством App.MainPage
+            var mainPage = global::WRST.maui.MainPage.Current;
+            
             if (mainPage == null || mainPage.IsSaved)
-                return; // Если всё сохранено, окно закроется штатно
+                return;
 
-            // e.Cancel = true; НЕ поддерживается напрямую в CloseWindowRequested, 
-            // поэтому в .NET 10 используется переопределение на уровне Window
+            // Показываем диалог через страницу
+            bool shouldSave = await mainPage.DisplayAlert(
+                "Несохранённые данные",
+                "Вы хотите сохранить изменения перед выходом?",
+                "Да", "Нет"
+            );
 
-            // Чтобы предотвратить моментальное исчезновение UI, мы переносим 
-            // проверку сохранности на уровень закрытия конкретного окна ниже
+            if (shouldSave)
+            {
+                await mainPage.SaveDataAsync();
+                this.Quit(); // Завершаем процесс приложения на Mac
+            }
+            else
+            {
+                this.Quit(); // Закрываем без сохранения
+            }
         };
-
-        // Самый надежный способ в .NET 10 для Mac: событие уничтожения окна
-        window.Destroying += OnWindowDestroying;
 #endif
 
         return window;
     }
-
-#if MACCATALYST
-    private async void OnWindowDestroying(object? sender, EventArgs e)
-    {
-        var mainPage = MainPage.Current;
-        if (mainPage == null || mainPage.IsSaved)
-            return;
-
-        // Показываем нативный диалог MAUI
-        bool? shouldSave = await mainPage.DisplayAlertAsync(
-            "Несохранённые данные",
-            "Вы хотите сохранить изменения перед выходом?",
-            "Да", "Нет"
-        );
-
-        if (shouldSave == true)
-        {
-            await mainPage.SaveDataAsync();
-            this.Quit(); // Полностью завершаем процесс приложения
-        }
-        else if (shouldSave == false)
-        {
-            this.Quit(); // Завершаем процесс без сохранения
-        }
-    }
-#endif
 }
