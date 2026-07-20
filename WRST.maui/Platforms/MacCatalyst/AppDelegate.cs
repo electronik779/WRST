@@ -1,3 +1,4 @@
+using System.Runtime.InteropServices;
 using Foundation;
 using ObjCRuntime;
 
@@ -8,23 +9,42 @@ public class AppDelegate : MauiUIApplicationDelegate
 {
     protected override MauiApp CreateMauiApp() => MauiProgram.CreateMauiApp();
 
+    // Импортируем оригинальные функции среды выполнения Objective-C
+    [DllImport("/usr/lib/libobjc.A.dylib", EntryPoint = "objc_getClass")]
+    private static extern IntPtr objc_getClass(string className);
+
+    [DllImport("/usr/lib/libobjc.A.dylib", EntryPoint = "class_getInstanceMethod")]
+    private static extern IntPtr class_getInstanceMethod(IntPtr cls, IntPtr sel);
+
+    [DllImport("/usr/lib/libobjc.A.dylib", EntryPoint = "method_setImplementation")]
+    private static extern IntPtr method_setImplementation(IntPtr method, ref BlockLiteral block);
+
     static AppDelegate()
     {
-        // Динамически регистрируем метод из AppKit через Objective-C рантайм
+        // Получаем указатель на класс NSApplication из AppKit
+        IntPtr nsAppClass = objc_getClass("NSApplication");
+        if (nsAppClass == IntPtr.Zero) return;
+
+        // Создаем блок с нашей кастомной логикой
         var block = new BlockLiteral();
         block.SetupBlockUnsafe(TargetMethod, null);
-        
-        // Селектор оригинального метода из NSApplicationDelegate
+
+        // Получаем селектор метода управления жизненным циклом окон
         var selector = new Selector("applicationShouldTerminateAfterLastWindowClosed:");
         
-        // Внедряем поведение напрямую в класс делегата нативного приложения
-        Class.Get("NSApplication").GetMethod(selector).SetImplementation(ref block);
+        // Находим сам метод внутри класса
+        IntPtr method = class_getInstanceMethod(nsAppClass, selector.Handle);
+        if (method != IntPtr.Zero)
+        {
+            // Перезаписываем реализацию метода на нашу собственную функцию
+            method_setImplementation(method, ref block);
+        }
     }
 
-    // Сигнатура метода должна возвращать нативный bool (byte/bool в Obj-C)
+    // Эта функция будет вызвана операционной системой macOS при закрытии окон
     [MonoPInvokeCallback(typeof(Func<IntPtr, IntPtr, bool>))]
     private static bool TargetMethod(IntPtr self, IntPtr sender)
     {
-        return false; // Предотвращает автоматическое завершение приложения
+        return false; // Запрещаем закрытие процесса приложения
     }
 }
