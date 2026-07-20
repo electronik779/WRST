@@ -11,6 +11,9 @@ public partial class App : Application
     {
         var window = new Window(new AppShell());
 
+        window.Width = 800;
+        window.Height = 800;
+
 #if MACCATALYST
         // В .NET 10 на Mac событие Destroying срабатывает при закрытии окна
         window.Destroying += async (s, e) =>
