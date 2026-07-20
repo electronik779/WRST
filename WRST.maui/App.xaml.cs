@@ -58,12 +58,5 @@ namespace WRST.maui
 #endif
             return window;
         }
-#if MACCATALYST
-        // Внутренний класс-делегат, предотвращающий автоматическое завершение приложения
-        private class MyAppDelegate : NSApplicationDelegate
-        {
-            public override bool ApplicationShouldTerminateAfterLastWindowClosed(NSApplication sender) => false;
-        }
-#endif
     }
 }
