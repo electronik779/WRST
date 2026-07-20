@@ -1,6 +1,5 @@
-#if MACCATALYST
-using AppKit;
 using Foundation;
+using ObjCRuntime;
 
 namespace WRST.maui;
 
@@ -9,21 +8,23 @@ public class AppDelegate : MauiUIApplicationDelegate
 {
     protected override MauiApp CreateMauiApp() => MauiProgram.CreateMauiApp();
 
-    // Статический конструктор вызывается при старте приложения на Mac
     static AppDelegate()
     {
-        // Подменяем делегат нативного NSApplication на наш кастомный класс
-        NSApplication.SharedApplication.Delegate = new MacCatalystAppDelegate();
+        // Динамически регистрируем метод из AppKit через Objective-C рантайм
+        var block = new BlockLiteral();
+        block.SetupBlockUnsafe(TargetMethod, null);
+        
+        // Селектор оригинального метода из NSApplicationDelegate
+        var selector = new Selector("applicationShouldTerminateAfterLastWindowClosed:");
+        
+        // Внедряем поведение напрямую в класс делегата нативного приложения
+        Class.Get("NSApplication").GetMethod(selector).SetImplementation(ref block);
     }
-}
 
-// Нативный класс-делегат из мира AppKit (macOS)
-public class MacCatalystAppDelegate : NSApplicationDelegate
-{
-    // Предотвращает автоматическое закрытие процесса при закрытии последнего окна
-    public override bool ApplicationShouldTerminateAfterLastWindowClosed(NSApplication sender)
+    // Сигнатура метода должна возвращать нативный bool (byte/bool в Obj-C)
+    [MonoPInvokeCallback(typeof(Func<IntPtr, IntPtr, bool>))]
+    private static bool TargetMethod(IntPtr self, IntPtr sender)
     {
-        return false; 
+        return false; // Предотвращает автоматическое завершение приложения
     }
 }
-#endif
