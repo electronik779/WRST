@@ -1,5 +1,4 @@
 ﻿#if MACCATALYST
-    using UIKit;
     using AppKit;
 #endif
 
@@ -10,11 +9,6 @@ namespace WRST.maui
         public App()
         {
             InitializeComponent();
-
-            #if MACCATALYST
-                // Устанавливаем делегат, чтобы отключить автоматическое завершение при закрытии последнего окна
-                NSApplication.SharedApplication.Delegate = new MyAppDelegate();
-            #endif
         }
 
         protected override Window CreateWindow(IActivationState? activationState)
