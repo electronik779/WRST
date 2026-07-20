@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Maui.Storage;
 using System.Collections.ObjectModel;
 using System.Data;
+using System.Diagnostics;
 using System.Globalization;
 using System.Text;
 
@@ -40,10 +41,16 @@ namespace WRST.maui
         double[,] IntakeFromReservoirTableData = new double[0, 0]; // Отбор из водохранилища.
         double[,] CharacteristicOfDownstreamTableData = new double[0, 0]; // Характеристика нижнего бьефа. 
 
+        // Сохранено?
+        public bool IsSaved { get; set; } = true;
+
+        public static MainPage? Current { get; private set; }
+
         public MainPage()
         {
             InitializeComponent();
 
+            Current = this;
             BindingContext = this;
 
             // Инициализация таблиц диспетчерских остатков и отборов
@@ -122,6 +129,7 @@ namespace WRST.maui
                 {
                     HeadLossLable.Text = "Коэффициент потерь при Qгэс²";
                 }
+                IsSaved = false;
             }
         }
 
@@ -157,6 +165,7 @@ namespace WRST.maui
                 {
                     // Возвращаем стандартное состояние (цвета подтянутся из Normal/Focused в зависимости от темы)
                     VisualStateManager.GoToState(entry, "Normal");
+                    IsSaved = false;
                 }
                 else
                 {
@@ -231,6 +240,7 @@ namespace WRST.maui
                 if (isValid)
                 {
                     VisualStateManager.GoToState(entry, "Normal");
+                    IsSaved = false;
                 }
                 else
                 {
@@ -502,6 +512,8 @@ namespace WRST.maui
 
                 // Обновляем UI
                 UpdateUI(blocks);
+
+                IsSaved = true;
             }
             catch (Exception ex)
             {
@@ -610,7 +622,7 @@ namespace WRST.maui
         }
 
         // Сохранение данных в файл
-        private async void Save_Click(object sender, EventArgs e)
+        public async Task SaveDataAsync()
         {
             // Проверяем, что в текстовых полях есть числа
             if (CheckData()) return;
@@ -655,6 +667,8 @@ namespace WRST.maui
                 using var stream = new MemoryStream(Encoding.UTF8.GetBytes(content));
                 var result = await FileSaver.Default.SaveAsync("Initial_data.csv", stream, CancellationToken.None);
 
+                IsSaved = true;
+
                 if (result.IsSuccessful)
                     await DisplayAlertAsync(
                         "Успех!",
@@ -668,6 +682,10 @@ namespace WRST.maui
                     "Ошибка записи: " + ex.Message,
                     "OK");
             }
+        }
+        public async void Save_Click(object sender, EventArgs e)
+        {
+            await SaveDataAsync();
         }
 
         // Универсальный метод с поддержкой форматов чисел
@@ -1040,6 +1058,8 @@ namespace WRST.maui
             int pointer = InflowCount - BeginningMonth + 1;
             if (pointer > InflowCount - 1) pointer = 0;
 
+            Debug.WriteLine($"pointer= {pointer}, begm= {BeginningMonth}");
+
             int month = 0;
 
             for (int i = 0; i < InflowCount; i++)
@@ -1053,12 +1073,14 @@ namespace WRST.maui
                 // Инициализируем строку
                 row.InitializeCells(3, string.Empty);
 
-                row.SetCell(0, (i + 1).ToString());
+                row.SetCell(0, (pointer + 1).ToString());
                 row.SetCell(1, RemainderAccordingDispatchScheduleTableData[0, month].ToString("N1"));
                 row.SetCell(2, (RemainderAccordingDispatchScheduleTableData[0, month] +
                     ActualResidualVolume[pointer]).ToString("N1"));
 
                 VolumeData.Add(row);
+
+                Debug.WriteLine($"i= {i}, month= {month}, pointer+1= {pointer + 1}");
 
                 pointer++;
                 month++;

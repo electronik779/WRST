@@ -696,7 +696,7 @@ public partial class SecondPage : ContentPage, IQueryAttributable
 
             headers = Array.Empty<string>();
             headers = new[] {
-                "#", "Месяц", "Диспетчерский объем, м³", "Фактический объем, м³"
+                "#", "Месяц", "Диспетчерский объем, м³", "Фактический объем (над МО), м³"
                     };
             headerLine = string.Join(";", headers.Select(EscapeCsvField));
             csvContent.AppendLine(headerLine);
