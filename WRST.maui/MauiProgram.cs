@@ -19,6 +19,11 @@ namespace WRST.maui
             builder
                 .UseMauiApp<App>()
                 .UseMauiCommunityToolkit()
+                .ConfigureFonts(fonts =>
+                {
+                    fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
+                    fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
+                })
                 
                 .ConfigureLifecycleEvents(events =>
                 {
@@ -59,6 +64,7 @@ namespace WRST.maui
                     });
 #endif
 #if MACCATALYST
+                // Теперь метод AddMacCatalyst будет успешно найден компилятором
                 events.AddMacCatalyst(mac => mac
                     .ApplicationShouldTerminateAfterLastWindowClosed(sender => false)
                 );
@@ -66,12 +72,7 @@ namespace WRST.maui
                 })
 
                 .UseSkiaSharp()
-                .UseLiveCharts()
-                .ConfigureFonts(fonts =>
-                {
-                    fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
-                    fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
-                });
+                .UseLiveCharts();
 
 #if DEBUG
     		builder.Logging.AddDebug();
