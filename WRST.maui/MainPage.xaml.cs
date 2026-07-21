@@ -386,8 +386,8 @@ namespace WRST.maui
 
             BathygraphyData = tempCollection;
 
-            //BathygraphyCollectionView.ItemsSource = null;
-            //BathygraphyCollectionView.ItemsSource = BathygraphyData;
+            BathygraphyCollectionView.ItemsSource = null;
+            BathygraphyCollectionView.ItemsSource = BathygraphyData;
         }
 
         // По нажатию кнопки "Создать" напротив поля ввода Количество точек характеристики нижнего бьефа
@@ -437,8 +437,8 @@ namespace WRST.maui
             // Подменяем ссылку целиком. CollectionView получит один глобальный сигнал обновления
             DownstreamData = tempCollection;
 
-            //DownstreamCollectionView.ItemsSource = null;
-            //DownstreamCollectionView.ItemsSource = DownstreamData;
+            DownstreamCollectionView.ItemsSource = null;
+            DownstreamCollectionView.ItemsSource = DownstreamData;
         }
 
         // Считывание исходных данных из файла

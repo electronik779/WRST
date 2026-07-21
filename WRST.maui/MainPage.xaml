@@ -135,10 +135,19 @@
                   "Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto" 
                   RowSpacing="10">
 
-                <Label Grid.Row="0" Grid.Column="0" Text="Номер календарного месяца начала расчета" VerticalOptions="Center"/>
-                <Entry Grid.Row="0" Grid.Column="1" x:Name="BeginningMonthInput" Style="{StaticResource ParamEntryStyle}" TextChanged="OnIntEntryTextChanged" Keyboard="Numeric"/>
+                <Label Grid.Row="0" Grid.Column="0" Text="Номер календарного месяца начала расчета" 
+                       VerticalOptions="Center"
+                       HorizontalOptions="End"
+                       Margin="0, 0, 86, 0"/>
+                <Entry Grid.Row="0" Grid.Column="1" x:Name="BeginningMonthInput" 
+                       Style="{StaticResource ParamEntryStyle}" 
+                       TextChanged="OnIntEntryTextChanged" 
+                       Keyboard="Numeric"/>
 
-                <Label Grid.Row="1" Grid.Column="0" Text="Количество значений притока" VerticalOptions="Center"/>
+                <Label Grid.Row="1" Grid.Column="0" Text="Количество значений притока" 
+                       VerticalOptions="Center"
+                       HorizontalOptions="End"
+                       Margin="0, 0, 184, 0"/>
                 <Entry Grid.Row="1" Grid.Column="1" x:Name="InflowCountInput" Style="{StaticResource ParamEntryStyle}" 
                        TextChanged="OnIntEntryTextChanged" Keyboard="Numeric" Focused="OnEntryFocused"/>
                 <Button Grid.Row="1" Grid.Column="2" Text="Создать" Margin="10,0,0,0" Clicked="InflowButton_Clicked" />
@@ -186,15 +195,24 @@
                     </ScrollView>
                 </VerticalStackLayout>
 
-                <Label Grid.Row="3" Grid.Column="0" Text="Полезный объем водохранилища, млн.м³" VerticalOptions="Center"/>
+                <Label Grid.Row="3" Grid.Column="0" Text="Полезный объем водохранилища, млн.м³" 
+                       VerticalOptions="Center"
+                       HorizontalOptions="End"
+                       Margin="0, 0, 107, 0"/>
                 <Entry Grid.Row="3" Grid.Column="1" x:Name="UsefulVolumeInput" Style="{StaticResource ParamEntryStyle}" 
                        TextChanged="OnDoubleEntryTextChanged" Keyboard="Numeric" Focused="OnEntryFocused"/>
 
-                <Label Grid.Row="4" Grid.Column="0" Text="Мёртвый объем водохранилища, млн.м³" VerticalOptions="Center"/>
+                <Label Grid.Row="4" Grid.Column="0" Text="Мёртвый объем водохранилища, млн.м³" 
+                       VerticalOptions="Center"
+                       HorizontalOptions="End"
+                       Margin="0, 0, 114, 0"/>
                 <Entry Grid.Row="4" Grid.Column="1" x:Name="UselessVolumeInput" Style="{StaticResource ParamEntryStyle}" 
                        TextChanged="OnDoubleEntryTextChanged" Keyboard="Numeric" Focused="OnEntryFocused"/>
 
-                <Label Grid.Row="5" Grid.Column="0" Text="Количество точек характеристики верхнего бьефа" VerticalOptions="Center"/>
+                <Label Grid.Row="5" Grid.Column="0" Text="Количество точек характеристики верхнего бьефа" 
+                       VerticalOptions="Center"
+                       HorizontalOptions="End"
+                       Margin="0, 0, 46, 0"/>
                 <Entry Grid.Row="5" Grid.Column="1" x:Name="BathygraphyCountInput" Style="{StaticResource ParamEntryStyle}" 
                        TextChanged="OnIntEntryTextChanged" Keyboard="Numeric" Focused="OnEntryFocused"/>
                 <Button Grid.Row="5" Grid.Column="2" Text="Создать" Margin="10,0,0,0" Clicked="BathygraphyButton_Clicked" />
@@ -238,7 +256,9 @@
                     </ScrollView>
                 </VerticalStackLayout>
                 
-                <Label Grid.Row="7" Grid.Column="0" Text="Диспетчерские остатки на конец месяца" VerticalOptions="Center"/>
+                <Label Grid.Row="7" Grid.Column="0" Text="Диспетчерские остатки на конец месяца" 
+                       VerticalOptions="Center"
+                       Margin="0, 10, 0, 0"/>
 
                 <!-- Таблица диспетчерские остатки -->
                 <VerticalStackLayout Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="3" Padding="10" Spacing="0">
@@ -286,7 +306,9 @@
                     </ScrollView>
                 </VerticalStackLayout>
 
-                <Label Grid.Row="9" Grid.Column="0" Text="Отбор из водохранилища" VerticalOptions="Center"/>
+                <Label Grid.Row="9" Grid.Column="0" Text="Отбор из водохранилища" 
+                       VerticalOptions="Center"
+                       Margin="0, 10, 0, 0"/>
                 
                 <!-- Таблица отбор из вдхр -->
                 <VerticalStackLayout Grid.Row="10" Grid.Column="0" Grid.ColumnSpan="3" Padding="10" Spacing="0">
@@ -334,7 +356,10 @@
                     </ScrollView>
                 </VerticalStackLayout>
 
-                <Label Grid.Row="11" Grid.Column="0" Text="Количество точек характеристики нижнего бьефа" VerticalOptions="Center"/>
+                <Label Grid.Row="11" Grid.Column="0" Text="Количество точек характеристики нижнего бьефа" 
+                       VerticalOptions="Center"
+                       HorizontalOptions="End"
+                       Margin="0, 0, 50, 0"/>
                 <Entry Grid.Row="11" Grid.Column="1" x:Name="CharacteristicOfDownstreamCountInput" Style="{StaticResource ParamEntryStyle}" 
                        TextChanged="OnIntEntryTextChanged" Keyboard="Numeric" Focused="OnEntryFocused"/>
                 <Button Grid.Row="11" Grid.Column="2" Text="Создать" Margin="10,0,0,0" Clicked="CharacteristicOfDownstreamButton_Clicked" />
@@ -378,7 +403,10 @@
                     </ScrollView>
                 </VerticalStackLayout>
 
-                <Label Grid.Row="13" Grid.Column="0" Text="Схема питания ГЭС" VerticalOptions="Center"/>
+                <Label Grid.Row="13" Grid.Column="0" Text="Схема питания ГЭС" 
+                       VerticalOptions="Center"
+                       HorizontalOptions="End"
+                       Margin="0, 0, 262, 0"/>
                 <VerticalStackLayout Grid.Row="13" Grid.Column="1" x:Name="RadioGroup">
                     <RadioButton Content="индивидуальная" Value="0" TextColor="{AppThemeBinding Light=Black, Dark=White}" 
                                  CheckedChanged="OnRadioChanged" IsChecked="True" />
@@ -386,19 +414,31 @@
                                  CheckedChanged="OnRadioChanged"/>
                 </VerticalStackLayout>
 
-                <Label Grid.Row="14" Grid.Column="0" Text="Гарантированный расход ГЭС, м³/с" VerticalOptions="Center"/>
+                <Label Grid.Row="14" Grid.Column="0" Text="Гарантированный расход ГЭС, м³/с" 
+                       VerticalOptions="Center"
+                       HorizontalOptions="End"
+                       Margin="0, 0, 155, 0"/>
                 <Entry Grid.Row="14" Grid.Column="1" x:Name="GuaranteedDischargeInput" Style="{StaticResource ParamEntryStyle}" 
                        TextChanged="OnDoubleEntryTextChanged" Keyboard="Numeric" Focused="OnEntryFocused"/>
 
-                <Label Grid.Row="15" Grid.Column="0" Text="Полный (максимальный) расход ГЭС, м³/с" VerticalOptions="Center"/>
+                <Label Grid.Row="15" Grid.Column="0" Text="Полный (максимальный) расход ГЭС, м³/с" 
+                       VerticalOptions="Center"
+                       HorizontalOptions="End"
+                       Margin="0, 0, 110, 0"/>
                 <Entry Grid.Row="15" Grid.Column="1" x:Name="FullDischargeInput" Style="{StaticResource ParamEntryStyle}" 
                        TextChanged="OnDoubleEntryTextChanged" Keyboard="Numeric" Focused="OnEntryFocused"/>
 
-                <Label Grid.Row="16" Grid.Column="0" x:Name="HeadLossLable" Text="Потери напора, м" VerticalOptions="Center"/>
+                <Label Grid.Row="16" Grid.Column="0" x:Name="HeadLossLable" Text="Потери напора, м" 
+                       VerticalOptions="Center"
+                       HorizontalOptions="End"
+                       Margin="0, 0, 272, 0"/>
                 <Entry Grid.Row="16" Grid.Column="1" x:Name="HeadLossInput" Style="{StaticResource ParamEntryStyle}" 
                        TextChanged="OnDoubleEntryTextChanged" Keyboard="Numeric" Focused="OnEntryFocused"/>
 
-                <Label Grid.Row="17" Grid.Column="0" Text="Кпд гидроагрегата" VerticalOptions="Center"/>
+                <Label Grid.Row="17" Grid.Column="0" Text="Кпд гидроагрегата" 
+                       VerticalOptions="Center"
+                       HorizontalOptions="End"
+                       Margin="0, 0, 266, 0"/>
                 <Entry Grid.Row="17" Grid.Column="1" x:Name="EfficiencyInput" Style="{StaticResource ParamEntryStyle}" 
                        TextChanged="OnDoubleEntryTextChanged" Keyboard="Numeric" Focused="OnEntryFocused"/>
             </Grid>
