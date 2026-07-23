@@ -27,28 +27,29 @@
 
         <local:IndexToColorConverter x:Key="RowColorConverter" />
         <local:DischargeColorConverter x:Key="DischargeColorConverter" />
-        
-    </ContentPage.Resources>
 
+    </ContentPage.Resources>
+    
     <ScrollView>
         <VerticalStackLayout Padding="15" Spacing="10">
             <Grid ColumnDefinitions="*, *" RowDefinitions="Auto, Auto, Auto, Auto, Auto, Auto, Auto, 420, 420, 420, 420, 420, 270, 270, 1000" 
                   RowSpacing="10">
 
-                <Label Grid.Row="0" Grid.ColumnSpan="2" Text="Результат расчета" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center"/>
+                <!-- Таблица результаты расчета -->
+                <Label Grid.Row="0" Grid.ColumnSpan="2" Text="Результаты расчета" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center" FontSize="Subtitle"/>
 
                 <Grid Grid.Row="1" Grid.ColumnSpan="2"
-                            ColumnDefinitions="50,30,80,85,80,80,80,90,90,85" 
+                            ColumnDefinitions="50,*,*,*,*,*,*,*,*,*" 
                               HeightRequest="100"
                               BackgroundColor="{AppThemeBinding Light=LightGray, Dark=#1C1C1E}">
                         <Label Text="#"                                         Grid.Column="0" FontAttributes="Bold" HorizontalTextAlignment="Center" Style="{StaticResource TableLabelStyle}"/>
-                        <Label Text="Ме-сяц"                                    Grid.Column="1" FontAttributes="Bold" HorizontalTextAlignment="Center" Style="{StaticResource TableLabelStyle}"/>
-                        <Label Text="Приток, м³/с"                              Grid.Column="2" FontAttributes="Bold" HorizontalTextAlignment="Center" Style="{StaticResource TableLabelStyle}"/>
-                        <Label Text="Расход ГЭС, м³/с"                          Grid.Column="3" FontAttributes="Bold" HorizontalTextAlignment="Center" Style="{StaticResource TableLabelStyle}"/>
-                        <Label Text="Сбросы, м³/с"                              Grid.Column="4" FontAttributes="Bold" HorizontalTextAlignment="Center" Style="{StaticResource TableLabelStyle}"/>
+                        <Label Text="Ме&#x00AD;сяц"                             Grid.Column="1" FontAttributes="Bold" HorizontalTextAlignment="Center" LineBreakMode="CharacterWrap" Style="{StaticResource TableLabelStyle}"/>
+                        <Label Text="Приток, &#x00AD;м³ &#x2044; с"               Grid.Column="2" FontAttributes="Bold" HorizontalTextAlignment="Center" LineBreakMode="CharacterWrap" Style="{StaticResource TableLabelStyle}"/>
+                    <Label Text="Расход ГЭС, &#x00AD;м³ &#x2044; с"                          Grid.Column="3" FontAttributes="Bold" HorizontalTextAlignment="Center" LineBreakMode="CharacterWrap" Style="{StaticResource TableLabelStyle}"/>
+                    <Label Text="Сбросы, &#x00AD;м³ &#x2044; с"               Grid.Column="4" FontAttributes="Bold" HorizontalTextAlignment="Center" LineBreakMode="CharacterWrap" Style="{StaticResource TableLabelStyle}"/>
                         <Label Text="Отм. ВБ, м"                                Grid.Column="5" FontAttributes="Bold" HorizontalTextAlignment="Center" Style="{StaticResource TableLabelStyle}"/>
                         <Label Text="Отм. НБ, м"                                Grid.Column="6" FontAttributes="Bold" HorizontalTextAlignment="Center" Style="{StaticResource TableLabelStyle}"/>
-                        <Label Text="Статический напор, м"                      Grid.Column="7" FontAttributes="Bold" HorizontalTextAlignment="Center" Style="{StaticResource TableLabelStyle}"/>
+                        <Label Text="Стати&#x00AD;ческий напор, м"              Grid.Column="7" FontAttributes="Bold" HorizontalTextAlignment="Center" Style="{StaticResource TableLabelStyle}"/>
                         <Label Text="Мощность ГЭС, кВт"                         Grid.Column="8" FontAttributes="Bold" HorizontalTextAlignment="Center" Style="{StaticResource TableLabelStyle}"/>
                         <Label Text="Избыт. объем над дисп. остатком, млн.м³"   Grid.Column="9" FontAttributes="Bold" HorizontalTextAlignment="Center" LineBreakMode="WordWrap" Style="{StaticResource TableLabelStyle}"/>
                 </Grid>
@@ -61,7 +62,7 @@
                                 ItemSizingStrategy="MeasureFirstItem">
                     <CollectionView.ItemTemplate>
                         <DataTemplate x:DataType="local:TableRow">
-                            <Grid ColumnDefinitions="50,30,80,85,80,80,80,90,90,85" 
+                            <Grid ColumnDefinitions="50,*,*,*,*,*,*,*,*,*" 
                                   HeightRequest="30"
                                   Style="{StaticResource TableRowGridStyle}">
                                 <Label Text="{Binding Cells[0]}" Grid.Column="0" HorizontalTextAlignment="Center" Style="{StaticResource TableLabelStyle}"/>
@@ -97,7 +98,8 @@
                        Text="{Binding SumIdleResetVolume, StringFormat='Суммарный объем сбросов {0:N0} млн.м³'}" 
                         Style="{StaticResource TableLabelStyle}"/>
 
-                <Label Grid.Row="4" Grid.ColumnSpan="2" Text="Обеспеченности" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center"/>
+                <!-- Таблица обеспеченности -->
+                <Label Grid.Row="4" Grid.ColumnSpan="2" Text="Обеспеченности" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center" FontSize="Subtitle"/>
                 <Grid Grid.Row="5" Grid.ColumnSpan="2" RowDefinitions="Auto, Auto">
                     <!-- Заголовок второй таблицы -->
                     <Grid Grid.Row="0" ColumnDefinitions="*,*,*,*,*" BackgroundColor="{AppThemeBinding Light=LightGray, Dark=#1C1C1E}">
@@ -124,7 +126,7 @@
                     </VerticalStackLayout>
                 </Grid>
 
-                <Label Grid.Row="6" Grid.ColumnSpan="2" Text="Графики" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center"/>
+                <Label Grid.Row="6" Grid.ColumnSpan="2" Text="Графики" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center" FontSize="Subtitle"/>
                 <lvc:CartesianChart Grid.Row="7" Grid.ColumnSpan="2"
                     HeightRequest="400"
                     Series="{Binding DischChartSeries}"

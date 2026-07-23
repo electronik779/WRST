@@ -132,7 +132,10 @@
         <VerticalStackLayout Padding="15" Spacing="10">
 
             <Grid ColumnDefinitions="*, 240, 120" RowDefinitions=
-                  "Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto" 
+                  "Auto, Auto, Auto, Auto, Auto, Auto, 
+                  Auto, Auto, Auto, Auto, Auto, Auto, 
+                  Auto, Auto, Auto, Auto, Auto, Auto,
+                  Auto, Auto, Auto" 
                   RowSpacing="10">
 
                 <Label Grid.Row="0" Grid.Column="0" Text="Номер календарного месяца начала расчета" 
@@ -152,8 +155,12 @@
                        TextChanged="OnIntEntryTextChanged" Keyboard="Numeric" Focused="OnEntryFocused"/>
                 <Button Grid.Row="1" Grid.Column="2" Text="Создать" Margin="10,0,0,0" Clicked="InflowButton_Clicked" />
 
+                <Label Grid.Row="2" Grid.Column="0" Text="Бытовой сток:" 
+                       VerticalOptions="Center"
+                       Margin="0, 10, 0, 0"/>
+                                
                 <!-- Таблица притока -->
-                <VerticalStackLayout Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Padding="10" Spacing="0">
+                <VerticalStackLayout Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3" Padding="0" Spacing="0">
                     <!-- Заголовок таблицы -->
                     <Label Text="{Binding HeaderText}" 
                         Style="{StaticResource TableLabelStyle}"
@@ -195,30 +202,34 @@
                     </ScrollView>
                 </VerticalStackLayout>
 
-                <Label Grid.Row="3" Grid.Column="0" Text="Полезный объем водохранилища, млн.м³" 
+                <Label Grid.Row="4" Grid.Column="0" Text="Полезный объем водохранилища, млн.м³" 
                        VerticalOptions="Center"
                        HorizontalOptions="End"
                        Margin="0, 0, 107, 0"/>
-                <Entry Grid.Row="3" Grid.Column="1" x:Name="UsefulVolumeInput" Style="{StaticResource ParamEntryStyle}" 
+                <Entry Grid.Row="4" Grid.Column="1" x:Name="UsefulVolumeInput" Style="{StaticResource ParamEntryStyle}" 
                        TextChanged="OnDoubleEntryTextChanged" Keyboard="Numeric" Focused="OnEntryFocused"/>
 
-                <Label Grid.Row="4" Grid.Column="0" Text="Мёртвый объем водохранилища, млн.м³" 
+                <Label Grid.Row="5" Grid.Column="0" Text="Мёртвый объем водохранилища, млн.м³" 
                        VerticalOptions="Center"
                        HorizontalOptions="End"
                        Margin="0, 0, 114, 0"/>
-                <Entry Grid.Row="4" Grid.Column="1" x:Name="UselessVolumeInput" Style="{StaticResource ParamEntryStyle}" 
+                <Entry Grid.Row="5" Grid.Column="1" x:Name="UselessVolumeInput" Style="{StaticResource ParamEntryStyle}" 
                        TextChanged="OnDoubleEntryTextChanged" Keyboard="Numeric" Focused="OnEntryFocused"/>
 
-                <Label Grid.Row="5" Grid.Column="0" Text="Количество точек характеристики верхнего бьефа" 
+                <Label Grid.Row="6" Grid.Column="0" Text="Количество точек характеристики верхнего бьефа" 
                        VerticalOptions="Center"
                        HorizontalOptions="End"
                        Margin="0, 0, 46, 0"/>
-                <Entry Grid.Row="5" Grid.Column="1" x:Name="BathygraphyCountInput" Style="{StaticResource ParamEntryStyle}" 
+                <Entry Grid.Row="6" Grid.Column="1" x:Name="BathygraphyCountInput" Style="{StaticResource ParamEntryStyle}" 
                        TextChanged="OnIntEntryTextChanged" Keyboard="Numeric" Focused="OnEntryFocused"/>
-                <Button Grid.Row="5" Grid.Column="2" Text="Создать" Margin="10,0,0,0" Clicked="BathygraphyButton_Clicked" />
+                <Button Grid.Row="6" Grid.Column="2" Text="Создать" Margin="10,0,0,0" Clicked="BathygraphyButton_Clicked" />
 
+                <Label Grid.Row="7" Grid.Column="0" Text="Характеристика верхнего бьефа:" 
+                       VerticalOptions="Center"
+                       Margin="0, 10, 0, 0"/>
+                
                 <!-- Таблица верхнего бьефа -->
-                <VerticalStackLayout Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="3" Padding="10" Spacing="20">
+                <VerticalStackLayout Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="3" Padding="0" Spacing="20">
                     <!-- ScrollableView для горизонтальной прокрутки -->
                     <ScrollView Orientation="Horizontal">
                         <CollectionView x:Name="BathygraphyCollectionView"
@@ -256,12 +267,12 @@
                     </ScrollView>
                 </VerticalStackLayout>
                 
-                <Label Grid.Row="7" Grid.Column="0" Text="Диспетчерские остатки на конец месяца" 
+                <Label Grid.Row="9" Grid.Column="0" Text="Диспетчерские остатки на конец месяца:" 
                        VerticalOptions="Center"
                        Margin="0, 10, 0, 0"/>
 
                 <!-- Таблица диспетчерские остатки -->
-                <VerticalStackLayout Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="3" Padding="10" Spacing="0">
+                <VerticalStackLayout Grid.Row="10" Grid.Column="0" Grid.ColumnSpan="3" Padding="0" Spacing="0">
                     <!-- Заголовок таблицы -->
                     <Label Text="{Binding HeaderText}" 
                            Style="{StaticResource TableLabelStyle}"
@@ -306,12 +317,12 @@
                     </ScrollView>
                 </VerticalStackLayout>
 
-                <Label Grid.Row="9" Grid.Column="0" Text="Отбор из водохранилища" 
+                <Label Grid.Row="11" Grid.Column="0" Text="Отбор из водохранилища:" 
                        VerticalOptions="Center"
                        Margin="0, 10, 0, 0"/>
                 
                 <!-- Таблица отбор из вдхр -->
-                <VerticalStackLayout Grid.Row="10" Grid.Column="0" Grid.ColumnSpan="3" Padding="10" Spacing="0">
+                <VerticalStackLayout Grid.Row="12" Grid.Column="0" Grid.ColumnSpan="3" Padding="0" Spacing="0">
                     <!-- Заголовок таблицы -->
                     <Label Text="{Binding HeaderText}" 
                            Style="{StaticResource TableLabelStyle}"
@@ -356,16 +367,20 @@
                     </ScrollView>
                 </VerticalStackLayout>
 
-                <Label Grid.Row="11" Grid.Column="0" Text="Количество точек характеристики нижнего бьефа" 
+                <Label Grid.Row="13" Grid.Column="0" Text="Количество точек характеристики нижнего бьефа" 
                        VerticalOptions="Center"
                        HorizontalOptions="End"
                        Margin="0, 0, 50, 0"/>
-                <Entry Grid.Row="11" Grid.Column="1" x:Name="CharacteristicOfDownstreamCountInput" Style="{StaticResource ParamEntryStyle}" 
+                <Entry Grid.Row="13" Grid.Column="1" x:Name="CharacteristicOfDownstreamCountInput" Style="{StaticResource ParamEntryStyle}" 
                        TextChanged="OnIntEntryTextChanged" Keyboard="Numeric" Focused="OnEntryFocused"/>
-                <Button Grid.Row="11" Grid.Column="2" Text="Создать" Margin="10,0,0,0" Clicked="CharacteristicOfDownstreamButton_Clicked" />
+                <Button Grid.Row="13" Grid.Column="2" Text="Создать" Margin="10,0,0,0" Clicked="CharacteristicOfDownstreamButton_Clicked" />
 
+                <Label Grid.Row="14" Grid.Column="0" Text="Характеристика нижнего бьефа:" 
+                       VerticalOptions="Center"
+                       Margin="0, 10, 0, 0"/>
+                
                 <!-- Таблица нижнего бьефа -->
-                <VerticalStackLayout Grid.Row="12" Grid.Column="0" Grid.ColumnSpan="3" Padding="10" Spacing="20">
+                <VerticalStackLayout Grid.Row="15" Grid.Column="0" Grid.ColumnSpan="3" Padding="0" Spacing="20">
                     <!-- СкроллableView для горизонтальной прокрутки -->
                     <ScrollView Orientation="Horizontal">
                         <CollectionView x:Name="DownstreamCollectionView"
@@ -403,43 +418,43 @@
                     </ScrollView>
                 </VerticalStackLayout>
 
-                <Label Grid.Row="13" Grid.Column="0" Text="Схема питания ГЭС" 
+                <Label Grid.Row="16" Grid.Column="0" Text="Схема питания ГЭС" 
                        VerticalOptions="Center"
                        HorizontalOptions="End"
                        Margin="0, 0, 262, 0"/>
-                <VerticalStackLayout Grid.Row="13" Grid.Column="1" x:Name="RadioGroup">
+                <VerticalStackLayout Grid.Row="16" Grid.Column="1" x:Name="RadioGroup">
                     <RadioButton Content="индивидуальная" Value="0" TextColor="{AppThemeBinding Light=Black, Dark=White}" 
                                  CheckedChanged="OnRadioChanged" IsChecked="True" />
                     <RadioButton Content="групповая" Value="1" TextColor="{AppThemeBinding Light=Black, Dark=White}" 
                                  CheckedChanged="OnRadioChanged"/>
                 </VerticalStackLayout>
 
-                <Label Grid.Row="14" Grid.Column="0" Text="Гарантированный расход ГЭС, м³/с" 
+                <Label Grid.Row="17" Grid.Column="0" Text="Гарантированный расход ГЭС, м³/с" 
                        VerticalOptions="Center"
                        HorizontalOptions="End"
                        Margin="0, 0, 155, 0"/>
-                <Entry Grid.Row="14" Grid.Column="1" x:Name="GuaranteedDischargeInput" Style="{StaticResource ParamEntryStyle}" 
+                <Entry Grid.Row="17" Grid.Column="1" x:Name="GuaranteedDischargeInput" Style="{StaticResource ParamEntryStyle}" 
                        TextChanged="OnDoubleEntryTextChanged" Keyboard="Numeric" Focused="OnEntryFocused"/>
 
-                <Label Grid.Row="15" Grid.Column="0" Text="Полный (максимальный) расход ГЭС, м³/с" 
+                <Label Grid.Row="18" Grid.Column="0" Text="Полный (максимальный) расход ГЭС, м³/с" 
                        VerticalOptions="Center"
                        HorizontalOptions="End"
                        Margin="0, 0, 110, 0"/>
-                <Entry Grid.Row="15" Grid.Column="1" x:Name="FullDischargeInput" Style="{StaticResource ParamEntryStyle}" 
+                <Entry Grid.Row="18" Grid.Column="1" x:Name="FullDischargeInput" Style="{StaticResource ParamEntryStyle}" 
                        TextChanged="OnDoubleEntryTextChanged" Keyboard="Numeric" Focused="OnEntryFocused"/>
 
-                <Label Grid.Row="16" Grid.Column="0" x:Name="HeadLossLable" Text="Потери напора, м" 
+                <Label Grid.Row="19" Grid.Column="0" x:Name="HeadLossLable" Text="Потери напора, м" 
                        VerticalOptions="Center"
                        HorizontalOptions="End"
                        Margin="0, 0, 272, 0"/>
-                <Entry Grid.Row="16" Grid.Column="1" x:Name="HeadLossInput" Style="{StaticResource ParamEntryStyle}" 
+                <Entry Grid.Row="19" Grid.Column="1" x:Name="HeadLossInput" Style="{StaticResource ParamEntryStyle}" 
                        TextChanged="OnDoubleEntryTextChanged" Keyboard="Numeric" Focused="OnEntryFocused"/>
 
-                <Label Grid.Row="17" Grid.Column="0" Text="Кпд гидроагрегата" 
+                <Label Grid.Row="20" Grid.Column="0" Text="Кпд гидроагрегата" 
                        VerticalOptions="Center"
                        HorizontalOptions="End"
                        Margin="0, 0, 266, 0"/>
-                <Entry Grid.Row="17" Grid.Column="1" x:Name="EfficiencyInput" Style="{StaticResource ParamEntryStyle}" 
+                <Entry Grid.Row="20" Grid.Column="1" x:Name="EfficiencyInput" Style="{StaticResource ParamEntryStyle}" 
                        TextChanged="OnDoubleEntryTextChanged" Keyboard="Numeric" Focused="OnEntryFocused"/>
             </Grid>
 

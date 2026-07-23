@@ -547,7 +547,7 @@ public partial class SecondPage : ContentPage, IQueryAttributable
             new Axis
             {
                 Labels = new string[] { "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12" },
-                Name = "Месяцы",
+                Name = "Месяц",
 
                 SeparatorsPaint = new SolidColorPaint
                     {
