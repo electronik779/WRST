@@ -17,12 +17,20 @@ public partial class SecondPage : ContentPage, IQueryAttributable
     private ObservableCollection<TableRow>? _controlData;
     private ObservableCollection<TableRow>? _securityData;
     private ObservableCollection<TableRow>? _volumeData;
+    private ObservableCollection<TableRow>? _controlMonthPowerData;
 
     public ObservableCollection<TableRow>? ControlData
     {
         get => _controlData;
 
         set { _controlData = value; OnPropertyChanged(); }
+    }
+
+    public ObservableCollection<TableRow>? ControlMonthPowerData
+    {
+        get => _controlMonthPowerData;
+
+        set { _controlMonthPowerData = value; OnPropertyChanged(); }
     }
 
     public ObservableCollection<TableRow>? SecurityData
@@ -41,6 +49,11 @@ public partial class SecondPage : ContentPage, IQueryAttributable
 
     public double AverageAnnualElectricityGeneration { get; set; }
     public double SumIdleResetVolume { get; set; }
+    public double AverageInflow { get; set; }
+    public double AverageConsumption { get; set; }
+    public double FlowUtilizationRate { get; set; }
+    public double ReservoirСapacityСoefficient { get; set; }
+    public int ControlMonth { get; set; }
 
     // Для графиков
     // Расходы
@@ -93,6 +106,23 @@ public partial class SecondPage : ContentPage, IQueryAttributable
             ControlData = controlData;
         }
 
+        // Безопасно извлекаем double число
+        if (query.TryGetValue("ControlMonth", out var controlMonthObj) &&
+            controlMonthObj is int controlMonthValue)
+        {
+            ControlMonth = controlMonthValue;
+
+            OnPropertyChanged(nameof(ControlMonth));
+        }
+
+        if (query.TryGetValue("ControlMonthPowerData", out var controlMonthPowerDataObj) &&
+            controlMonthPowerDataObj is ObservableCollection<TableRow> controlMonthPowerData)
+        {
+            ControlMonthPowerData = controlMonthPowerData;
+        }
+        ControlMonthPowerCollectionView.ItemsSource = null;
+        ControlMonthPowerCollectionView.ItemsSource = ControlMonthPowerData;
+
         // Безопасно извлекаем SecurityData
         if (query.TryGetValue("SecurityData", out var securityDataObj) &&
             securityDataObj is ObservableCollection<TableRow> securityData)
@@ -134,6 +164,39 @@ public partial class SecondPage : ContentPage, IQueryAttributable
 
             OnPropertyChanged(nameof(SumIdleResetVolume));
         }
+
+        if (query.TryGetValue("AverageInflow", out var averageInflowObj) &&
+            averageInflowObj is double averageInflowValue)
+        {
+            AverageInflow = averageInflowValue;
+
+            OnPropertyChanged(nameof(AverageInflow));
+        }
+
+        if (query.TryGetValue("AverageConsumption", out var averageConsumptionObj) &&
+            averageConsumptionObj is double averageConsumptionValue)
+        {
+            AverageConsumption = averageConsumptionValue;
+
+            OnPropertyChanged(nameof(AverageConsumption));
+        }
+
+        if (query.TryGetValue("FlowUtilizationRate", out var flowUtilizationRateObj) &&
+            flowUtilizationRateObj is double flowUtilizationRateValue)
+        {
+            FlowUtilizationRate = flowUtilizationRateValue;
+
+            OnPropertyChanged(nameof(FlowUtilizationRate));
+        }
+
+        if (query.TryGetValue("ReservoirСapacityСoefficient", out var reservoirСapacityСoefficientObj) &&
+            reservoirСapacityСoefficientObj is double reservoirСapacityСoefficientValue)
+        {
+            ReservoirСapacityСoefficient = reservoirСapacityСoefficientValue;
+
+            OnPropertyChanged(nameof(ReservoirСapacityСoefficient));
+        }
+
 
         // Строим графики
         if (ControlData != null)

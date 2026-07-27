@@ -135,7 +135,7 @@
                   "Auto, Auto, Auto, Auto, Auto, Auto, 
                   Auto, Auto, Auto, Auto, Auto, Auto, 
                   Auto, Auto, Auto, Auto, Auto, Auto,
-                  Auto, Auto, Auto" 
+                  Auto, Auto, Auto, Auto" 
                   RowSpacing="10">
 
                 <Label Grid.Row="0" Grid.Column="0" Text="Номер календарного месяца начала расчета" 
@@ -456,6 +456,14 @@
                        Margin="0, 0, 266, 0"/>
                 <Entry Grid.Row="20" Grid.Column="1" x:Name="EfficiencyInput" Style="{StaticResource ParamEntryStyle}" 
                        TextChanged="OnDoubleEntryTextChanged" Keyboard="Numeric" Focused="OnEntryFocused"/>
+
+                <Label Grid.Row="21" Grid.Column="0" Text="Номер контрольного месяца" 
+                       VerticalOptions="Center"
+                       HorizontalOptions="End"
+                       Margin="0, 0, 245, 0"/>
+                <Entry Grid.Row="21" Grid.Column="1" x:Name="ControlMonthInput" Style="{StaticResource ParamEntryStyle}" 
+                       TextChanged="OnIntEntryTextChanged" Keyboard="Numeric" Focused="OnEntryFocused"
+                       Text="12"/>
             </Grid>
 
         </VerticalStackLayout>
