@@ -18,16 +18,13 @@ _Гидроэлектростанции. Часть 1. Гидроэлектро�
 
 # Установка
 
->[!NOTE]
->В случае ошибок скачивания сторонних пакетов необходимо самостоятельно установить [.NET SDK 10](https://dotnet.microsoft.com/ru-ru/download/dotnet/10.0) и [App SDK (версией не ниже 1.8)](https://learn.microsoft.com/ru-ru/windows/apps/windows-app-sdk/downloads).
+## Для Windows
 
-## Windows
+Установка не требуется. Для Windows x64 скачайте "свежий" релиз [Windows-x64-WRPT.zip](https://github.com/electronik779/WRPT/releases), распакуйте в любую удобную для вас папку и запустите исполняемый файл (WRPT.exe).
 
-Для Windows x64 скачайте "свежий" (Latest) релиз [Setup_WRST_vXXXX.X_Win.exe](https://github.com/electronik779/WRST/releases), и запустите.
+## Для остальных ОС
 
-## MacOS
-
-Для MacOS скачайте "свежий" (Latest) релиз [Setup_WRST_vXXXX.X_Mac.dmg](https://github.com/electronik779/WRST/releases), и установите.
+В ближайшее время не планируется.
 
 ----
 
