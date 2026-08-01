@@ -483,7 +483,7 @@ namespace WRST.maui
 
                 // Блок 1: Одиночные поля
                 var b1 = blocks[0];
-                BeginningMonthInput.Text = b1.ElementAtOrDefault(0);
+                BeginningMonthInput.Text = b1.ElementAtOrDefault(0) ?? "0";
                 int.TryParse(BeginningMonthInput.Text, NumberStyles.Any, culture, out BeginningMonth);
 
                 // Установка RadioButton
@@ -498,6 +498,9 @@ namespace WRST.maui
                 HeadLossInput.Text = b1.ElementAtOrDefault(6) ?? "0";
                 EfficiencyInput.Text = b1.ElementAtOrDefault(7) ?? "0";
                 ControlMonthInput.Text = b1.ElementAtOrDefault(8) ?? "0";
+
+                if (ControlMonthInput.Text == "0" || ControlMonthInput.Text == string.Empty)
+                { ControlMonthInput.Text = "12"; } // Если старый файл, то ControlMonth нет
 
                 // Блок 2: Inflow
                 int.TryParse(blocks[1].FirstOrDefault(), out InflowCount);
@@ -1379,7 +1382,7 @@ namespace WRST.maui
             {
                 // Обработка ошибок (например, если браузер не установлен на устройстве)
                 await DisplayAlertAsync("Ошибка!",
-                    "Не удалось открыть ссылку.\nОткройте ссылку в браузере https://github.com/electronik779/WRST", 
+                    "Не удалось открыть ссылку.\nОткройте ссылку в браузере https://github.com/electronik779/WRST",
                     "OK");
             }
         }
