@@ -25,7 +25,7 @@ _Гидроэлектростанции. Часть 1. Гидроэлектро�
 >Для работы программы требуются установленные на компьютере пакеты .NET SDK 10 и App SDK (версией 1.8).
 >При отсутствии этих пакетов программа установки предложит скачать их и установить.
 >
->В случае каких либо ошибок необходимо самостоятельно установить [.NET SDK 10](https://dotnet.microsoft.com/ru-ru/download/dotnet/10.0) и [App SDK](https://learn.microsoft.com/ru-ru/windows/apps/windows-app-sdk/downloads-archive) (проверено с версией 1.8.10).
+>В случае каких либо ошибок необходимо самостоятельно скачать и установить [.NET SDK 10](https://dotnet.microsoft.com/ru-ru/download/dotnet/10.0) и [App SDK](https://learn.microsoft.com/ru-ru/windows/apps/windows-app-sdk/downloads-archive) (проверено с версией 1.8.10).
 >После их установки рекомендуется перезагрузить компьютер.
 
 ## MacOS
