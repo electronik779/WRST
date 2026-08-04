@@ -19,14 +19,21 @@ _Гидроэлектростанции. Часть 1. Гидроэлектро�
 
 ## Windows
 
-Для Windows x64 скачайте "свежий" (Latest) релиз [Setup_WRST_vXXXX.X_Win.exe](https://github.com/electronik779/WRST/releases), и установите.
+Для Windows x64 скачайте "свежий" (Latest) релиз [Setup_WRST_vXXXX.X_Win.exe](https://github.com/electronik779/WRST/releases) и установите, выбрав опцию "для всех пользователей".
 
 >[!NOTE]
->В случае ошибок скачивания сторонних пакетов необходимо самостоятельно установить [.NET SDK 10](https://dotnet.microsoft.com/ru-ru/download/dotnet/10.0) и [App SDK (версией не ниже 1.8)](https://learn.microsoft.com/ru-ru/windows/apps/windows-app-sdk/downloads).
+>Для работы программы требуются установленные на компьютере пакеты .NET SDK 10 и App SDK (версией 1.8).
+>При отсутствии этих пакетов программа установки предложит скачать их и установить.
+>
+>В случае каких либо ошибок необходимо самостоятельно установить [.NET SDK 10](https://dotnet.microsoft.com/ru-ru/download/dotnet/10.0) и [App SDK](https://learn.microsoft.com/ru-ru/windows/apps/windows-app-sdk/downloads-archive) (проверено с версией 1.8.10).
+>После их установки рекомендуется перезагрузить компьютер.
 
 ## MacOS
 
-Для MacOS скачайте "свежий" (Latest) релиз [Setup_WRST_vXXXX.X_Mac.dmg](https://github.com/electronik779/WRST/releases), и установите.
+Для MacOS скачайте "свежий" (Latest) релиз [Setup_WRST_vXXXX.X_Mac.dmg](https://github.com/electronik779/WRST/releases) и установите.
+
+>[!NOTE]
+>Возможность установки и работоспособность не проверялись.
 
 ----
 # Описание интерфейса ввода
