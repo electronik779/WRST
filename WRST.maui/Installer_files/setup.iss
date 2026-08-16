@@ -217,10 +217,10 @@ begin
       if SdkMissing then
       begin
         if IsArm64 then
-          idpAddFile('https://aka.ms/windowsappsdk/2.3/2.3.1/windowsappruntimeinstall-arm64.exe',
+          idpAddFile('https://aka.ms/windowsappsdk/1.8/1.8.260710003/windowsappruntimeinstall-arm64.exe',
                      ExpandConstant('{tmp}\windowsappsdk_setup.exe'))
         else
-          idpAddFile('https://aka.ms/windowsappsdk/2.3/2.3.1/windowsappruntimeinstall-x64.exe',
+          idpAddFile('https://aka.ms/windowsappsdk/1.8/1.8.260710003/windowsappruntimeinstall-x64.exe',
                      ExpandConstant('{tmp}\windowsappsdk_setup.exe'));
       end;
     end
