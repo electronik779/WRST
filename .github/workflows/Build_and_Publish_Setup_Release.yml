@@ -33,8 +33,21 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '10.0.x'
+          cache: true
+          cache-dependency-path: '**/WRST.maui.csproj'
+
+      - name: Cache Windows MAUI Workloads
+        id: cache-windows-workloads
+        uses: actions/cache@v4
+        with:
+          path: |
+            AppData\Local\Microsoft\dotnet\sdk-advertising
+            AppData\Local\Microsoft\dotnet\metadata
+            AppData\Local\Microsoft\dotnet\packs
+          key: ${{ runner.os }}-workloads-${{ hashFiles('**/WRST.maui.csproj') }}
 
       - name: Install MAUI Workload
+        if: steps.cache-windows-workloads.outputs.cache-hit != 'true'
         run: dotnet workload install maui
 
       - name: Create Dummy License File (Windows)
@@ -53,6 +66,7 @@ jobs:
           -p:PublishSingleFile=false 
           -p:WindowsAppSDKSelfContained=false
           --self-contained false
+          --no-restore
 
       # ИСПРАВЛЕНО: Указываем точный путь к папке публикации согласно логам отладки
       - name: Upload Raw Windows Files for Installer
@@ -104,10 +118,10 @@ jobs:
   build-macos:
     if: inputs.build_macos == true
     #runs-on: macos-26
-    runs-on: macos-27
-    strategy:
-      matrix:
-        arch: [maccatalyst-x64, maccatalyst-arm64]
+    runs-on: xcode-27
+    #strategy:
+    #  matrix:
+    #    arch: [maccatalyst-x64, maccatalyst-arm64]
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -125,6 +139,16 @@ jobs:
         with:
           dotnet-version: '10.0.x'
 
+      - name: Cache MAUI Workloads
+        id: cache-workloads
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.dotnet/sdk-advertising
+            ~/.dotnet/metadata
+            ~/.dotnet/packs
+          key: ${{ runner.os }}-workloads-${{ hashFiles('**/WRST.maui.csproj') }}
+
       - name: Install MAUI Workload
         run: |
           dotnet workload install maui
@@ -139,28 +163,51 @@ jobs:
       #    dotnet clean --configuration Release
       #    rm -rf WRST.maui/bin WRST.maui/obj
 
-      - name: Build macOS
+      - name: Build macOS (x64)
         run: >
           dotnet publish WRST.maui/WRST.maui.csproj 
           -f net10.0-maccatalyst
           -p:TargetFrameworks=net10.0-maccatalyst
           -c Release 
-          -r ${{ matrix.arch }}
+          -r maccatalyst-x64
           -p:SolutionDir="../"
           -p:CreatePackage=true
           -p:PublishTrimmed=true
           -p:PublishSingleFile=false
+          --no-restore
+
+      - name: Build macOS (arm64)
+        run: >
+          dotnet publish WRST.maui/WRST.maui.csproj 
+          -f net10.0-maccatalyst
+          -p:TargetFrameworks=net10.0-maccatalyst
+          -c Release 
+          -r maccatalyst-arm64
+          -p:SolutionDir="../"
+          -p:CreatePackage=true
+          -p:PublishTrimmed=true
+          -p:PublishSingleFile=false
+          --no-restore
 
       - name: Archive macOS App
         run: |
-          cd WRST.maui/bin/Release/net10.0-maccatalyst/${{ matrix.arch }}/
-          zip -r ../../../../../WRST.maui-${{ matrix.arch }}.zip WRST.maui.app
+          cd WRST.maui/bin/Release/net10.0-maccatalyst/maccatalyst-x64/
+          zip -r ../../../../../WRST.maui-maccatalyst-x64.zip WRST.maui.app
+          
+          cd ../maccatalyst-arm64/
+          zip -r ../../../../../WRST.maui-maccatalyst-arm64.zip WRST.maui.app
 
-      - name: Upload Raw macOS App
+      - name: Upload Raw macOS x64 App
         uses: actions/upload-artifact@v4
         with:
-          name: raw-mac-${{ matrix.arch }}
-          path: WRST.maui-${{ matrix.arch }}.zip
+          name: raw-mac-maccatalyst-x64
+          path: WRST.maui-maccatalyst-x64.zip
+
+      - name: Upload Raw macOS arm64 App
+        uses: actions/upload-artifact@v4
+        with:
+          name: raw-mac-maccatalyst-arm64
+          path: WRST.maui-maccatalyst-arm64.zip
 
   build-macos-dmg:
     if: inputs.build_macos == true
