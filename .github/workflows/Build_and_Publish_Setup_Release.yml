@@ -69,6 +69,7 @@ jobs:
           -p:PublishSingleFile=false 
           -p:WindowsAppSDKSelfContained=false
           --self-contained false
+          -p:UseMonoRuntime=false
 
       - name: Upload Raw Windows Files for Installer
         uses: actions/upload-artifact@v4
@@ -167,6 +168,7 @@ jobs:
           -p:CreatePackage=true
           -p:PublishTrimmed=true
           -p:PublishSingleFile=false
+          -p:SupportedOSPlatformVersion=17.0
 
       - name: Build macOS (arm64)
         run: >
@@ -178,6 +180,7 @@ jobs:
           -p:CreatePackage=true
           -p:PublishTrimmed=true
           -p:PublishSingleFile=false
+          -p:SupportedOSPlatformVersion=17.0
 
       - name: Archive macOS App
         run: |
