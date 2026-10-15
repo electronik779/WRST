@@ -132,7 +132,8 @@
         <VerticalStackLayout Padding="15" Spacing="10">
 
             <Grid ColumnDefinitions="*, 240, 120" RowDefinitions=
-                  "Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto" 
+                  "Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto,
+                  Auto, Auto, Auto, Auto, Auto, Auto, Auto, Auto" 
                   RowSpacing="10">
 
                 <Label Grid.Row="0" Grid.Column="0" Text="Номер календарного месяца начала расчета" VerticalOptions="Center"/>
