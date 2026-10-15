@@ -154,8 +154,8 @@ jobs:
 
       - name: Restore NuGet Packages (macOS)
         run: |
-          dotnet restore WRST.maui/WRST.maui.csproj -f net10.0-maccatalyst -r maccatalyst-x64
-          dotnet restore WRST.maui/WRST.maui.csproj -f net10.0-maccatalyst -r maccatalyst-arm64
+          dotnet restore WRST.maui/WRST.maui.csproj --framework net10.0-maccatalyst -r maccatalyst-x64
+          dotnet restore WRST.maui/WRST.maui.csproj --framework net10.0-maccatalyst -r maccatalyst-arm64
 
       # --- ПОСЛЕДОВАТЕЛЬНАЯ КРОСС-КОМПИЛЯЦИЯ ---
 
