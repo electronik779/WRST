@@ -69,7 +69,6 @@ jobs:
           -p:PublishSingleFile=false 
           -p:WindowsAppSDKSelfContained=false
           --self-contained false
-          --no-restore
 
       - name: Upload Raw Windows Files for Installer
         uses: actions/upload-artifact@v4
@@ -168,7 +167,6 @@ jobs:
           -p:CreatePackage=true
           -p:PublishTrimmed=true
           -p:PublishSingleFile=false
-          --no-restore
 
       - name: Build macOS (arm64)
         run: >
@@ -180,7 +178,6 @@ jobs:
           -p:CreatePackage=true
           -p:PublishTrimmed=true
           -p:PublishSingleFile=false
-          --no-restore
 
       - name: Archive macOS App
         run: |
