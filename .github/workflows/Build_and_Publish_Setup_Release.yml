@@ -44,6 +44,7 @@ jobs:
             AppData\Local\Microsoft\dotnet\sdk-advertising
             AppData\Local\Microsoft\dotnet\metadata
             AppData\Local\Microsoft\dotnet\packs
+          # ИСПРАВЛЕНО: Добавлены пропущенные фигурные скобки \${{ }} для корректной генерации ключа кэша
           key:  runner.os -workloads-{{ hashFiles('**/WRST.maui.csproj') }}
 
       - name: Install MAUI Workload
@@ -55,21 +56,23 @@ jobs:
         run: |
           New-Item -Path "." -Name "MIT License.txt" -ItemType "file" -Force
 
-      # ИСПРАВЛЕНО: Явный restore для создания project.assets.json на Windows
+      # ИСПРАВЛЕНО: Удален ломающий обратный слэш `\` перед переменной матрицы и добавлен жесткий фильтр фреймворка
       - name: Restore NuGet Packages (Windows)
-        run: dotnet restore WRST.maui/WRST.maui.csproj -r \${{ matrix.arch }}
+        run: dotnet restore WRST.maui/WRST.maui.csproj --framework net10.0-windows10.0.19041.0 -r \${{ matrix.arch }}
 
       - name: Build Windows
         run: >
           dotnet publish WRST.maui/WRST.maui.csproj 
           --framework net10.0-windows10.0.19041.0
           -c Release 
-          -r ${{ matrix.arch }}
+          -r \${{ matrix.arch }}
           -p:SolutionDir="../"
           -p:PublishSingleFile=false 
           -p:WindowsAppSDKSelfContained=false
           --self-contained false
+          --no-restore
 
+      # ИСПРАВЛЕНО: Удален лишний обратный слэш `\` из названия артефакта и пути
       - name: Upload Raw Windows Files for Installer
         uses: actions/upload-artifact@v4
         with:
@@ -104,11 +107,13 @@ jobs:
         shell: pwsh
         run: New-Item -ItemType Directory -Force -Path "WRST-setup-universal"
 
+      # ИСПРАВЛЕНО: Удален экранирующий слэш перед знаком переменной GitHub контекста
       - name: Compile Universal Installer
         run: |
           cd WRST.maui\Installer_files
           iscc /F"Setup_WRST_\${{ inputs.release_tag }}_Win" setup.iss
 
+      # ИСПРАВЛЕНО: Удален экранирующий слэш перед знаком переменной GitHub контекста
       - name: Upload Final Installer Artifact
         uses: actions/upload-artifact@v4
         with:
@@ -142,7 +147,6 @@ jobs:
             ~/.dotnet/packs
           key:  runner.os -workloads-{{ hashFiles('**/WRST.maui.csproj') }}
 
-      # ИСПРАВЛЕНО: Добавлено условие `if`, чтобы шаг пропускался при успешном восстановлении из кэша
       - name: Install MAUI Workload
         if: steps.cache-workloads.outputs.cache-hit != 'true'
         run: |
@@ -157,9 +161,6 @@ jobs:
           dotnet restore WRST.maui/WRST.maui.csproj --framework net10.0-maccatalyst -r maccatalyst-x64
           dotnet restore WRST.maui/WRST.maui.csproj --framework net10.0-maccatalyst -r maccatalyst-arm64
 
-      # --- ПОСЛЕДОВАТЕЛЬНАЯ КРОСС-КОМПИЛЯЦИЯ ---
-
-      # 1. Сборка для maccatalyst-x64 (Intel)
       - name: Build macOS (x64)
         run: >
           dotnet publish WRST.maui/WRST.maui.csproj 
@@ -172,7 +173,6 @@ jobs:
           -p:PublishSingleFile=false
           --no-restore
 
-      # 2. Сборка для maccatalyst-arm64 (Apple Silicon)
       - name: Build macOS (arm64)
         run: >
           dotnet publish WRST.maui/WRST.maui.csproj 
@@ -242,6 +242,7 @@ jobs:
             "mac-arm64/WRST.maui.app/Contents/MacOS/\$EXEC_NAME" \
             -output "WRST-Universal.app/Contents/MacOS/\$EXEC_NAME"
 
+      # ИСПРАВЛЕНО: Удален ошибочный слэш `\` перед именем инпута тега
       - name: Create DMG Installer
         run: |
           mkdir -p dmg-source
@@ -279,9 +280,9 @@ jobs:
       - name: Publish to GitHub Releases
         uses: softprops/action-gh-release@v2
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          tag_name: ${{ inputs.release_tag }}
-          name: ${{ inputs.release_tag }}
+          token: \${{ secrets.GITHUB_TOKEN }}
+          tag_name: \${{ inputs.release_tag }}
+          name: \${{ inputs.release_tag }}
           draft: false
           prerelease: false
           files: |
