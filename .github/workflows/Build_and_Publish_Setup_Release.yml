@@ -44,7 +44,7 @@ jobs:
             AppData\Local\Microsoft\dotnet\sdk-advertising
             AppData\Local\Microsoft\dotnet\metadata
             AppData\Local\Microsoft\dotnet\packs
-          key: ${{ runner.os }}-workloads-${{ hashFiles('**/WRST.maui.csproj') }}
+          key:  runner.os -workloads-{{ hashFiles('**/WRST.maui.csproj') }}
 
       - name: Install MAUI Workload
         if: steps.cache-windows-workloads.outputs.cache-hit != 'true'
@@ -55,25 +55,29 @@ jobs:
         run: |
           New-Item -Path "." -Name "MIT License.txt" -ItemType "file" -Force
 
+      # ИСПРАВЛЕНО: Явный restore для создания project.assets.json на Windows
+      - name: Restore NuGet Packages (Windows)
+        run: dotnet restore WRST.maui/WRST.maui.csproj -r \${{ matrix.arch }}
+
+      # Теперь флаг --no-restore отработает корректно
       - name: Build Windows
         run: >
           dotnet publish WRST.maui/WRST.maui.csproj 
           -f net10.0-windows10.0.19041.0
           -p:TargetFrameworks=net10.0-windows10.0.19041.0
           -c Release 
-          -r ${{ matrix.arch }}
+          -r \${{ matrix.arch }}
           -p:SolutionDir="../"
           -p:PublishSingleFile=false 
           -p:WindowsAppSDKSelfContained=false
           --self-contained false
           --no-restore
 
-      # ИСПРАВЛЕНО: Указываем точный путь к папке публикации согласно логам отладки
       - name: Upload Raw Windows Files for Installer
         uses: actions/upload-artifact@v4
         with:
-          name: raw-files-${{ matrix.arch }}
-          path: WRST.maui/bin/Release/net10.0-windows10.0.19041.0/${{ matrix.arch }}/publish
+          name: raw-files-\${{ matrix.arch }}
+          path: WRST.maui/bin/Release/net10.0-windows10.0.19041.0/\${{ matrix.arch }}/publish
 
   build-installer:
     if: inputs.build_windows == true
@@ -104,42 +108,32 @@ jobs:
         run: New-Item -ItemType Directory -Force -Path "WRST-setup-universal"
 
       - name: Compile Universal Installer
-        # Флаг /F переопределяет OutputBaseFilename из setup.iss на динамическое имя с тегом
         run: |
           cd WRST.maui\Installer_files
-          iscc /F"Setup_WRST_${{ inputs.release_tag }}_Win" setup.iss
+          iscc /F"Setup_WRST_\${{ inputs.release_tag }}_Win" setup.iss
 
       - name: Upload Final Installer Artifact
         uses: actions/upload-artifact@v4
         with:
           name: windows-universal-installer
-          path: WRST-setup-universal/Setup_WRST_${{ inputs.release_tag }}_Win.exe
+          path: WRST-setup-universal/Setup_WRST_\${{ inputs.release_tag }}_Win.exe
 
   build-macos:
     if: inputs.build_macos == true
-    #runs-on: macos-26
     runs-on: xcode-27
-    #strategy:
-    #  matrix:
-    #    arch: [maccatalyst-x64, maccatalyst-arm64]
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      #- name: Select Xcode 26.6
-      #  run: |
-      #    sudo xcode-select --switch /Applications/Xcode_26.6.app
-
       - name: Verify Xcode Version
-        run: |
-          xcodebuild -version
+        run: xcodebuild -version
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '10.0.x'
           cache: true
-          cache-dependency-path: '**/*.csproj'
+          cache-dependency-path: '**/WRST.maui.csproj'
 
       - name: Cache MAUI Workloads
         id: cache-workloads
@@ -149,21 +143,21 @@ jobs:
             ~/.dotnet/sdk-advertising
             ~/.dotnet/metadata
             ~/.dotnet/packs
-          key: ${{ runner.os }}-workloads-${{ hashFiles('**/WRST.maui.csproj') }}
+          key:  runner.os -workloads-{{ hashFiles('**/WRST.maui.csproj') }}
 
+      # ИСПРАВЛЕНО: Добавлено условие `if`, чтобы шаг пропускался при успешном восстановлении из кэша
       - name: Install MAUI Workload
+        if: steps.cache-workloads.outputs.cache-hit != 'true'
         run: |
           dotnet workload install maui
           dotnet workload install maccatalyst
 
       - name: Create Dummy License File (macOS)
-        run: |
-          touch "MIT License.txt"
+        run: touch "MIT License.txt"
 
-      #- name: Clean
-      #  run: |
-      #    dotnet clean --configuration Release
-      #    rm -rf WRST.maui/bin WRST.maui/obj
+      # ИСПРАВЛЕНО: Добавлен явный restore перед сборкой под macOS
+      - name: Restore NuGet Packages (macOS)
+        run: dotnet restore WRST.maui/WRST.maui.csproj
 
       - name: Build macOS (x64)
         run: >
@@ -241,15 +235,14 @@ jobs:
           mkdir -p WRST-Universal.app
           cp -R mac-arm64/WRST.maui.app/ WRST-Universal.app/
           
-          EXEC_NAME=$(defaults read "$PWD/WRST-Universal.app/Contents/Info.plist" CFBundleExecutable)
+          EXEC_NAME=\$(defaults read "\$PWD/WRST-Universal.app/Contents/Info.plist" CFBundleExecutable)
           
           lipo -create \
-            "mac-x64/WRST.maui.app/Contents/MacOS/$EXEC_NAME" \
-            "mac-arm64/WRST.maui.app/Contents/MacOS/$EXEC_NAME" \
-            -output "WRST-Universal.app/Contents/MacOS/$EXEC_NAME"
+            "mac-x64/WRST.maui.app/Contents/MacOS/\$EXEC_NAME" \
+            "mac-arm64/WRST.maui.app/Contents/MacOS/\$EXEC_NAME" \
+            -output "WRST-Universal.app/Contents/MacOS/\$EXEC_NAME"
 
       - name: Create DMG Installer
-        # ИСПРАВЛЕНО: Изменено имя результирующего .dmg файла
         run: |
           mkdir -p dmg-source
           mv WRST-Universal.app dmg-source/WRST.app
@@ -260,7 +253,7 @@ jobs:
             --icon-size 100 \
             --icon "WRST.app" 125 125 \
             --app-drop-link 375 125 \
-            "Setup_WRST_${{ inputs.release_tag }}_Mac.dmg" \
+            "Setup_WRST_\${{ inputs.release_tag }}_Mac.dmg" \
             "dmg-source/"
 
       - name: Upload Final DMG Artifact
