@@ -59,19 +59,16 @@ jobs:
       - name: Restore NuGet Packages (Windows)
         run: dotnet restore WRST.maui/WRST.maui.csproj -r \${{ matrix.arch }}
 
-      # Теперь флаг --no-restore отработает корректно
       - name: Build Windows
         run: >
           dotnet publish WRST.maui/WRST.maui.csproj 
-          -f net10.0-windows10.0.19041.0
-          -p:TargetFrameworks=net10.0-windows10.0.19041.0
+          --framework net10.0-windows10.0.19041.0
           -c Release 
-          -r \${{ matrix.arch }}
+          -r ${{ matrix.arch }}
           -p:SolutionDir="../"
           -p:PublishSingleFile=false 
           -p:WindowsAppSDKSelfContained=false
           --self-contained false
-          --no-restore
 
       - name: Upload Raw Windows Files for Installer
         uses: actions/upload-artifact@v4
@@ -155,15 +152,18 @@ jobs:
       - name: Create Dummy License File (macOS)
         run: touch "MIT License.txt"
 
-      # ИСПРАВЛЕНО: Добавлен явный restore перед сборкой под macOS
       - name: Restore NuGet Packages (macOS)
-        run: dotnet restore WRST.maui/WRST.maui.csproj
+        run: |
+          dotnet restore WRST.maui/WRST.maui.csproj -f net10.0-maccatalyst -r maccatalyst-x64
+          dotnet restore WRST.maui/WRST.maui.csproj -f net10.0-maccatalyst -r maccatalyst-arm64
 
+      # --- ПОСЛЕДОВАТЕЛЬНАЯ КРОСС-КОМПИЛЯЦИЯ ---
+
+      # 1. Сборка для maccatalyst-x64 (Intel)
       - name: Build macOS (x64)
         run: >
           dotnet publish WRST.maui/WRST.maui.csproj 
-          -f net10.0-maccatalyst
-          -p:TargetFrameworks=net10.0-maccatalyst
+          --framework net10.0-maccatalyst
           -c Release 
           -r maccatalyst-x64
           -p:SolutionDir="../"
@@ -172,11 +172,11 @@ jobs:
           -p:PublishSingleFile=false
           --no-restore
 
+      # 2. Сборка для maccatalyst-arm64 (Apple Silicon)
       - name: Build macOS (arm64)
         run: >
           dotnet publish WRST.maui/WRST.maui.csproj 
-          -f net10.0-maccatalyst
-          -p:TargetFrameworks=net10.0-maccatalyst
+          --framework net10.0-maccatalyst
           -c Release 
           -r maccatalyst-arm64
           -p:SolutionDir="../"
