@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Maui.Storage;
 using System.Collections.ObjectModel;
 using System.Data;
+using System.Diagnostics;
 using System.Globalization;
 using System.Text;
 
@@ -17,6 +18,7 @@ namespace WRST.maui
         public ObservableCollection<TableRow> ControlData { get; set; } = new();
         public ObservableCollection<TableRow> SecurityData { get; set; } = new();
         public ObservableCollection<TableRow> VolumeData { get; set; } = new();
+        public ObservableCollection<TableRow> ControlMonthPowerData { get; set; } = new();
 
         // Страница с проектом и помощью
         private Uri uri = new Uri("https://github.com/electronik779/WRST");
@@ -32,18 +34,26 @@ namespace WRST.maui
         double FullDischarge = 0; // Максимальный расход ГЭС
         double kHeadLoss = 0; // Потери напора / коэффициент при Q^2
         double Efficiency = 0; // Кпд агрегата
+        int ControlMonth = 12; // Номер контрольного месяца
 
         // Исходные данные. Массивы (строки x столбцы)
         double[,] InflowTableData = new double[0, 0]; // Приток.
         double[,] BathygraphyTableData = new double[0, 0]; // характеристика верхнего бьефа.
         double[,] RemainderAccordingDispatchScheduleTableData = new double[0, 0]; // Диспетчерские остатки.
         double[,] IntakeFromReservoirTableData = new double[0, 0]; // Отбор из водохранилища.
-        double[,] CharacteristicOfDownstreamTableData = new double[0, 0]; // Характеристика нижнего бьефа. 
+        double[,] CharacteristicOfDownstreamTableData = new double[0, 0]; // Характеристика нижнего бьефа.
+        double[] ControlMonthPower = new double[0]; // Мощности контрольного месяца
+
+        // Сохранено?
+        public bool IsSaved { get; set; } = true;
+
+        public static MainPage? Current { get; private set; }
 
         public MainPage()
         {
             InitializeComponent();
 
+            Current = this;
             BindingContext = this;
 
             // Инициализация таблиц диспетчерских остатков и отборов
@@ -122,6 +132,7 @@ namespace WRST.maui
                 {
                     HeadLossLable.Text = "Коэффициент потерь при Qгэс²";
                 }
+                IsSaved = false;
             }
         }
 
@@ -157,6 +168,7 @@ namespace WRST.maui
                 {
                     // Возвращаем стандартное состояние (цвета подтянутся из Normal/Focused в зависимости от темы)
                     VisualStateManager.GoToState(entry, "Normal");
+                    IsSaved = false;
                 }
                 else
                 {
@@ -231,6 +243,7 @@ namespace WRST.maui
                 if (isValid)
                 {
                     VisualStateManager.GoToState(entry, "Normal");
+                    IsSaved = false;
                 }
                 else
                 {
@@ -376,8 +389,8 @@ namespace WRST.maui
 
             BathygraphyData = tempCollection;
 
-            //BathygraphyCollectionView.ItemsSource = null;
-            //BathygraphyCollectionView.ItemsSource = BathygraphyData;
+            BathygraphyCollectionView.ItemsSource = null;
+            BathygraphyCollectionView.ItemsSource = BathygraphyData;
         }
 
         // По нажатию кнопки "Создать" напротив поля ввода Количество точек характеристики нижнего бьефа
@@ -427,8 +440,8 @@ namespace WRST.maui
             // Подменяем ссылку целиком. CollectionView получит один глобальный сигнал обновления
             DownstreamData = tempCollection;
 
-            //DownstreamCollectionView.ItemsSource = null;
-            //DownstreamCollectionView.ItemsSource = DownstreamData;
+            DownstreamCollectionView.ItemsSource = null;
+            DownstreamCollectionView.ItemsSource = DownstreamData;
         }
 
         // Считывание исходных данных из файла
@@ -470,7 +483,7 @@ namespace WRST.maui
 
                 // Блок 1: Одиночные поля
                 var b1 = blocks[0];
-                BeginningMonthInput.Text = b1.ElementAtOrDefault(0);
+                BeginningMonthInput.Text = b1.ElementAtOrDefault(0) ?? "0";
                 int.TryParse(BeginningMonthInput.Text, NumberStyles.Any, culture, out BeginningMonth);
 
                 // Установка RadioButton
@@ -484,6 +497,10 @@ namespace WRST.maui
                 FullDischargeInput.Text = b1.ElementAtOrDefault(5) ?? "0";
                 HeadLossInput.Text = b1.ElementAtOrDefault(6) ?? "0";
                 EfficiencyInput.Text = b1.ElementAtOrDefault(7) ?? "0";
+                ControlMonthInput.Text = b1.ElementAtOrDefault(8) ?? "0";
+
+                if (ControlMonthInput.Text == "0" || ControlMonthInput.Text == string.Empty)
+                { ControlMonthInput.Text = "12"; } // Если старый файл, то ControlMonth нет
 
                 // Блок 2: Inflow
                 int.TryParse(blocks[1].FirstOrDefault(), out InflowCount);
@@ -502,6 +519,8 @@ namespace WRST.maui
 
                 // Обновляем UI
                 UpdateUI(blocks);
+
+                IsSaved = true;
             }
             catch (Exception ex)
             {
@@ -610,7 +629,7 @@ namespace WRST.maui
         }
 
         // Сохранение данных в файл
-        private async void Save_Click(object sender, EventArgs e)
+        public async Task SaveDataAsync()
         {
             // Проверяем, что в текстовых полях есть числа
             if (CheckData()) return;
@@ -632,7 +651,8 @@ namespace WRST.maui
                     GuaranteedDischarge.ToString(culture),
                     FullDischarge.ToString(culture),
                     kHeadLoss.ToString(culture),
-                    Efficiency.ToString(culture)
+                    Efficiency.ToString(culture),
+                    ControlMonth.ToString(culture)
                 });
 
                 // 2. Блоки данных
@@ -655,6 +675,8 @@ namespace WRST.maui
                 using var stream = new MemoryStream(Encoding.UTF8.GetBytes(content));
                 var result = await FileSaver.Default.SaveAsync("Initial_data.csv", stream, CancellationToken.None);
 
+                IsSaved = true;
+
                 if (result.IsSuccessful)
                     await DisplayAlertAsync(
                         "Успех!",
@@ -668,6 +690,10 @@ namespace WRST.maui
                     "Ошибка записи: " + ex.Message,
                     "OK");
             }
+        }
+        public async void Save_Click(object sender, EventArgs e)
+        {
+            await SaveDataAsync();
         }
 
         // Универсальный метод с поддержкой форматов чисел
@@ -720,6 +746,7 @@ namespace WRST.maui
             RemainderAccordingDispatchScheduleTableData = new double[1, 12];
             IntakeFromReservoirTableData = new double[1, 12];
             CharacteristicOfDownstreamTableData = new double[2, CharacteristicOfDownstreamCount];
+            ControlMonthPower = new double[InflowCount / 12];
 
             // Получаем значения из таблиц
             try
@@ -758,9 +785,11 @@ namespace WRST.maui
                 return;
             }
 
+            int YearIndex = 1; // Порядковый номер года
             int MonthOrdinalNumber = 0; // Порядковый номер месяца
             int CalendarMonth = BeginningMonth - 1; // Календарный номер месяца в индексах
                                                     // Индексы массивов 0-11, месяцы - 1-12, поэтому -1.
+            ControlMonth--; // Номер контрольного месяца в индексах
             int PreviousMonth = CalendarMonth - 1; // Предыдущий месяц
             if (PreviousMonth < 0) PreviousMonth = 11; // Сразу в индексах
             double ExcessVolume = 0; // Избыточный объем. Ноль, т.к. начинаем с полного вдхр
@@ -858,8 +887,9 @@ namespace WRST.maui
                 // Запоминаем результаты и вычисляем статический напор, мощность
                 Consumption[MonthOrdinalNumber] = CurrentConsumption;
                 IdleReset[MonthOrdinalNumber] = IdleDischargeFlowRate;
-                ActualResidualVolume[MonthOrdinalNumber] = ResidualVolumeCurrentMonth -
-                    RequiredVolumeAccordingDispatchSchedule;
+                //ActualResidualVolume[MonthOrdinalNumber] = ResidualVolumeCurrentMonth -
+                //    RequiredVolumeAccordingDispatchSchedule;
+                ActualResidualVolume[MonthOrdinalNumber] = ResidualVolumeCurrentMonth;
                 VolumeInReservoir = ResidualVolumeCurrentMonth + UselessVolume;
                 DischargeIntoDownstream = CurrentConsumption + IdleDischargeFlowRate;
                 UpstreamLevel[MonthOrdinalNumber] =
@@ -889,6 +919,26 @@ namespace WRST.maui
                 Power[MonthOrdinalNumber] = 9.81 * CurrentConsumption *
                     (StaticHead[MonthOrdinalNumber] - HeadLoss) * Efficiency;
 
+                // Мощности контрольного месяца
+                if (CalendarMonth == ControlMonth)
+                {
+                    if (MonthOrdinalNumber <= 11 - BeginningMonth + 1 ||
+                        MonthOrdinalNumber >= InflowCount - BeginningMonth + 1) YearIndex = 0;
+
+                    //Debug.WriteLine($"CalendarMonth = {CalendarMonth}");
+                    //Debug.WriteLine($"ControlMonth - 1 = {ControlMonth}");
+                    //Debug.WriteLine($"");
+                    //Debug.WriteLine($"MonthOrdinalNumber = {MonthOrdinalNumber}");
+                    //Debug.WriteLine($"BeginningMonth - 1 = {BeginningMonth - 1}");
+                    //Debug.WriteLine($"InflowCount - BeginningMonth + 1 = {InflowCount - BeginningMonth + 1}");
+                    //Debug.WriteLine($"YearIndex = {YearIndex}");
+                    //Debug.WriteLine($"");
+
+                    ControlMonthPower[YearIndex] = Power[MonthOrdinalNumber];
+                    YearIndex++;
+                    if (YearIndex > InflowCount / 12) YearIndex = 0;
+                }
+
                 // Переприсваивание
                 ResidualVolumePreviousMonth = ResidualVolumeCurrentMonth;
                 ExcessVolume = ResidualVolumeCurrentMonth - RequiredVolumeAccordingDispatchSchedule;
@@ -907,6 +957,17 @@ namespace WRST.maui
                 SumIdleResetVolume += MonthIdleResetVolume;
             }
 
+            // Средний расход ГЭС
+            double AverageConsumption = 1 / (double)InflowCount * Consumption.Sum();
+
+            // Средний приток
+            double sum = 0;
+            foreach (double dis in InflowTableData)
+            {
+                sum += dis;
+            }
+            double AverageInflow = 1 / (double)InflowCount * sum;
+
             // Среднегодовая выработка
             double MonthElectricityProduction = 0;
             double SumElectricityProduction = 0;
@@ -916,7 +977,17 @@ namespace WRST.maui
                 MonthElectricityProduction = Power[i] * 730;
                 SumElectricityProduction += MonthElectricityProduction;
             }
-            AverageAnnualElectricityGeneration = SumElectricityProduction * 12 / InflowCount;
+            AverageAnnualElectricityGeneration = SumElectricityProduction * 12 / InflowCount *
+                (1 + (UsefullVolume - ResidualVolumeCurrentMonth) / (2.63 * InflowCount * AverageInflow));
+
+            // Коэффициент использования стока
+            double FlowUtilizationRate = AverageConsumption / AverageInflow;
+
+            // Коэффициент ёмкости водохранилища
+            double ReservoirСapacityСoefficient = UsefullVolume / (AverageInflow * 2.63 * 12);
+            //Debug.WriteLine($"AverageInflowVolume = {AverageInflow * 2.63 * 12}");
+            //Debug.WriteLine($"UsefullVolume = {UsefullVolume}");
+
 
             // Готовим таблицы для вывода результатов
 
@@ -935,7 +1006,7 @@ namespace WRST.maui
                 };
 
                 // Инициализируем строку 10 ячейками
-                row.InitializeCells(10, string.Empty);
+                row.InitializeCells(11, string.Empty);
 
                 // Заполняем ячейки (индексы от 0 до 9)
                 row.SetCell(0, (i + 1).ToString());                              // 1: Порядковый номер
@@ -949,12 +1020,36 @@ namespace WRST.maui
                 row.SetCell(7, StaticHead[i].ToString("F2"));                    // 8: Статический напор
                 row.SetCell(8, Power[i].ToString("N0"));                         // 9: Мощность ГЭС
                 row.SetCell(9, ActualResidualVolume[i].ToString("N1"));          // 10: Остаточный объем над диспетчерсим объемом
+                row.SetCell(10, RemainderAccordingDispatchScheduleTableData[0, CalendarMonth - 1].ToString("N1")); // 11: Диспетчерский объем
 
                 ControlData.Add(row);
 
                 CalendarMonth++;
                 if (CalendarMonth > 12) CalendarMonth = 1;
             }
+
+            // Таблица мощностей контрольного месяца
+            ControlMonthPowerData.Clear();
+            var yearRow = new TableRow();
+            yearRow.Index = 0;
+            yearRow.IsEditable = false;
+            yearRow.RowLabel = "Год";
+            yearRow.InitializeCells(InflowCount / 12, "");
+            for (int i = 0; i < InflowCount / 12; i++)
+            {
+                yearRow.Cells[i] = (i + 1).ToString();
+            }
+            ControlMonthPowerData.Add(yearRow);
+            var yearRow2 = new TableRow();
+            yearRow2.Index = 1;
+            yearRow2.IsEditable = false;
+            yearRow2.RowLabel = "Мощность, кВт";
+            yearRow2.InitializeCells(InflowCount / 12, "");
+            for (int i = 0; i < InflowCount / 12; i++)
+            {
+                yearRow2.Cells[i] = ControlMonthPower[i].ToString("N0");
+            }
+            ControlMonthPowerData.Add(yearRow2);
 
             // Таблица обеспеченностей (приток, расход ГЭС, статический напор, мощность ГЭС)
             // Вычисляем обеспеченность
@@ -1040,6 +1135,8 @@ namespace WRST.maui
             int pointer = InflowCount - BeginningMonth + 1;
             if (pointer > InflowCount - 1) pointer = 0;
 
+            Debug.WriteLine($"pointer= {pointer}, begm= {BeginningMonth}");
+
             int month = 0;
 
             for (int i = 0; i < InflowCount; i++)
@@ -1053,12 +1150,13 @@ namespace WRST.maui
                 // Инициализируем строку
                 row.InitializeCells(3, string.Empty);
 
-                row.SetCell(0, (i + 1).ToString());
+                row.SetCell(0, (pointer + 1).ToString());
                 row.SetCell(1, RemainderAccordingDispatchScheduleTableData[0, month].ToString("N1"));
-                row.SetCell(2, (RemainderAccordingDispatchScheduleTableData[0, month] +
-                    ActualResidualVolume[pointer]).ToString("N1"));
+                row.SetCell(2, ActualResidualVolume[pointer].ToString("N1"));
 
                 VolumeData.Add(row);
+
+                Debug.WriteLine($"i= {i}, month= {month}, pointer+1= {pointer + 1}");
 
                 pointer++;
                 month++;
@@ -1070,11 +1168,17 @@ namespace WRST.maui
             var navigationParameters = new ShellNavigationQueryParameters
             {
                 { "ControlData", ControlData },
+                { "ControlMonth", ControlMonth + 1 },
+                { "ControlMonthPowerData", ControlMonthPowerData },
                 { "SecurityData", SecurityData },
                 { "GuaranteedDischarge", GuaranteedDischarge },
                 { "VolumeData", VolumeData },
                 { "AverageAnnualElectricityGeneration", AverageAnnualElectricityGeneration },
-                { "SumIdleResetVolume", SumIdleResetVolume }
+                { "SumIdleResetVolume", SumIdleResetVolume },
+                { "AverageInflow", AverageInflow },
+                { "AverageConsumption", AverageConsumption },
+                { "FlowUtilizationRate", FlowUtilizationRate },
+                { "ReservoirСapacityСoefficient", ReservoirСapacityСoefficient }
             };
 
             // Автоматический переход
@@ -1150,6 +1254,7 @@ namespace WRST.maui
             if (!double.TryParse(FullDischargeInput.Text?.Replace(',', '.'), NumberStyles.Any, culture, out FullDischarge)) return;
             if (!double.TryParse(HeadLossInput.Text?.Replace(',', '.'), NumberStyles.Any, culture, out kHeadLoss)) return;
             if (!double.TryParse(EfficiencyInput.Text?.Replace(',', '.'), NumberStyles.Any, culture, out Efficiency)) return;
+            if (!int.TryParse(ControlMonthInput.Text, NumberStyles.Any, culture, out ControlMonth)) return;
         }
 
         private void ExportTableToMatrix(ObservableCollection<TableRow> uiTable, double[,] targetMatrix, int startRowIndex)
@@ -1215,6 +1320,7 @@ namespace WRST.maui
             if (CheckDoubleVariable("Полный (максимальный) расход ГЭС", FullDischargeInput.Text)) return true;
             if (CheckDoubleVariable("Потери напора", HeadLossInput.Text)) return true;
             if (CheckDoubleVariable("Кпд гидроагрегата", EfficiencyInput.Text)) return true;
+            if (CheckIntVariable("Номер контрольного месяца", ControlMonthInput.Text)) return true;
 
             return false; // Если дошли сюда, значит все данные валидны
         }
@@ -1276,7 +1382,7 @@ namespace WRST.maui
             {
                 // Обработка ошибок (например, если браузер не установлен на устройстве)
                 await DisplayAlertAsync("Ошибка!",
-                    "Не удалось открыть ссылку.\nОткройте ссылку в браузере https://github.com/electronik779/WRST", 
+                    "Не удалось открыть ссылку.\nОткройте ссылку в браузере https://github.com/electronik779/WRST",
                     "OK");
             }
         }

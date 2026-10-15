@@ -2,7 +2,6 @@ using CommunityToolkit.Maui.Storage;
 using LiveChartsCore;
 using LiveChartsCore.Defaults;
 using LiveChartsCore.SkiaSharpView;
-using LiveChartsCore.SkiaSharpView.Drawing;
 using LiveChartsCore.SkiaSharpView.Painting;
 using SkiaSharp;
 using System.Collections.ObjectModel;
@@ -17,12 +16,20 @@ public partial class SecondPage : ContentPage, IQueryAttributable
     private ObservableCollection<TableRow>? _controlData;
     private ObservableCollection<TableRow>? _securityData;
     private ObservableCollection<TableRow>? _volumeData;
+    private ObservableCollection<TableRow>? _controlMonthPowerData;
 
     public ObservableCollection<TableRow>? ControlData
     {
         get => _controlData;
 
         set { _controlData = value; OnPropertyChanged(); }
+    }
+
+    public ObservableCollection<TableRow>? ControlMonthPowerData
+    {
+        get => _controlMonthPowerData;
+
+        set { _controlMonthPowerData = value; OnPropertyChanged(); }
     }
 
     public ObservableCollection<TableRow>? SecurityData
@@ -41,6 +48,11 @@ public partial class SecondPage : ContentPage, IQueryAttributable
 
     public double AverageAnnualElectricityGeneration { get; set; }
     public double SumIdleResetVolume { get; set; }
+    public double AverageInflow { get; set; }
+    public double AverageConsumption { get; set; }
+    public double FlowUtilizationRate { get; set; }
+    public double ReservoirСapacityСoefficient { get; set; }
+    public int ControlMonth { get; set; }
 
     // Для графиков
     // Расходы
@@ -93,6 +105,23 @@ public partial class SecondPage : ContentPage, IQueryAttributable
             ControlData = controlData;
         }
 
+        // Безопасно извлекаем double число
+        if (query.TryGetValue("ControlMonth", out var controlMonthObj) &&
+            controlMonthObj is int controlMonthValue)
+        {
+            ControlMonth = controlMonthValue;
+
+            OnPropertyChanged(nameof(ControlMonth));
+        }
+
+        if (query.TryGetValue("ControlMonthPowerData", out var controlMonthPowerDataObj) &&
+            controlMonthPowerDataObj is ObservableCollection<TableRow> controlMonthPowerData)
+        {
+            ControlMonthPowerData = controlMonthPowerData;
+        }
+        ControlMonthPowerCollectionView.ItemsSource = null;
+        ControlMonthPowerCollectionView.ItemsSource = ControlMonthPowerData;
+
         // Безопасно извлекаем SecurityData
         if (query.TryGetValue("SecurityData", out var securityDataObj) &&
             securityDataObj is ObservableCollection<TableRow> securityData)
@@ -134,6 +163,39 @@ public partial class SecondPage : ContentPage, IQueryAttributable
 
             OnPropertyChanged(nameof(SumIdleResetVolume));
         }
+
+        if (query.TryGetValue("AverageInflow", out var averageInflowObj) &&
+            averageInflowObj is double averageInflowValue)
+        {
+            AverageInflow = averageInflowValue;
+
+            OnPropertyChanged(nameof(AverageInflow));
+        }
+
+        if (query.TryGetValue("AverageConsumption", out var averageConsumptionObj) &&
+            averageConsumptionObj is double averageConsumptionValue)
+        {
+            AverageConsumption = averageConsumptionValue;
+
+            OnPropertyChanged(nameof(AverageConsumption));
+        }
+
+        if (query.TryGetValue("FlowUtilizationRate", out var flowUtilizationRateObj) &&
+            flowUtilizationRateObj is double flowUtilizationRateValue)
+        {
+            FlowUtilizationRate = flowUtilizationRateValue;
+
+            OnPropertyChanged(nameof(FlowUtilizationRate));
+        }
+
+        if (query.TryGetValue("ReservoirСapacityСoefficient", out var reservoirСapacityСoefficientObj) &&
+            reservoirСapacityСoefficientObj is double reservoirСapacityСoefficientValue)
+        {
+            ReservoirСapacityСoefficient = reservoirСapacityСoefficientValue;
+
+            OnPropertyChanged(nameof(ReservoirСapacityСoefficient));
+        }
+
 
         // Строим графики
         if (ControlData != null)
@@ -352,7 +414,7 @@ public partial class SecondPage : ContentPage, IQueryAttributable
                 SeparatorsPaint = new SolidColorPaint
                     {
                         // Для Светлой темы (Light): черный цвет с прозрачностью ~9% (22 из 255)
-                        Color = new SKColor(0, 0, 0, 22),                         
+                        Color = new SKColor(0, 0, 0, 22),
                         StrokeThickness = 1f // Ровно 1 пиксель
                     }
             }
@@ -547,7 +609,7 @@ public partial class SecondPage : ContentPage, IQueryAttributable
             new Axis
             {
                 Labels = new string[] { "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12" },
-                Name = "Месяцы",
+                Name = "Месяц",
 
                 SeparatorsPaint = new SolidColorPaint
                     {
@@ -638,12 +700,12 @@ public partial class SecondPage : ContentPage, IQueryAttributable
             // 1. Скрытый трюк для Excel: жестко задаем разделитель-запятую
             //csvContent.AppendLine("sep=;");
 
-            // 1. Массив названий колонок для шапки (запятые внутри строк теперь безопасны)
+            // 1. Массив названий колонок для шапки
             string[] headers = new string[]
             {
             "#", "Месяц", "Приток, м³/с", "Расход ГЭС, м³/с", "Сбросы, м³/с",
             "Отм. ВБ, м", "Отм. НБ, м", "Статический напор, м",
-                "Мощность ГЭС, кВт", "Избыт. объем над дисп. остатком, млн.м³"
+                "Мощность ГЭС, кВт", "Остаточный объем, млн.м³", "Диспетчерский объем, млн.м³"
             };
 
             string headerLine = string.Join(";", headers.Select(EscapeCsvField));
@@ -652,24 +714,47 @@ public partial class SecondPage : ContentPage, IQueryAttributable
             // 3. Наполняем строками из ControlData
             foreach (var row in ControlData)
             {
-                // Берем первые 10 ячеек, очищаем от разделителей разрядов, а затем экранируем
+                // Берем первые 11 ячеек, очищаем от разделителей разрядов, а затем экранируем
                 var processedCells = row.Cells
-                    .Take(10)
+                    .Take(11)
                     .Select(CleanNumberFormat)
                     .Select(EscapeCsvField);
-
                 string line = string.Join(";", processedCells);
                 csvContent.AppendLine(line);
             }
 
-            string Electricity = CleanNumberFormat(EscapeCsvField(AverageAnnualElectricityGeneration.
-                ToString("F0")));
-            string Reset = CleanNumberFormat(EscapeCsvField(SumIdleResetVolume.
-                ToString("F0")));
-            string tmpLine = $"Среднегодовая выработка {Electricity} кВтч" + ";" +
-                $"Суммарный объем сбросов {Reset} млн.м³";
             csvContent.AppendLine("");
+
+            string Electricity = CleanNumberFormat(EscapeCsvField(AverageAnnualElectricityGeneration.
+                ToString("N0")));
+            string tmpLine = $"Среднегодовая выработка" + ";" + Electricity + ";" + "кВтч";
             csvContent.AppendLine(tmpLine);
+
+            string Reset = CleanNumberFormat(EscapeCsvField(SumIdleResetVolume.
+                ToString("N1")));
+            tmpLine = $"Суммарный объем сбросов" + ";" + Reset + ";" + "млн.м³";
+            csvContent.AppendLine(tmpLine);
+
+            string Inflow = CleanNumberFormat(EscapeCsvField(AverageInflow.
+                ToString("N1")));
+            tmpLine = $"Средний расход стока" + ";" + Inflow + ";" + "м³/с";
+            csvContent.AppendLine(tmpLine);
+
+            string Consumption = CleanNumberFormat(EscapeCsvField(AverageConsumption.
+                ToString("N1")));
+            tmpLine = $"Средний расход потребления" + ";" + Consumption + ";" + "м³/с";
+            csvContent.AppendLine(tmpLine);
+
+            string Utilization = CleanNumberFormat(EscapeCsvField(FlowUtilizationRate.
+                ToString("F3")));
+            tmpLine = $"Коэффициент использования стока" + ";" + Utilization;
+            csvContent.AppendLine(tmpLine);
+
+            string Capacity = CleanNumberFormat(EscapeCsvField(ReservoirСapacityСoefficient.
+                ToString("F3")));
+            tmpLine = $"Коэффициент ёмкости водохранилища" + ";" + Capacity;
+            csvContent.AppendLine(tmpLine);
+
             csvContent.AppendLine("");
 
             headers = Array.Empty<string>();
@@ -682,7 +767,7 @@ public partial class SecondPage : ContentPage, IQueryAttributable
 
             foreach (var row in SecurityData)
             {
-                // Берем первые 10 ячеек, очищаем от разделителей разрядов, а затем экранируем
+                // Берем первые 5 ячеек, очищаем от разделителей разрядов, а затем экранируем
                 var processedCells = row.Cells
                     .Take(5)
                     .Select(CleanNumberFormat)
@@ -692,32 +777,33 @@ public partial class SecondPage : ContentPage, IQueryAttributable
                 csvContent.AppendLine(line);
             }
 
-            csvContent.AppendLine("");
 
-            headers = Array.Empty<string>();
-            headers = new[] {
-                "#", "Месяц", "Диспетчерский объем, м³", "Фактический объем, м³"
-                    };
-            headerLine = string.Join(";", headers.Select(EscapeCsvField));
-            csvContent.AppendLine(headerLine);
+            //csvContent.AppendLine("");
 
-            int month = 1;
-            for (int i = 0; i < VolumeData.Count; i++)
-            {
-                List<string> lineTmp = new List<string>();
-                string tmp = VolumeData[i].GetCell(0);
-                lineTmp.Add(tmp);
-                lineTmp.Add(month.ToString());
-                tmp = VolumeData[i].GetCell(1);
-                lineTmp.Add(tmp);
-                tmp = VolumeData[i].GetCell(2);
-                lineTmp.Add(tmp);
-                string line = string.Join(";", lineTmp.Select(CleanNumberFormat).Select(EscapeCsvField));
-                csvContent.AppendLine(line);
+            //headers = Array.Empty<string>();
+            //headers = new[] {
+            //    "#", "Месяц", "Диспетчерский объем, м³", "Фактический объем (над МО), м³"
+            //        };
+            //headerLine = string.Join(";", headers.Select(EscapeCsvField));
+            //csvContent.AppendLine(headerLine);
 
-                month++;
-                if (month > 12) month = 1;
-            }
+            //int month = 1;
+            //for (int i = 0; i < VolumeData.Count; i++)
+            //{
+            //    List<string> lineTmp = new List<string>();
+            //    string tmp = VolumeData[i].GetCell(0);
+            //    lineTmp.Add(tmp);
+            //    lineTmp.Add(month.ToString());
+            //    tmp = VolumeData[i].GetCell(1);
+            //    lineTmp.Add(tmp);
+            //    tmp = VolumeData[i].GetCell(2);
+            //    lineTmp.Add(tmp);
+            //    string line = string.Join(";", lineTmp.Select(CleanNumberFormat).Select(EscapeCsvField));
+            //    csvContent.AppendLine(line);
+
+            //    month++;
+            //    if (month > 12) month = 1;
+            //}
 
             // 4. принудительно создаем кодировку UTF-8 с меткой BOM (true)
             var encodingWithBom = new UTF8Encoding(encoderShouldEmitUTF8Identifier: true);

@@ -5,8 +5,16 @@
 #define MyAppPublisher "НИУ МГСУ"
 #define MyAppExeName "WRST.maui.exe"
 
-// ВКЛЮЧАЕМ ПЛАГИН СКАЧИВАНИЯ
+; ---- ОБЪЯВЛЯЕМ ЯЗЫКИ ПЕРЕД ПОДКЛЮЧЕНИЕМ ПЛАГИНОВ ----
+[Languages]
+Name: "russian"; MessagesFile: "compiler:Languages\Russian.isl"
+Name: "english"; MessagesFile: "compiler:Default.isl"
+
+; ---- ПОДКЛЮЧАЕМ ПЛАГИН СКАЧИВАНИЯ ----
 #include "idp.iss"
+
+; ---- ПОДКЛЮЧАЕМ ЛОКАЛЬНЫЙ ПЕРЕВОД ПЛАГИНА IDP (если нужен) ----
+#include "unicode\idplang\Russian.iss"
 
 [Setup]
 AppId={{93E52303-A161-4F12-9BD1-348371540E41}}
@@ -16,38 +24,34 @@ AppPublisher={#MyAppPublisher}
 DefaultDirName={autopf}\{#MyAppName}
 UninstallDisplayIcon={app}\{#MyAppExeName}
 
-; Разрешаем запуск как на стандартных x64, так и на нативных ARM64 процессорах (Windows 11)
 ArchitecturesAllowed=x64compatible arm64
 ArchitecturesInstallIn64BitMode=x64compatible arm64
 
 DefaultGroupName={#MyAppName}
 AllowNoIcons=yes
-LicenseFile=MIT License.txt
+; ИСПРАВЛЕНО: Используем обратные слэши для Windows
+LicenseFile=..\..\MIT License.txt
 PrivilegesRequired=admin
 PrivilegesRequiredOverridesAllowed=dialog
 
-OutputDir=WRST-setup-universal
+; ИСПРАВЛЕНО: Инсталлятор соберется в корне воркфлоу
+OutputDir=..\..\WRST-setup-universal
 OutputBaseFilename=setup_WRST_universal
 SolidCompression=yes
 WizardStyle=modern dynamic
-
-[Languages]
-Name: "english"; MessagesFile: "compiler:Default.isl"
-Name: "russian"; MessagesFile: "compiler:Languages\Russian.isl"
 
 [Tasks]
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
 ; ---- СБОРКА ДЛЯ ARM64 ----
-; Файлы будут копироваться только если процессор пользователя нативный ARM64
-Source: "win-arm64\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion; Check: IsArm64
-Source: "win-arm64\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs; Check: IsArm64
+; ИСПРАВЛЕНО: Все пути используют обратные слэши Windows
+Source: "..\..\win-arm64\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion; Check: IsArm64
+Source: "..\..\win-arm64\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs; Check: IsArm64
 
 ; ---- СБОРКА ДЛЯ X64 ----
-; Файлы будут копироваться только если процессор стандартный Intel/AMD x64 (не ARM64)
-Source: "win-x64\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion; Check: not IsArm64
-Source: "win-x64\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs; Check: not IsArm64
+Source: "..\..\win-x64\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion; Check: not IsArm64
+Source: "..\..\win-x64\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs; Check: not IsArm64
 
 [Icons]
 Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"
@@ -57,7 +61,10 @@ Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: de
 Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: nowait postinstall skipifsilent
 
 [Code]
-// Функция покомпонентного сравнения строк версий (Major.Minor.Build.Revision)
+var
+  SdkMissing, DotNetMissing: Boolean;
+
+// Функция покомпонентного сравнения строк версий (пока не используется, но оставлена)
 function CompareVersion(CurrentVer, MinVer: String): Integer;
 var
   C1, C2, C3, C4: Longint;
@@ -82,61 +89,96 @@ begin
   else Result := C4 - M4;
 end;
 
-// 1. Проверка Windows App SDK в MSIX-реестре пакетов repository
+// 1. Проверка Windows App SDK (версия >= 1.8)
 function IsWinAppSdkInstalled(): Boolean;
 var
-  SubKeys: TArrayOfString;
-  I: Integer;
-  RegistryPath: String;
-  PackageName: String;
-  InstalledVersion: String;
-  MinRequiredVersion: String;
+  FindRec: TFindRec;
+  FolderName: String;
+  VersionStr: String;
+  Major, Minor: Integer;
+  P, StartPos: Integer;
 begin
   Result := False;
-  MinRequiredVersion := '8000.731.1532.0';
-  RegistryPath := 'Software\Microsoft\Windows\CurrentVersion\Appx\PackageRepository\Packages';
-
-  if RegGetSubkeyNames(HKLM, RegistryPath, SubKeys) then
+  // Ищем папки, начинающиеся с "Microsoft.WindowsAppRuntime"
+  if FindFirst(ExpandConstant('{pf}\WindowsApps\Microsoft.WindowsAppRuntime*'), FindRec) then
   begin
-    for I := 0 to GetArrayLength(SubKeys) - 1 do
-    begin
-      PackageName := SubKeys[I];
-      if (Pos('Microsoft.WindowsAppRuntime', PackageName) > 0) or (Pos('Microsoft.NETCore.App', PackageName) > 0) then
+    repeat
+      FolderName := FindRec.Name;
+      // Извлекаем версию из имени папки
+      // Формат: Microsoft.WindowsAppRuntime.X.Y.Z_... или Microsoft.WindowsAppRuntime.X.Y_...
+      // Нам нужна часть после "Microsoft.WindowsAppRuntime." до первого '_'
+      StartPos := Pos('Microsoft.WindowsAppRuntime.', FolderName);
+      if StartPos > 0 then
       begin
-        if RegQueryStringValue(HKLM, RegistryPath + '\' + PackageName, 'PackageVersion', InstalledVersion) then
+        VersionStr := Copy(FolderName, StartPos + Length('Microsoft.WindowsAppRuntime.'), MaxInt);
+        // Удаляем всё после первого '_'
+        P := Pos('_', VersionStr);
+        if P > 0 then VersionStr := Copy(VersionStr, 1, P - 1);
+        // Теперь VersionStr содержит что-то вроде "1.8.1234.0" или "2.3.1.0"
+        // Извлекаем Major и Minor (первые два числа)
+        P := Pos('.', VersionStr);
+        if P > 0 then
         begin
-          if CompareVersion(InstalledVersion, MinRequiredVersion) >= 0 then
+          Major := StrToIntDef(Copy(VersionStr, 1, P - 1), -1);
+          VersionStr := Copy(VersionStr, P + 1, MaxInt);
+          P := Pos('.', VersionStr);
+          if P > 0 then
+            Minor := StrToIntDef(Copy(VersionStr, 1, P - 1), -1)
+          else
+            Minor := StrToIntDef(VersionStr, -1);
+          // Проверяем условие: версия >= 1.8 (т.е. Major > 1 или (Major = 1 и Minor >= 8))
+          if (Major > 1) or ((Major = 1) and (Minor >= 8)) then
           begin
             Result := True;
-            Exit;
+            Break;
           end;
         end;
       end;
+    until not FindNext(FindRec);
+    FindClose(FindRec);
+  end;
+end;
+
+// 2. Проверка .NET 10 Desktop Runtime (по наличию папки)
+function IsDotNet10Installed(): Boolean;
+var
+  DotNetPath: String;
+  FindRec: TFindRec;
+begin
+  Result := False;
+  DotNetPath := ExpandConstant('{pf}\dotnet\shared\Microsoft.WindowsDesktop.App\10.0.*');
+  if FindFirst(DotNetPath, FindRec) then
+  begin
+    Result := True;
+    FindClose(FindRec);
+  end;
+end;
+
+// Вспомогательная функция для безопасного получения размера файла в байтах
+function GetLocalFileSize(const FileName: String): Longint;
+var
+  FindRec: TFindRec;
+begin
+  Result := 0;
+  if FindFirst(FileName, FindRec) then
+  begin
+    try
+      Result := FindRec.SizeLow;
+    finally
+      FindClose(FindRec);
     end;
   end;
 end;
 
-// 2. Проверка .NET 10 с динамическим выбором ветки x64/arm64 в реестре
-function IsDotNet10Installed(): Boolean;
-var
-  InstalledVersion: String;
-  RegPath: String;
+function BoolToStr(Value: Boolean): String;
 begin
-  if IsArm64 then
-    RegPath := 'SOFTWARE\dotnet\Setup\InstalledVersions\arm64\sharedfx\Microsoft.WindowsDesktop.App'
+  if Value then
+    Result := 'True'
   else
-    RegPath := 'SOFTWARE\dotnet\Setup\InstalledVersions\x64\sharedfx\Microsoft.WindowsDesktop.App';
-
-  if RegQueryStringValue(HKLM, RegPath, '10.0', InstalledVersion) then
-    Result := True
-  else
-    Result := False;
+    Result := 'False';
 end;
 
-var
-  SdkMissing, DotNetMissing: Boolean;
-
-// Инициализация начала установки: Определение архитектуры и подмена ссылок на лету
+// ЭТАП 1: Инициализация. Только проверка и заполнение очереди файлов
 function InitializeSetup(): Boolean;
 var
   UserChoice: Integer;
@@ -146,35 +188,40 @@ begin
   Result := True;
   SdkMissing := not IsWinAppSdkInstalled();
   DotNetMissing := not IsDotNet10Installed();
-
   if IsArm64 then ArchLabel := 'ARM64' else ArchLabel := 'x64';
-
+  
+  // ДИАГНОСТИКА
+  // MsgBox('Arch: ' + ArchLabel + #13#10 +
+  //     'SdkMissing = ' + BoolToStr(SdkMissing) + #13#10 +
+  //     'DotNetMissing = ' + BoolToStr(DotNetMissing), mbInformation, MB_OK);
+  
   if SdkMissing or DotNetMissing then
   begin
     AlertMessage := 'Для работы программы на вашем компьютере не хватает важных компонентов (' + ArchLabel + '):' + #13#10;
     if DotNetMissing then AlertMessage := AlertMessage + ' - Среда выполнения .NET 10 Desktop Runtime' + #13#10;
     if SdkMissing then AlertMessage := AlertMessage + ' - Пакет Windows App SDK (не ниже 8000.731.1532.0)' + #13#10;
-    AlertMessage := AlertMessage + #13#10 + 'Хотите, чтобы установщик автоматически скачал и установил их в фоновом режиме?';
-
+    AlertMessage := AlertMessage + #13#10 + 'Хотите, чтобы установщик автоматически скачал и установил их?';
     UserChoice := MsgBox(AlertMessage, mbConfirmation, MB_YESNO);
-
+    
     if UserChoice = idYes then
     begin
-      // Динамический выбор ссылок на скачивание в зависимости от процессора пользователя
       if DotNetMissing then
       begin
         if IsArm64 then
-          idpAddFile('https://microsoft.com', ExpandConstant('{tmp}\dotnet_setup.exe'))
+          idpAddFile('https://builds.dotnet.microsoft.com/dotnet/WindowsDesktop/10.0.10/windowsdesktop-runtime-10.0.10-win-arm64.exe',
+                     ExpandConstant('{tmp}\dotnet_setup.exe'))
         else
-          idpAddFile('https://microsoft.com', ExpandConstant('{tmp}\dotnet_setup.exe'));
+          idpAddFile('https://builds.dotnet.microsoft.com/dotnet/WindowsDesktop/10.0.10/windowsdesktop-runtime-10.0.10-win-x64.exe',
+                     ExpandConstant('{tmp}\dotnet_setup.exe'));
       end;
-      
       if SdkMissing then
       begin
         if IsArm64 then
-          idpAddFile('https://aka.ms', ExpandConstant('{tmp}\windowsappsdk_setup.exe'))
+          idpAddFile('https://aka.ms/windowsappsdk/1.8/1.8.260710003/windowsappruntimeinstall-arm64.exe',
+                     ExpandConstant('{tmp}\windowsappsdk_setup.exe'))
         else
-          idpAddFile('https://aka.ms', ExpandConstant('{tmp}\windowsappsdk_setup.exe'));
+          idpAddFile('https://aka.ms/windowsappsdk/1.8/1.8.260710003/windowsappruntimeinstall-x64.exe',
+                     ExpandConstant('{tmp}\windowsappsdk_setup.exe'));
       end;
     end
     else
@@ -185,32 +232,67 @@ begin
   end;
 end;
 
-// Тихая установка скачанных архитектурных зависимостей
+// ЭТАП 2: Форма создана. Настраиваем UI плагина
+procedure InitializeWizard();
+begin
+  if DotNetMissing or SdkMissing then
+  begin
+    idpDownloadAfter(wpReady);
+    idpSetOption('RetryCount', '5');
+    idpSetOption('RetryDelay', '2000');
+    idpSetOption('AllowContinue', 'true');
+  end;
+end;
+
+// ЭТАП 3: Установка скачанных зависимостей
 procedure CurStepChanged(CurStep: TSetupStep);
 var
   ErrorCode: Integer;
   ArchLabel: String;
+  DotNetPath: String;
+  SdkPath: String;
 begin
   if IsArm64 then ArchLabel := 'ARM64' else ArchLabel := 'x64';
-
+  
   if CurStep = ssInstall then
   begin
+    // 1. Установка .NET 10
     if DotNetMissing then
     begin
-      WizardForm.StatusLabel.Caption := 'Установка среды выполнения .NET 10 Desktop Runtime (' + ArchLabel + ')...';
-      if not Exec(ExpandConstant('{tmp}\dotnet_setup.exe'), '/install /quiet /norestart', '', SW_SHOW, ewWaitUntilTerminated, ErrorCode) then
+      DotNetPath := ExpandConstant('{tmp}\dotnet_setup.exe');
+      if FileExists(DotNetPath) and (GetLocalFileSize(DotNetPath) > 1000000) then
       begin
-        MsgBox('Не удалось установить .NET 10. Код ошибки: ' + IntToStr(ErrorCode), mbError, MB_OK);
+        WizardForm.StatusLabel.Caption := 'Установка среды выполнения .NET 10 Desktop Runtime (' + ArchLabel + ')...';
+        if not ShellExec('open', DotNetPath, '/quiet /norestart', '', SW_SHOW, ewWaitUntilTerminated, ErrorCode) then
+        begin
+          MsgBox('Не удалось запустить установщик .NET 10. Код ошибки Shell: ' + IntToStr(ErrorCode), mbError, MB_OK);
+        end;
+      end
+      else
+      begin
+        MsgBox('Загруженный файл .NET 10 поврежден или его скачивание было заблокировано. Пожалуйста, перезапустите установку.', mbError, MB_OK);
       end;
     end;
 
+    // 2. Установка Windows App SDK
     if SdkMissing then
     begin
-      WizardForm.StatusLabel.Caption := 'Установка среды выполнения Windows App SDK (' + ArchLabel + ')...';
-      if not Exec(ExpandConstant('{tmp}\windowsappsdk_setup.exe'), '--quiet', '', SW_SHOW, ewWaitUntilTerminated, ErrorCode) then
+      SdkPath := ExpandConstant('{tmp}\windowsappsdk_setup.exe');
+      if FileExists(SdkPath) and (GetLocalFileSize(SdkPath) > 1000000) then
       begin
-        MsgBox('Не удалось установить Windows App SDK. Код ошибки: ' + IntToStr(ErrorCode), mbError, MB_OK);
-      end;
+        WizardForm.StatusLabel.Caption := 'Установка Windows App SDK (для всех пользователей)...';
+        if ShellExec('open', SdkPath, '-quiet -allusers -norestart', '', SW_SHOW, ewWaitUntilTerminated, ErrorCode) then
+        begin
+          if ErrorCode <> 0 then
+            MsgBox('Установка Windows App SDK завершилась с ошибкой (код: ' + IntToStr(ErrorCode) + '). Возможно, требуется перезагрузка.', mbError, MB_OK)
+          else
+            MsgBox('Установка Windows App SDK выполнена. Перезагрузите компьютер для активации.', mbInformation, MB_OK);
+        end
+        else
+          MsgBox('Не удалось запустить установщик. Код ошибки: ' + IntToStr(ErrorCode), mbError, MB_OK);
+      end
+      else
+        MsgBox('Загруженный файл Windows App SDK повреждён или заблокирован. Перезапустите установку.', mbError, MB_OK);
     end;
   end;
 end;

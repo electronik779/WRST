@@ -1,10 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 18
-VisualStudioVersion = 18.4.11605.240 stable
+VisualStudioVersion = 18.4.11605.240
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WRST", "WRST\WRST.csproj", "{E22A8BE3-347D-415B-80A2-349268F76B26}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WRST.maui", "WRST.maui\WRST.maui.csproj", "{0A1F6E85-73ED-42AA-9D21-A5885205A8FF}"
 EndProject
 Global
@@ -15,14 +13,6 @@ Global
 		Release|x64 = Release|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{E22A8BE3-347D-415B-80A2-349268F76B26}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E22A8BE3-347D-415B-80A2-349268F76B26}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E22A8BE3-347D-415B-80A2-349268F76B26}.Debug|x64.ActiveCfg = Debug|x64
-		{E22A8BE3-347D-415B-80A2-349268F76B26}.Debug|x64.Build.0 = Debug|x64
-		{E22A8BE3-347D-415B-80A2-349268F76B26}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E22A8BE3-347D-415B-80A2-349268F76B26}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E22A8BE3-347D-415B-80A2-349268F76B26}.Release|x64.ActiveCfg = Release|x64
-		{E22A8BE3-347D-415B-80A2-349268F76B26}.Release|x64.Build.0 = Release|x64
 		{0A1F6E85-73ED-42AA-9D21-A5885205A8FF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{0A1F6E85-73ED-42AA-9D21-A5885205A8FF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0A1F6E85-73ED-42AA-9D21-A5885205A8FF}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
