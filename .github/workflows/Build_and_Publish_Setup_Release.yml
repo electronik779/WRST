@@ -48,7 +48,7 @@ jobs:
 
       - name: Install MAUI Workload
         if: steps.cache-windows-workloads.outputs.cache-hit != 'true'
-        run: dotnet workload install maui
+        run: dotnet workload restore WRST.maui/WRST.maui.csproj
 
       - name: Create Dummy License File (Windows)
         shell: pwsh
@@ -145,9 +145,7 @@ jobs:
 
       - name: Install MAUI Workload
         if: steps.cache-workloads.outputs.cache-hit != 'true'
-        run: |
-          dotnet workload install maui
-          dotnet workload install maccatalyst
+        run: dotnet workload restore WRST.maui/WRST.maui.csproj
 
       - name: Create Dummy License File (macOS)
         run: touch "MIT License.txt"
