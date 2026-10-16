@@ -153,8 +153,8 @@ jobs:
       # ИСПРАВЛЕНО: Заменен не поддерживаемый --framework на валидное свойство -p:TargetFramework=...
       - name: Restore NuGet Packages (macOS)
         run: |
-          dotnet restore WRST.maui/WRST.maui.csproj -p:TargetFramework=net10.0-maccatalyst -r maccatalyst-x64
-          dotnet restore WRST.maui/WRST.maui.csproj -p:TargetFramework=net10.0-maccatalyst -r maccatalyst-arm64
+          dotnet restore WRST.maui/WRST.maui.csproj -p:TargetFramework=net10.0-maccatalyst -r maccatalyst-x64 /p:MSBuildEnableWorkloadResolver=false
+          dotnet restore WRST.maui/WRST.maui.csproj -p:TargetFramework=net10.0-maccatalyst -r maccatalyst-arm64 /p:MSBuildEnableWorkloadResolver=false
 
       - name: Build macOS (x64)
         run: >
