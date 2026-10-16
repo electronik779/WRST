@@ -205,7 +205,7 @@
                 <Label Grid.Row="4" Grid.Column="0" Text="Полезный объем водохранилища, млн.м³" 
                        VerticalOptions="Center"
                        HorizontalOptions="End"
-                       Margin="0, 0, 107, 0"/>
+                       Margin="0, 0, 106, 0"/>
                 <Entry Grid.Row="4" Grid.Column="1" x:Name="UsefulVolumeInput" Style="{StaticResource ParamEntryStyle}" 
                        TextChanged="OnDoubleEntryTextChanged" Keyboard="Numeric" Focused="OnEntryFocused"/>
 
@@ -432,7 +432,7 @@
                 <Label Grid.Row="17" Grid.Column="0" Text="Гарантированный расход ГЭС, м³/с" 
                        VerticalOptions="Center"
                        HorizontalOptions="End"
-                       Margin="0, 0, 155, 0"/>
+                       Margin="0, 0, 154, 0"/>
                 <Entry Grid.Row="17" Grid.Column="1" x:Name="GuaranteedDischargeInput" Style="{StaticResource ParamEntryStyle}" 
                        TextChanged="OnDoubleEntryTextChanged" Keyboard="Numeric" Focused="OnEntryFocused"/>
 
