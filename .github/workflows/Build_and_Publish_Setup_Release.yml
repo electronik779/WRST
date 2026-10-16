@@ -133,19 +133,9 @@ jobs:
           cache: true
           cache-dependency-path: '**/WRST.maui.csproj'
 
-      - name: Cache MAUI Workloads
-        id: cache-workloads
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.dotnet/sdk-advertising
-            ~/.dotnet/metadata
-            ~/.dotnet/packs
-          key: ${{ runner.os }}-workloads-${{ hashFiles('**/WRST.maui.csproj') }}
-
-      - name: Install MAUI Workload
-        if: steps.cache-workloads.outputs.cache-hit != 'true'
-        run: dotnet workload restore WRST.maui/WRST.maui.csproj
+      - name: Install MAUI Workloads Globally
+        run: |
+          dotnet workload install maui maccatalyst --ignore-failed-sources
 
       - name: Create Dummy License File (macOS)
         run: touch "MIT License.txt"
@@ -153,8 +143,8 @@ jobs:
       # ИСПРАВЛЕНО: Заменен не поддерживаемый --framework на валидное свойство -p:TargetFramework=...
       - name: Restore NuGet Packages (macOS)
         run: |
-          dotnet restore WRST.maui/WRST.maui.csproj -p:TargetFramework=net10.0-maccatalyst -r maccatalyst-x64 /p:MSBuildEnableWorkloadResolver=false
-          dotnet restore WRST.maui/WRST.maui.csproj -p:TargetFramework=net10.0-maccatalyst -r maccatalyst-arm64 /p:MSBuildEnableWorkloadResolver=false
+          dotnet restore WRST.maui/WRST.maui.csproj -p:TargetFramework=net10.0-maccatalyst -r maccatalyst-x64
+          dotnet restore WRST.maui/WRST.maui.csproj -p:TargetFramework=net10.0-maccatalyst -r maccatalyst-arm64
 
       - name: Build macOS (x64)
         run: >
